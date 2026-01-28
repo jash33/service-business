@@ -1,0 +1,12 @@
+{
+  "id": "open-graph-image-generator",
+  "category": "SEO",
+  "title": "Dynamic Open Graph Image Generator",
+  "description": "Create system to generate unique OG images for each page with page title, branding, and relevant visuals. Improves social media share appearance.",
+  "status": "in_progress",
+  "priority": 2,
+  "complexity": "moderate",
+  "createdAt": "2026-01-26T01:51:05.773Z",
+  "updatedAt": "2026-01-26T19:18:55.937Z",
+  "descriptionHistory": []
+}

@@ -17,6 +17,8 @@
  */
 
 import { seoConfig } from '../config/seo.config';
+import { newsletterConfig, isNewsletterConfigured } from '../config/newsletter.config';
+import NewsletterForm from './NewsletterForm.astro';
 
 // Define the social platform types
 type SocialPlatform = 'facebook' | 'twitter' | 'instagram' | 'linkedin' | 'youtube';
@@ -39,6 +41,8 @@ interface Props {
   socialLinks?: SocialLink[];
   /** Service areas to display */
   serviceAreas?: string[];
+  /** Show newsletter signup form */
+  showNewsletter?: boolean;
 }
 
 // Default service areas based on the seo.config.ts
@@ -53,6 +57,7 @@ const {
   companyName = seoConfig.siteName,
   socialLinks = [],
   serviceAreas = defaultServiceAreas,
+  showNewsletter = newsletterConfig.showInFooter && isNewsletterConfigured(),
 } = Astro.props;
 
 // Get the current year dynamically
@@ -92,7 +97,13 @@ const platformNames: Record<SocialPlatform, string> = {
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="footer__icon" aria-hidden="true">
                 <path fill-rule="evenodd" d="M1.5 4.5a3 3 0 013-3h1.372c.86 0 1.61.586 1.819 1.42l1.105 4.423a1.875 1.875 0 01-.694 1.955l-1.293.97c-.135.101-.164.249-.126.352a11.285 11.285 0 006.697 6.697c.103.038.25.009.352-.126l.97-1.293a1.875 1.875 0 011.955-.694l4.423 1.105c.834.209 1.42.959 1.42 1.82V19.5a3 3 0 01-3 3h-2.25C8.552 22.5 1.5 15.448 1.5 6.75V4.5z" clip-rule="evenodd" />
               </svg>
-              <a href={`tel:${phone.replace(/\D/g, '')}`} class="footer__link" aria-label={`Call us at ${phone}`}>
+              <a
+                href={`tel:${phone.replace(/\D/g, '')}`}
+                class="footer__link footer__link--phone"
+                aria-label={`Call us at ${phone}`}
+                data-track-location="footer"
+                data-track-type="call"
+              >
                 {phone}
               </a>
             </p>
@@ -147,6 +158,20 @@ const platformNames: Record<SocialPlatform, string> = {
               ))}
             </ul>
           </nav>
+        </section>
+      )}
+
+      <!-- Newsletter Section (conditionally rendered) -->
+      {showNewsletter && (
+        <section class="footer__section footer__newsletter" aria-labelledby="footer-newsletter-heading">
+          <h2 id="footer-newsletter-heading" class="footer__heading">Stay Updated</h2>
+          <NewsletterForm
+            source="footer"
+            variant="stacked"
+            showHeader={false}
+            showNameField={false}
+            class="footer__newsletter-form"
+          />
         </section>
       )}
     </div>
@@ -498,7 +523,7 @@ const platformNames: Record<SocialPlatform, string> = {
   /* Desktop (1024px) */
   @media screen and (min-width: 1024px) {
     .footer__content {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
     }
 
     .footer__areas-list {
@@ -506,6 +531,88 @@ const platformNames: Record<SocialPlatform, string> = {
       grid-template-columns: repeat(2, 1fr);
       gap: var(--spacing-2) var(--spacing-6);
     }
+  }
+
+  /* -----------------------------------------------------------------
+   * Newsletter Section Styles
+   * ----------------------------------------------------------------- */
+  .footer__newsletter {
+    grid-column: 1 / -1;
+  }
+
+  @media screen and (min-width: 768px) {
+    .footer__newsletter {
+      grid-column: auto;
+    }
+  }
+
+  @media screen and (min-width: 1024px) {
+    .footer__newsletter {
+      grid-column: auto;
+    }
+  }
+
+  /* Newsletter form overrides for dark footer background */
+  .footer__newsletter :global(.newsletter-form__input) {
+    background-color: var(--color-primary-800);
+    border-color: var(--color-primary-600);
+    color: var(--color-text-inverse);
+  }
+
+  .footer__newsletter :global(.newsletter-form__input::placeholder) {
+    color: var(--color-primary-300);
+  }
+
+  .footer__newsletter :global(.newsletter-form__input:hover:not(:focus):not([aria-invalid="true"])) {
+    border-color: var(--color-primary-500);
+  }
+
+  .footer__newsletter :global(.newsletter-form__input:focus) {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 var(--focus-ring-width) rgba(139, 92, 246, 0.3);
+  }
+
+  .footer__newsletter :global(.newsletter-form__submit) {
+    background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-alt) 100%);
+    border: none;
+  }
+
+  .footer__newsletter :global(.newsletter-form__submit:hover:not(:disabled)) {
+    background: linear-gradient(135deg, var(--color-accent-dark) 0%, var(--color-accent-alt-dark) 100%);
+    box-shadow: var(--glow-accent-md);
+  }
+
+  .footer__newsletter :global(.newsletter-form__privacy) {
+    color: var(--color-primary-200);
+  }
+
+  .footer__newsletter :global(.newsletter-form__consent-label) {
+    color: var(--color-primary-100);
+  }
+
+  .footer__newsletter :global(.newsletter-form__consent-checkmark) {
+    background-color: var(--color-primary-800);
+    border-color: var(--color-primary-500);
+  }
+
+  .footer__newsletter :global(.newsletter-form__consent-checkbox:checked + .newsletter-form__consent-checkmark) {
+    border-color: var(--color-accent);
+  }
+
+  .footer__newsletter :global(.newsletter-form__consent-checkmark::after) {
+    background: var(--color-accent);
+  }
+
+  .footer__newsletter :global(.newsletter-form__link) {
+    color: var(--color-primary-200);
+  }
+
+  .footer__newsletter :global(.newsletter-form__link:hover) {
+    color: var(--color-text-inverse);
+  }
+
+  .footer__newsletter :global(.newsletter-form__error) {
+    color: var(--color-error-border);
   }
 
   /* Large Desktop (1280px) */

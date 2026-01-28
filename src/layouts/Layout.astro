@@ -4,6 +4,11 @@
  * Provides the HTML structure and SEO configuration for all pages.
  * Includes performance optimizations and privacy-compliant analytics.
  *
+ * Performance Features:
+ * - Critical CSS inlined in head for faster FCP
+ * - Google Fonts loaded via preload (non-render-blocking)
+ * - Non-critical CSS deferred
+ *
  * @example
  * ```astro
  * <Layout
@@ -15,15 +20,24 @@
  * ```
  */
 
-// Import global styles including design system variables
+// Import global styles (non-critical CSS - will be bundled by Astro)
 import '../styles/globals.css';
+
+// Import critical CSS as raw string for inlining
+import criticalCSS from '../styles/critical.css?raw';
 
 import SEO from '../components/SEO.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import EmergencyServiceBanner from '../components/EmergencyServiceBanner.astro';
 import GoogleAnalytics from '../components/GoogleAnalytics.astro';
 import CookieConsent from '../components/CookieConsent.astro';
 import PerformanceMonitor from '../components/PerformanceMonitor.astro';
+import StickyMobileCTA from '../components/StickyMobileCTA.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import NewsletterPopup from '../components/NewsletterPopup.astro';
+import ExitIntentPopup from '../components/ExitIntentPopup.astro';
+import type { BreadcrumbItem } from '../components/Breadcrumb.astro';
 import type { SEOProps } from '../types/seo';
 import { seoConfig } from '../config/seo.config';
 
@@ -37,6 +51,16 @@ interface Props extends Partial<SEOProps> {
   bodyClass?: string;
   /** Disable analytics for this page */
   disableAnalytics?: boolean;
+  /** Custom breadcrumb items (optional - auto-generates from path if not provided) */
+  breadcrumbs?: BreadcrumbItem[];
+  /** Disable breadcrumb navigation for this page (e.g., home page) */
+  hideBreadcrumbs?: boolean;
+  /** Disable newsletter popup for this page */
+  disableNewsletterPopup?: boolean;
+  /** Disable exit intent popup for this page */
+  disableExitIntentPopup?: boolean;
+  /** Disable emergency service banner for this page */
+  disableEmergencyBanner?: boolean;
 }
 
 const {
@@ -45,8 +69,21 @@ const {
   bodyClass = '',
   lang = seoConfig.defaultLang,
   disableAnalytics = false,
+  breadcrumbs,
+  hideBreadcrumbs = false,
+  disableNewsletterPopup = false,
+  disableExitIntentPopup = false,
+  disableEmergencyBanner = false,
   ...seoProps
 } = Astro.props;
+
+// Determine if we should show breadcrumbs
+// Hide on home page by default, show on all other pages
+const isHomePage = Astro.url.pathname === '/' || Astro.url.pathname === '';
+const showBreadcrumbs = !hideBreadcrumbs && !isHomePage;
+
+// Google Fonts URL - optimized with display=swap and subset
+const googleFontsURL = 'https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Inter:wght@400;500;600;700&display=swap';
 ---
 
 <!doctype html>
@@ -69,9 +106,23 @@ const {
 			})();
 		</script>
 
+		<!-- Critical CSS - Inlined for faster First Contentful Paint -->
+		<style is:inline set:html={criticalCSS}></style>
+
 		<!-- Preconnect to external resources for performance -->
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+		<!-- Google Fonts - Non-render-blocking load via preload -->
+		<link
+			rel="preload"
+			href={googleFontsURL}
+			as="style"
+			onload="this.onload=null;this.rel='stylesheet'"
+		/>
+		<noscript>
+			<link rel="stylesheet" href={googleFontsURL} />
+		</noscript>
 
 		<!-- DNS prefetch for analytics (loaded conditionally) -->
 		<link rel="dns-prefetch" href="https://www.googletagmanager.com" />
@@ -92,17 +143,83 @@ const {
 	</head>
 	<body class={bodyClass}>
 		<a href="#main-content" class="skip-link">Skip to main content</a>
+		{!disableEmergencyBanner && (
+			<EmergencyServiceBanner
+				message="Need urgent help? We offer 24/7 emergency web support!"
+				phoneNumber="+1-832-555-0123"
+				phoneDisplay="(832) 555-0123"
+				ctaText="Call Now"
+				dismissDurationHours={24}
+			/>
+		)}
 		<Header currentPath={Astro.url.pathname} />
-		<div id="main-content">
+		{showBreadcrumbs && (
+			<Breadcrumb
+				items={breadcrumbs}
+				currentPath={Astro.url.pathname}
+				currentTitle={title}
+			/>
+		)}
+		<main id="main-content" tabindex="-1">
 			<slot />
-		</div>
+		</main>
 		<Footer />
+
+		<!-- Sticky Mobile CTA Bar (mobile-only, always visible) -->
+		<StickyMobileCTA />
 
 		<!-- Cookie Consent Banner (GDPR/CCPA compliant) -->
 		{!disableAnalytics && <CookieConsent />}
 
+		<!-- Newsletter Popup (with consent-aware display) -->
+		{!disableNewsletterPopup && <NewsletterPopup />}
+
+		<!-- Exit Intent Popup (discount/consultation offer) -->
+		{!disableExitIntentPopup && <ExitIntentPopup />}
+
 		<!-- Performance Monitoring (Core Web Vitals) -->
 		{!disableAnalytics && <PerformanceMonitor />}
+
+		<!-- Skip Navigation Link - Focus Management -->
+		<script>
+			/**
+			 * Skip Link Focus Management
+			 * Ensures proper focus behavior when skip link is activated.
+			 * Moves focus to main content and handles scroll position.
+			 */
+			function initSkipLink() {
+				const skipLink = document.querySelector('.skip-link');
+				const mainContent = document.getElementById('main-content');
+
+				if (!skipLink || !mainContent) return;
+
+				skipLink.addEventListener('click', (event) => {
+					event.preventDefault();
+
+					// Focus the main content area
+					mainContent.focus();
+
+					// Scroll to main content with smooth behavior (respects prefers-reduced-motion via CSS)
+					mainContent.scrollIntoView({
+						behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+						block: 'start'
+					});
+
+					// Update URL hash for browser history (optional)
+					history.pushState(null, '', '#main-content');
+				});
+			}
+
+			// Run on DOM ready
+			if (document.readyState === 'loading') {
+				document.addEventListener('DOMContentLoaded', initSkipLink);
+			} else {
+				initSkipLink();
+			}
+
+			// Re-run on Astro page transitions (View Transitions API)
+			document.addEventListener('astro:page-load', initSkipLink);
+		</script>
 
 		<!-- Scroll Reveal Animation Observer -->
 		<script>
@@ -170,5 +287,19 @@ const {
 
 	#main-content {
 		flex: 1 0 auto;
+	}
+
+	/* Adjust sticky header position when emergency banner is visible */
+	body.has-emergency-banner :global(.header) {
+		top: var(--emergency-banner-height, 0);
+	}
+
+	/* Adjust scroll margins when emergency banner is visible */
+	body.has-emergency-banner :global(#main-content) {
+		scroll-margin-top: calc(44px + var(--spacing-8, 2rem) + 1px + var(--emergency-banner-height, 0px));
+	}
+
+	body.has-emergency-banner :global([id]:target) {
+		scroll-margin-top: calc(44px + var(--spacing-8, 2rem) + 1px + var(--emergency-banner-height, 0px));
 	}
 </style>

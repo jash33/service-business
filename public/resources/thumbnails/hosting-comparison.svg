@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
+  <rect width="400" height="300" fill="#f8fafc"/>
+  <rect x="40" y="40" width="320" height="220" rx="12" fill="#e6eaf2" stroke="#365395" stroke-width="2"/>
+  <rect x="60" y="70" width="90" height="160" rx="8" fill="#fff" stroke="#365395" stroke-width="2"/>
+  <rect x="60" y="70" width="90" height="30" rx="8" fill="#365395"/>
+  <text x="105" y="90" text-anchor="middle" fill="#fff" font-family="Arial" font-size="10" font-weight="bold">SHARED</text>
+  <rect x="70" y="110" width="70" height="6" rx="1" fill="#10b981"/>
+  <rect x="70" y="125" width="50" height="6" rx="1" fill="#10b981"/>
+  <rect x="70" y="140" width="60" height="6" rx="1" fill="#f59e0b"/>
+  <rect x="70" y="155" width="40" height="6" rx="1" fill="#ef4444"/>
+  <text x="105" y="200" text-anchor="middle" fill="#365395" font-family="Arial" font-size="14" font-weight="bold">$5/mo</text>
+  <rect x="160" y="70" width="90" height="160" rx="8" fill="#fff" stroke="#8b5cf6" stroke-width="2"/>
+  <rect x="160" y="70" width="90" height="30" rx="8" fill="#8b5cf6"/>
+  <text x="205" y="90" text-anchor="middle" fill="#fff" font-family="Arial" font-size="10" font-weight="bold">VPS</text>
+  <rect x="170" y="110" width="70" height="6" rx="1" fill="#10b981"/>
+  <rect x="170" y="125" width="70" height="6" rx="1" fill="#10b981"/>
+  <rect x="170" y="140" width="70" height="6" rx="1" fill="#10b981"/>
+  <rect x="170" y="155" width="50" height="6" rx="1" fill="#f59e0b"/>
+  <text x="205" y="200" text-anchor="middle" fill="#8b5cf6" font-family="Arial" font-size="14" font-weight="bold">$30/mo</text>
+  <rect x="260" y="70" width="90" height="160" rx="8" fill="#fff" stroke="#06b6d4" stroke-width="2"/>
+  <rect x="260" y="70" width="90" height="30" rx="8" fill="#06b6d4"/>
+  <text x="305" y="90" text-anchor="middle" fill="#fff" font-family="Arial" font-size="10" font-weight="bold">DEDICATED</text>
+  <rect x="270" y="110" width="70" height="6" rx="1" fill="#10b981"/>
+  <rect x="270" y="125" width="70" height="6" rx="1" fill="#10b981"/>
+  <rect x="270" y="140" width="70" height="6" rx="1" fill="#10b981"/>
+  <rect x="270" y="155" width="70" height="6" rx="1" fill="#10b981"/>
+  <text x="305" y="200" text-anchor="middle" fill="#06b6d4" font-family="Arial" font-size="14" font-weight="bold">$100/mo</text>
+</svg>

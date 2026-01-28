@@ -1,0 +1,23 @@
+---
+/**
+ * Critical CSS Component
+ *
+ * Inlines critical CSS directly in the <head> to eliminate render-blocking
+ * resources and improve First Contentful Paint (FCP) and Lighthouse scores.
+ *
+ * The critical CSS contains only the minimum styles needed to render
+ * above-the-fold content without layout shifts.
+ *
+ * @example
+ * ```astro
+ * <head>
+ *   <CriticalCSS />
+ * </head>
+ * ```
+ */
+
+// Read critical CSS at build time
+import criticalStyles from '../styles/critical.css?raw';
+---
+
+<style set:html={criticalStyles} is:inline></style>

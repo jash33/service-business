@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769476983835-c45c2047",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-27T01:23:03.835Z",
+  "projectPath": "C:\\Users\\James\\Repos\\service-business",
+  "projectName": "service-business",
+  "featureId": "schema-markup-service",
+  "featureName": "Service Schema Markup for Individual Services",
+  "error": "Feature completed in 373s - auto-verified",
+  "passes": true
+}

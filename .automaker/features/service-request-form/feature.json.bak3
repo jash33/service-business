@@ -1,0 +1,12 @@
+{
+  "id": "service-request-form",
+  "category": "Core",
+  "title": "Detailed Service Request Quote Form",
+  "description": "Create a multi-step service request form with service selection, scheduling preferences, and project details. Includes file upload for project photos and generates detailed quote requests.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "complex",
+  "createdAt": "2026-01-26T01:51:05.713Z",
+  "updatedAt": "2026-01-26T01:51:05.713Z",
+  "descriptionHistory": []
+}

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769462177401-d63c6096",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-26T21:16:17.401Z",
+  "projectPath": "C:\\Users\\James\\Repos\\service-business",
+  "projectName": "service-business",
+  "featureId": "reviews-aggregator-widget",
+  "featureName": "Google Reviews Aggregator Widget",
+  "error": "Feature completed in 555s - auto-verified",
+  "passes": true
+}

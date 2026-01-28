@@ -1,0 +1,377 @@
+---
+/**
+ * TableOfContents Component
+ * A sticky table of contents for blog posts that highlights the current section
+ * and provides smooth scrolling navigation.
+ *
+ * Features:
+ * - Auto-generated from article headings
+ * - Sticky positioning on desktop
+ * - Active section highlighting
+ * - Smooth scroll navigation
+ * - Collapsible on mobile
+ * - Accessible with proper ARIA attributes
+ *
+ * @example
+ * ```astro
+ * <TableOfContents items={article.tableOfContents} />
+ * ```
+ */
+
+import type { TableOfContentsItem } from '../types/blog';
+
+interface Props {
+  /** Array of heading items for the table of contents */
+  items: TableOfContentsItem[];
+  /** Optional title for the TOC section */
+  title?: string;
+  /** Additional CSS class names */
+  class?: string;
+}
+
+const {
+  items = [],
+  title = 'Table of Contents',
+  class: className = '',
+} = Astro.props;
+
+// Don't render if no items
+if (items.length === 0) {
+  return null;
+}
+---
+
+<nav
+  class={`toc ${className}`}
+  aria-label="Table of contents"
+  data-toc
+>
+  <div class="toc__header">
+    <h2 class="toc__title">{title}</h2>
+    <button
+      class="toc__toggle"
+      aria-expanded="false"
+      aria-controls="toc-list"
+      type="button"
+    >
+      <svg class="toc__toggle-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="visually-hidden">Toggle table of contents</span>
+    </button>
+  </div>
+
+  <ol class="toc__list" id="toc-list" role="list">
+    {items.map((item) => (
+      <li
+        class={`toc__item toc__item--level-${item.level}`}
+        data-toc-item
+        data-target={item.id}
+      >
+        <a
+          href={`#${item.id}`}
+          class="toc__link"
+          data-toc-link
+        >
+          {item.text}
+        </a>
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<script>
+  // Initialize TOC functionality
+  function initTableOfContents() {
+    const tocNav = document.querySelector('[data-toc]') as HTMLElement | null;
+    if (!tocNav) return;
+
+    const tocToggle = tocNav.querySelector('.toc__toggle') as HTMLButtonElement | null;
+    const tocList = tocNav.querySelector('.toc__list') as HTMLElement | null;
+    const tocLinks = tocNav.querySelectorAll('[data-toc-link]');
+    const tocItems = tocNav.querySelectorAll('[data-toc-item]');
+
+    // Mobile toggle functionality
+    if (tocToggle && tocList) {
+      tocToggle.addEventListener('click', () => {
+        const isExpanded = tocToggle.getAttribute('aria-expanded') === 'true';
+        tocToggle.setAttribute('aria-expanded', (!isExpanded).toString());
+        tocList.classList.toggle('toc__list--expanded');
+      });
+    }
+
+    // Smooth scroll and active state management
+    tocLinks.forEach((link) => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = (link as HTMLAnchorElement).getAttribute('href')?.slice(1);
+        if (!targetId) return;
+
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+          // Smooth scroll with offset for fixed header
+          const headerOffset = 100;
+          const elementPosition = targetElement.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+
+          // Update URL hash without jumping
+          history.pushState(null, '', `#${targetId}`);
+        }
+      });
+    });
+
+    // Intersection Observer for active section highlighting
+    const headings = Array.from(tocItems).map((item) => {
+      const targetId = item.getAttribute('data-target');
+      return targetId ? document.getElementById(targetId) : null;
+    }).filter(Boolean) as HTMLElement[];
+
+    if (headings.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+
+            // Remove active class from all items
+            tocItems.forEach((item) => {
+              item.classList.remove('toc__item--active');
+            });
+
+            // Add active class to current item
+            const activeItem = tocNav.querySelector(`[data-target="${id}"]`);
+            if (activeItem) {
+              activeItem.classList.add('toc__item--active');
+            }
+          }
+        });
+      },
+      {
+        rootMargin: '-80px 0px -70% 0px',
+        threshold: 0
+      }
+    );
+
+    headings.forEach((heading) => {
+      observer.observe(heading);
+    });
+  }
+
+  // Run on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTableOfContents);
+  } else {
+    initTableOfContents();
+  }
+
+  // Re-run on Astro page transitions
+  document.addEventListener('astro:page-load', initTableOfContents);
+</script>
+
+<style>
+  /* =================================================================
+   * TABLE OF CONTENTS STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention
+   */
+
+  .toc {
+    background-color: var(--color-background-subtle);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-5);
+  }
+
+  .toc__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-4);
+  }
+
+  .toc__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  .toc__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-md);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: background-color var(--duration-150) var(--ease-in-out);
+  }
+
+  .toc__toggle:hover {
+    background-color: var(--color-background-muted);
+  }
+
+  .toc__toggle:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .toc__toggle-icon {
+    width: 20px;
+    height: 20px;
+    transition: transform var(--duration-200) var(--ease-in-out);
+  }
+
+  .toc__toggle[aria-expanded="true"] .toc__toggle-icon {
+    transform: rotate(180deg);
+  }
+
+  .toc__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+  }
+
+  .toc__item {
+    position: relative;
+  }
+
+  .toc__item--level-2 {
+    padding-left: 0;
+  }
+
+  .toc__item--level-3 {
+    padding-left: var(--spacing-4);
+  }
+
+  .toc__item--level-4 {
+    padding-left: var(--spacing-8);
+  }
+
+  .toc__link {
+    display: block;
+    padding: var(--spacing-2) var(--spacing-3);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-normal);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    border-left: 2px solid transparent;
+    transition:
+      color var(--duration-150) var(--ease-in-out),
+      background-color var(--duration-150) var(--ease-in-out),
+      border-color var(--duration-150) var(--ease-in-out);
+  }
+
+  .toc__link:hover {
+    color: var(--color-primary);
+    background-color: var(--color-background-elevated);
+  }
+
+  .toc__link:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .toc__item--active .toc__link {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-medium);
+    background-color: var(--color-primary-50);
+    border-left-color: var(--color-primary);
+  }
+
+  /* Visually hidden but accessible */
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  /* Mobile: Collapsible TOC */
+  @media screen and (max-width: 1023px) {
+    .toc__list {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height var(--duration-300) var(--ease-in-out);
+    }
+
+    .toc__list--expanded {
+      max-height: 500px;
+    }
+
+    .toc__header {
+      margin-bottom: 0;
+    }
+
+    .toc__list--expanded + .toc__header,
+    .toc__header:has(+ .toc__list--expanded) {
+      margin-bottom: var(--spacing-4);
+    }
+  }
+
+  /* Desktop: Always visible, hide toggle */
+  @media screen and (min-width: 1024px) {
+    .toc {
+      position: sticky;
+      top: var(--spacing-24);
+      max-height: calc(100vh - var(--spacing-32));
+      overflow-y: auto;
+    }
+
+    .toc__toggle {
+      display: none;
+    }
+
+    .toc__list {
+      max-height: none;
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .toc__toggle-icon,
+    .toc__link,
+    .toc__list {
+      transition: none;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .toc {
+      display: none;
+    }
+  }
+</style>

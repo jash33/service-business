@@ -1,0 +1,286 @@
+---
+/**
+ * TestimonialsSection Component
+ * A responsive section displaying customer testimonials in a grid layout.
+ * Designed to build trust and credibility with authentic customer quotes.
+ *
+ * Features:
+ * - Responsive grid: 1 column (mobile) -> 2 columns (tablet) -> 3 columns (desktop)
+ * - Section heading and subheading
+ * - Consistent card sizing and spacing
+ * - Accessible with proper semantic structure
+ * - Loading/empty state handling
+ * - Smooth animations with reduced motion support
+ * - No star ratings for authenticity
+ *
+ * @example Basic usage
+ * ```astro
+ * <TestimonialsSection
+ *   heading="What Our Clients Say"
+ *   testimonials={[
+ *     { id: 'client-1', name: 'John Smith', location: 'Houston, TX', quote: '...' },
+ *     { id: 'client-2', name: 'Jane Doe', location: 'Sugar Land, TX', quote: '...' },
+ *   ]}
+ * />
+ * ```
+ *
+ * @example With subheading
+ * ```astro
+ * <TestimonialsSection
+ *   heading="Client Testimonials"
+ *   subheading="Hear from businesses we've helped succeed online"
+ *   testimonials={testimonials}
+ * />
+ * ```
+ */
+
+import type { TestimonialsSectionProps, Testimonial } from '../types/testimonial';
+import TestimonialCard from './TestimonialCard.astro';
+
+interface Props extends TestimonialsSectionProps {}
+
+const {
+  heading = 'What Our Clients Say',
+  subheading,
+  testimonials = [],
+  id = 'testimonials',
+  class: className = '',
+} = Astro.props;
+
+// Build CSS classes
+const sectionClasses = [
+  'testimonials-section',
+  className,
+].filter(Boolean).join(' ');
+
+// Check if we have testimonials to display
+const hasTestimonials = testimonials && testimonials.length > 0;
+---
+
+<section class={sectionClasses} id={id} aria-labelledby={`${id}-heading`}>
+  <div class="testimonials-section__container">
+    <!-- Section Header -->
+    <header class="testimonials-section__header section-heading--decorated">
+      <h2 id={`${id}-heading`} class="testimonials-section__heading">{heading}</h2>
+      {subheading && (
+        <p class="testimonials-section__subheading">{subheading}</p>
+      )}
+    </header>
+
+    <!-- Testimonials Grid -->
+    {hasTestimonials ? (
+      <div class="testimonials-section__grid">
+        {testimonials.map((testimonial) => (
+          <TestimonialCard
+            id={testimonial.id}
+            name={testimonial.name}
+            location={testimonial.location}
+            quote={testimonial.quote}
+            company={testimonial.company}
+            title={testimonial.title}
+          />
+        ))}
+      </div>
+    ) : (
+      <!-- Empty State -->
+      <div class="testimonials-section__empty" role="status" aria-live="polite">
+        <p class="testimonials-section__empty-text">Testimonials coming soon.</p>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  /* =================================================================
+   * TESTIMONIALS SECTION COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .testimonials-section {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+  }
+
+  .testimonials-section__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  /* Section Header */
+  .testimonials-section__header {
+    text-align: center;
+    margin-bottom: var(--spacing-12);
+  }
+
+  .testimonials-section__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4);
+    line-height: var(--line-height-tight);
+  }
+
+  .testimonials-section__subheading {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin: 0;
+    max-width: 40rem;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* Testimonials Grid */
+  .testimonials-section__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+  }
+
+  /* Empty State */
+  .testimonials-section__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-16) var(--spacing-8);
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-xl);
+    border: 2px dashed var(--color-border);
+  }
+
+  .testimonials-section__empty-text {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-tertiary);
+    margin: 0;
+    text-align: center;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * =================================================================
+   */
+
+  /* Tablet (768px) - 2 columns */
+  @media screen and (min-width: 768px) {
+    .testimonials-section {
+      padding: var(--spacing-20) var(--spacing-8);
+    }
+
+    .testimonials-section__header {
+      margin-bottom: var(--spacing-16);
+    }
+
+    .testimonials-section__heading {
+      font-size: var(--font-size-4xl);
+    }
+
+    .testimonials-section__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-8);
+    }
+  }
+
+  /* Desktop (1024px) - 3 columns */
+  @media screen and (min-width: 1024px) {
+    .testimonials-section__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* Large Desktop (1280px) */
+  @media screen and (min-width: 1280px) {
+    .testimonials-section {
+      padding: var(--spacing-24) var(--spacing-8);
+    }
+  }
+
+  /* =================================================================
+   * ANIMATION - Staggered card appearance
+   * =================================================================
+   */
+  .testimonials-section__grid > :global(*) {
+    animation: fadeSlideUp 0.5s ease-out backwards;
+  }
+
+  .testimonials-section__grid > :global(*:nth-child(1)) {
+    animation-delay: 0.1s;
+  }
+
+  .testimonials-section__grid > :global(*:nth-child(2)) {
+    animation-delay: 0.2s;
+  }
+
+  .testimonials-section__grid > :global(*:nth-child(3)) {
+    animation-delay: 0.3s;
+  }
+
+  .testimonials-section__grid > :global(*:nth-child(4)) {
+    animation-delay: 0.4s;
+  }
+
+  .testimonials-section__grid > :global(*:nth-child(5)) {
+    animation-delay: 0.5s;
+  }
+
+  .testimonials-section__grid > :global(*:nth-child(6)) {
+    animation-delay: 0.6s;
+  }
+
+  .testimonials-section__grid > :global(*:nth-child(7)) {
+    animation-delay: 0.7s;
+  }
+
+  .testimonials-section__grid > :global(*:nth-child(8)) {
+    animation-delay: 0.8s;
+  }
+
+  .testimonials-section__grid > :global(*:nth-child(9)) {
+    animation-delay: 0.9s;
+  }
+
+  @keyframes fadeSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * =================================================================
+   */
+  @media (prefers-reduced-motion: reduce) {
+    .testimonials-section__grid > :global(*) {
+      animation: none;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * =================================================================
+   */
+  @media print {
+    .testimonials-section {
+      padding: var(--spacing-8) 0;
+      background-color: transparent;
+    }
+
+    .testimonials-section__grid {
+      gap: var(--spacing-4);
+    }
+
+    .testimonials-section__grid > :global(*) {
+      animation: none;
+    }
+  }
+</style>

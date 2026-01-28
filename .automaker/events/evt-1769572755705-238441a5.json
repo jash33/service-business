@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769572755705-238441a5",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-28T03:59:15.705Z",
+  "projectPath": "C:\\Users\\James\\Repos\\service-business",
+  "projectName": "service-business",
+  "featureId": "feature-1769572722114-7ctaadhka",
+  "featureName": "",
+  "error": "Feature completed in 33s",
+  "passes": true
+}

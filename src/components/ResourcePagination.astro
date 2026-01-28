@@ -1,0 +1,358 @@
+---
+/**
+ * ResourcePagination Component
+ * A pagination component for navigating through resource pages.
+ *
+ * Features:
+ * - Previous/Next navigation
+ * - Page number buttons with ellipsis for large page counts
+ * - Current page indication
+ * - Accessible navigation with ARIA labels
+ * - Keyboard navigation support
+ * - Responsive design
+ *
+ * @example Basic usage
+ * ```astro
+ * <ResourcePagination
+ *   currentPage={1}
+ *   totalPages={5}
+ *   baseUrl="/resources"
+ * />
+ * ```
+ */
+
+interface Props {
+  /** Current page number (1-indexed) */
+  currentPage: number;
+  /** Total number of pages */
+  totalPages: number;
+  /** Base URL for pagination links */
+  baseUrl: string;
+  /** Additional CSS class names */
+  class?: string;
+}
+
+const {
+  currentPage,
+  totalPages,
+  baseUrl,
+  class: className = '',
+} = Astro.props;
+
+// Don't render if only one page
+if (totalPages <= 1) {
+  return null;
+}
+
+const paginationClasses = [
+  'resource-pagination',
+  className,
+].filter(Boolean).join(' ');
+
+// Build page URL
+const getPageUrl = (page: number): string => {
+  const url = new URL(baseUrl, 'http://localhost');
+  if (page > 1) {
+    url.searchParams.set('page', String(page));
+  }
+  return url.pathname + (url.search || '');
+};
+
+// Generate page numbers to display
+const getPageNumbers = (): (number | 'ellipsis')[] => {
+  const pages: (number | 'ellipsis')[] = [];
+  const showEllipsis = totalPages > 7;
+
+  if (!showEllipsis) {
+    // Show all pages if 7 or fewer
+    for (let i = 1; i <= totalPages; i++) {
+      pages.push(i);
+    }
+  } else {
+    // Always show first page
+    pages.push(1);
+
+    if (currentPage > 3) {
+      pages.push('ellipsis');
+    }
+
+    // Show pages around current page
+    const start = Math.max(2, currentPage - 1);
+    const end = Math.min(totalPages - 1, currentPage + 1);
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    if (currentPage < totalPages - 2) {
+      pages.push('ellipsis');
+    }
+
+    // Always show last page
+    pages.push(totalPages);
+  }
+
+  return pages;
+};
+
+const pageNumbers = getPageNumbers();
+const hasPrevious = currentPage > 1;
+const hasNext = currentPage < totalPages;
+---
+
+<nav class={paginationClasses} aria-label="Resource pagination">
+  <ul class="resource-pagination__list">
+    <!-- Previous Button -->
+    <li class="resource-pagination__item">
+      {hasPrevious ? (
+        <a
+          href={getPageUrl(currentPage - 1)}
+          class="resource-pagination__link resource-pagination__link--prev"
+          aria-label="Go to previous page"
+        >
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="resource-pagination__link-text">Previous</span>
+        </a>
+      ) : (
+        <span class="resource-pagination__link resource-pagination__link--prev resource-pagination__link--disabled" aria-disabled="true">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="resource-pagination__link-text">Previous</span>
+        </span>
+      )}
+    </li>
+
+    <!-- Page Numbers -->
+    {pageNumbers.map((page, index) => (
+      <li class="resource-pagination__item resource-pagination__item--page">
+        {page === 'ellipsis' ? (
+          <span class="resource-pagination__ellipsis" aria-hidden="true">...</span>
+        ) : page === currentPage ? (
+          <span
+            class="resource-pagination__link resource-pagination__link--current"
+            aria-current="page"
+            aria-label={`Current page, page ${page}`}
+          >
+            {page}
+          </span>
+        ) : (
+          <a
+            href={getPageUrl(page)}
+            class="resource-pagination__link resource-pagination__link--page"
+            aria-label={`Go to page ${page}`}
+          >
+            {page}
+          </a>
+        )}
+      </li>
+    ))}
+
+    <!-- Next Button -->
+    <li class="resource-pagination__item">
+      {hasNext ? (
+        <a
+          href={getPageUrl(currentPage + 1)}
+          class="resource-pagination__link resource-pagination__link--next"
+          aria-label="Go to next page"
+        >
+          <span class="resource-pagination__link-text">Next</span>
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      ) : (
+        <span class="resource-pagination__link resource-pagination__link--next resource-pagination__link--disabled" aria-disabled="true">
+          <span class="resource-pagination__link-text">Next</span>
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+      )}
+    </li>
+  </ul>
+
+  <!-- Page info for screen readers -->
+  <p class="resource-pagination__info sr-only">
+    Page {currentPage} of {totalPages}
+  </p>
+</nav>
+
+<style>
+  /* =================================================================
+   * RESOURCE PAGINATION COMPONENT STYLES
+   * ================================================================= */
+
+  .resource-pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--spacing-12);
+    padding-top: var(--spacing-8);
+    border-top: 1px solid var(--color-border-light);
+  }
+
+  .resource-pagination__list {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .resource-pagination__item {
+    display: flex;
+  }
+
+  .resource-pagination__item--page {
+    display: none;
+  }
+
+  .resource-pagination__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    min-width: var(--spacing-10);
+    height: var(--spacing-10);
+    padding: 0 var(--spacing-3);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    color: var(--color-text-secondary);
+    background-color: var(--color-background-subtle);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      border-color var(--duration-150) var(--ease-in-out),
+      color var(--duration-150) var(--ease-in-out),
+      box-shadow var(--duration-150) var(--ease-in-out);
+  }
+
+  .resource-pagination__link:hover:not(.resource-pagination__link--disabled):not(.resource-pagination__link--current) {
+    background-color: var(--color-primary-50);
+    border-color: var(--color-primary-200);
+    color: var(--color-primary-700);
+  }
+
+  .resource-pagination__link:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .resource-pagination__link svg {
+    width: var(--spacing-5);
+    height: var(--spacing-5);
+  }
+
+  .resource-pagination__link--disabled {
+    color: var(--color-text-tertiary);
+    background-color: var(--color-background-muted);
+    border-color: var(--color-border-light);
+    cursor: not-allowed;
+  }
+
+  .resource-pagination__link--current {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-text-inverse);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .resource-pagination__link--page {
+    min-width: var(--spacing-10);
+    padding: 0;
+  }
+
+  .resource-pagination__link-text {
+    display: inline;
+  }
+
+  .resource-pagination__ellipsis {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--spacing-10);
+    height: var(--spacing-10);
+    color: var(--color-text-tertiary);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+  }
+
+  .resource-pagination__info {
+    margin: 0;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+  @media screen and (max-width: 639px) {
+    .resource-pagination__link--prev,
+    .resource-pagination__link--next {
+      min-width: 44px;
+      min-height: 44px;
+    }
+
+    .resource-pagination__link-text {
+      display: none;
+    }
+  }
+
+  @media screen and (min-width: 640px) {
+    .resource-pagination__item--page {
+      display: flex;
+    }
+
+    .resource-pagination__list {
+      gap: var(--spacing-2);
+    }
+
+    .resource-pagination__link--prev,
+    .resource-pagination__link--next {
+      padding: 0 var(--spacing-4);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .resource-pagination__link {
+      transition: none;
+    }
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+  @media (forced-colors: active) {
+    .resource-pagination__link {
+      border: 2px solid currentColor;
+    }
+
+    .resource-pagination__link--current {
+      background-color: Highlight;
+      color: HighlightText;
+    }
+
+    .resource-pagination__link--disabled {
+      border-style: dashed;
+    }
+  }
+</style>

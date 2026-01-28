@@ -1,0 +1,12 @@
+{
+  "id": "booking-calendar-integration",
+  "category": "Integration",
+  "title": "Calendly/Acuity Scheduling Integration",
+  "description": "Embed third-party scheduling widget for appointment booking. Allows customers to view available time slots and book consultations directly from the website.",
+  "status": "in_progress",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [],
+  "createdAt": "2026-01-26T01:51:05.715Z",
+  "updatedAt": "2026-01-26T04:38:05.752Z"
+}

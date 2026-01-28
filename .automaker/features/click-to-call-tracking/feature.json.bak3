@@ -1,0 +1,14 @@
+{
+  "id": "click-to-call-tracking",
+  "category": "Analytics",
+  "title": "Phone Number Click-to-Call Tracking",
+  "description": "Implement event tracking for phone number clicks throughout the site. Integrates with Google Analytics 4 to measure conversion actions and optimize for mobile users.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [
+    "analytics-performance"
+  ],
+  "createdAt": "2026-01-26T01:51:05.712Z",
+  "updatedAt": "2026-01-26T01:51:05.712Z"
+}

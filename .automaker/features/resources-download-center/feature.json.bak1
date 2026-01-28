@@ -1,0 +1,12 @@
+{
+  "id": "resources-download-center",
+  "category": "Content",
+  "title": "Resources and Downloads Center",
+  "description": "Build a resource library with downloadable guides, spec sheets, maintenance tips, and educational content. Positions business as industry authority.",
+  "status": "in_progress",
+  "priority": 3,
+  "complexity": "moderate",
+  "dependencies": [],
+  "createdAt": "2026-01-26T01:51:05.762Z",
+  "updatedAt": "2026-01-27T16:13:08.224Z"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769527086637-23bb41c4",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-27T15:18:06.637Z",
+  "projectPath": "C:\\Users\\James\\Repos\\service-business",
+  "projectName": "service-business",
+  "featureId": "facebook-page-plugin",
+  "featureName": "Facebook Page Social Plugin",
+  "error": "Feature completed in 147s - auto-verified",
+  "passes": true
+}

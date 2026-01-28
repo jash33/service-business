@@ -30,10 +30,18 @@ const { currentPath = '/' } = Astro.props;
 const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/services', label: 'Services' },
+  { href: '/financing', label: 'Financing' },
+  { href: '/service-areas', label: 'Service Areas' },
   { href: '/portfolio', label: 'Portfolio' },
+  { href: '/resources', label: 'Resources' },
+  { href: '/vendors', label: 'Vendors' },
+  { href: '/team', label: 'Team' },
   { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' },
 ];
+
+// CTA link for quote request (separate from nav for special styling)
+const ctaLink = { href: '/service-request', label: 'Get Quote' };
 ---
 
 <header class="header" role="banner">
@@ -60,8 +68,14 @@ const navLinks = [
       </ul>
     </nav>
 
-    <!-- Theme Toggle (Desktop) -->
+    <!-- Desktop Actions -->
     <div class="header__actions">
+      <a
+        href={ctaLink.href}
+        class:list={['header__cta', { 'header__cta--active': currentPath === ctaLink.href }]}
+      >
+        {ctaLink.label}
+      </a>
       <ThemeToggle class="header__theme-toggle" />
     </div>
 
@@ -103,8 +117,19 @@ const navLinks = [
         ))}
       </ul>
 
+      <!-- Mobile CTA -->
+      <li class="header__mobile-nav-item header__mobile-nav-item--cta" style={`--item-index: ${navLinks.length}`}>
+        <a
+          href={ctaLink.href}
+          class:list={['header__mobile-cta', { 'header__mobile-cta--active': currentPath === ctaLink.href }]}
+          tabindex="-1"
+        >
+          {ctaLink.label}
+        </a>
+      </li>
+
       <!-- Mobile Theme Toggle Section -->
-      <div class="header__mobile-actions" style={`--item-index: ${navLinks.length}`}>
+      <div class="header__mobile-actions" style={`--item-index: ${navLinks.length + 1}`}>
         <div class="header__mobile-theme-toggle">
           <span class="header__mobile-theme-label">Theme</span>
           <ThemeToggle class="header__theme-toggle--mobile" />
@@ -426,7 +451,82 @@ const navLinks = [
   .header__actions {
     display: none;
     align-items: center;
-    gap: var(--spacing-2);
+    gap: var(--spacing-3);
+  }
+
+  /* CTA Button (Get Quote) */
+  .header__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: var(--spacing-2) var(--spacing-5);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-inverse);
+    background-color: var(--color-primary);
+    text-decoration: none;
+    border-radius: var(--radius-lg);
+    transition: background-color var(--duration-150) var(--ease-in-out),
+                transform var(--duration-150) var(--ease-in-out),
+                box-shadow var(--duration-150) var(--ease-in-out);
+  }
+
+  .header__cta:hover {
+    background-color: var(--color-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .header__cta:active {
+    transform: translateY(0);
+  }
+
+  .header__cta:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  .header__cta--active {
+    background-color: var(--color-primary-700);
+  }
+
+  /* Mobile CTA Button */
+  .header__mobile-nav-item--cta {
+    margin-top: var(--spacing-4);
+    padding-top: var(--spacing-4);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .header__mobile-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: var(--spacing-4);
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-inverse);
+    background-color: var(--color-primary);
+    text-decoration: none;
+    border-radius: var(--radius-lg);
+    transition: background-color var(--duration-150) var(--ease-in-out);
+  }
+
+  .header__mobile-cta:hover,
+  .header__mobile-cta:focus {
+    background-color: var(--color-primary-hover);
+  }
+
+  .header__mobile-cta:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  .header__mobile-cta--active {
+    background-color: var(--color-primary-700);
   }
 
   /* Mobile Actions Section */

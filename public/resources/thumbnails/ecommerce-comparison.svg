@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
+  <rect width="400" height="300" fill="#f8fafc"/>
+  <rect x="40" y="40" width="320" height="220" rx="12" fill="#e6eaf2" stroke="#365395" stroke-width="2"/>
+  <rect x="60" y="60" width="90" height="40" rx="6" fill="#96bf48"/>
+  <text x="105" y="85" text-anchor="middle" fill="#fff" font-family="Arial" font-size="12" font-weight="bold">Shopify</text>
+  <rect x="160" y="60" width="90" height="40" rx="6" fill="#7f54b3"/>
+  <text x="205" y="85" text-anchor="middle" fill="#fff" font-family="Arial" font-size="11" font-weight="bold">WooCommerce</text>
+  <rect x="260" y="60" width="90" height="40" rx="6" fill="#121118"/>
+  <text x="305" y="85" text-anchor="middle" fill="#fff" font-family="Arial" font-size="10" font-weight="bold">BigCommerce</text>
+  <rect x="60" y="115" width="290" height="30" rx="4" fill="#fff" stroke="#c2cbdf"/>
+  <text x="80" y="135" fill="#365395" font-family="Arial" font-size="11">Pricing</text>
+  <rect x="165" y="122" width="30" height="16" rx="2" fill="#10b981"/>
+  <rect x="215" y="122" width="30" height="16" rx="2" fill="#10b981"/>
+  <rect x="295" y="122" width="30" height="16" rx="2" fill="#f59e0b"/>
+  <rect x="60" y="155" width="290" height="30" rx="4" fill="#fff" stroke="#c2cbdf"/>
+  <text x="80" y="175" fill="#365395" font-family="Arial" font-size="11">Ease of Use</text>
+  <rect x="165" y="162" width="30" height="16" rx="2" fill="#10b981"/>
+  <rect x="215" y="162" width="30" height="16" rx="2" fill="#f59e0b"/>
+  <rect x="295" y="162" width="30" height="16" rx="2" fill="#10b981"/>
+  <rect x="60" y="195" width="290" height="30" rx="4" fill="#fff" stroke="#c2cbdf"/>
+  <text x="80" y="215" fill="#365395" font-family="Arial" font-size="11">Customization</text>
+  <rect x="165" y="202" width="30" height="16" rx="2" fill="#f59e0b"/>
+  <rect x="215" y="202" width="30" height="16" rx="2" fill="#10b981"/>
+  <rect x="295" y="202" width="30" height="16" rx="2" fill="#10b981"/>
+</svg>

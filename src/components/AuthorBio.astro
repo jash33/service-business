@@ -1,0 +1,323 @@
+---
+/**
+ * AuthorBio Component
+ * A card displaying author information including avatar, name, bio, and social links.
+ *
+ * Features:
+ * - Author avatar with fallback
+ * - Name and bio display
+ * - Optional social/website link
+ * - Accessible markup
+ * - Responsive design
+ *
+ * @example
+ * ```astro
+ * <AuthorBio
+ *   author={{
+ *     name: "John Doe",
+ *     avatar: "/images/authors/john.jpg",
+ *     bio: "John is a web developer with 10 years of experience.",
+ *     url: "https://johndoe.com"
+ *   }}
+ * />
+ * ```
+ */
+
+import type { BlogAuthor } from '../types/blog';
+
+interface Props {
+  /** Author information object */
+  author: BlogAuthor;
+  /** Additional CSS class names */
+  class?: string;
+  /** Whether to show "Written by" prefix */
+  showPrefix?: boolean;
+}
+
+const {
+  author,
+  class: className = '',
+  showPrefix = true,
+} = Astro.props;
+
+// Generate initials for fallback avatar
+const initials = author.name
+  .split(' ')
+  .map(word => word[0])
+  .slice(0, 2)
+  .join('')
+  .toUpperCase();
+---
+
+<aside class={`author-bio ${className}`} aria-label="About the author">
+  <div class="author-bio__avatar-container">
+    {author.avatar ? (
+      <img
+        src={author.avatar}
+        alt={`${author.name}'s profile photo`}
+        class="author-bio__avatar"
+        width="80"
+        height="80"
+        loading="lazy"
+      />
+    ) : (
+      <div class="author-bio__avatar-fallback" aria-hidden="true">
+        {initials}
+      </div>
+    )}
+  </div>
+
+  <div class="author-bio__content">
+    <div class="author-bio__header">
+      {showPrefix && (
+        <span class="author-bio__prefix">Written by</span>
+      )}
+      <h3 class="author-bio__name">
+        {author.url ? (
+          <a
+            href={author.url}
+            class="author-bio__name-link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {author.name}
+            <svg class="author-bio__external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        ) : (
+          author.name
+        )}
+      </h3>
+    </div>
+
+    {author.bio && (
+      <p class="author-bio__description">{author.bio}</p>
+    )}
+
+    {author.url && (
+      <a
+        href={author.url}
+        class="author-bio__link"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        View Profile
+        <svg class="author-bio__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    )}
+  </div>
+</aside>
+
+<style>
+  /* =================================================================
+   * AUTHOR BIO STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention
+   */
+
+  .author-bio {
+    display: flex;
+    gap: var(--spacing-5);
+    padding: var(--spacing-6);
+    background-color: var(--color-background-subtle);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+  }
+
+  .author-bio__avatar-container {
+    flex-shrink: 0;
+  }
+
+  .author-bio__avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: var(--radius-full);
+    object-fit: cover;
+    border: 3px solid var(--color-background-elevated);
+    box-shadow: var(--shadow-md);
+  }
+
+  .author-bio__avatar-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    border-radius: var(--radius-full);
+    background: var(--gradient-primary);
+    color: var(--color-text-inverse);
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    border: 3px solid var(--color-background-elevated);
+    box-shadow: var(--shadow-md);
+  }
+
+  .author-bio__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    flex: 1;
+    min-width: 0;
+  }
+
+  .author-bio__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+  }
+
+  .author-bio__prefix {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  .author-bio__name {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .author-bio__name-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--duration-150) var(--ease-in-out);
+  }
+
+  .author-bio__name-link:hover {
+    color: var(--color-primary);
+  }
+
+  .author-bio__name-link:focus-visible {
+    outline: none;
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+
+  .author-bio__external-icon {
+    width: 16px;
+    height: 16px;
+    opacity: 0.6;
+  }
+
+  .author-bio__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-normal);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0;
+  }
+
+  .author-bio__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    margin-top: var(--spacing-2);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: gap var(--duration-150) var(--ease-in-out);
+  }
+
+  .author-bio__link:hover {
+    gap: var(--spacing-2);
+  }
+
+  .author-bio__link:focus-visible {
+    outline: none;
+    text-decoration: underline;
+  }
+
+  .author-bio__arrow {
+    width: 16px;
+    height: 16px;
+    transition: transform var(--duration-150) var(--ease-in-out);
+  }
+
+  .author-bio__link:hover .author-bio__arrow {
+    transform: translateX(4px);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  @media screen and (max-width: 639px) {
+    .author-bio {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: var(--spacing-5);
+    }
+
+    .author-bio__content {
+      align-items: center;
+    }
+
+    .author-bio__header {
+      align-items: center;
+    }
+
+    .author-bio__avatar,
+    .author-bio__avatar-fallback {
+      width: 96px;
+      height: 96px;
+    }
+  }
+
+  @media screen and (min-width: 640px) {
+    .author-bio {
+      align-items: flex-start;
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .author-bio__name-link,
+    .author-bio__link,
+    .author-bio__arrow {
+      transition: none;
+    }
+
+    .author-bio__link:hover {
+      gap: var(--spacing-1);
+    }
+
+    .author-bio__link:hover .author-bio__arrow {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .author-bio {
+      border: 1px solid #ccc;
+      padding: 1rem;
+    }
+
+    .author-bio__link {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,513 @@
+---
+/**
+ * BeforeAfterGallery Component
+ *
+ * A gallery section showcasing multiple before/after image comparisons
+ * with filtering capabilities and responsive grid layout.
+ *
+ * Features:
+ * - Responsive grid layout (2-3 columns)
+ * - Category filtering
+ * - Staggered entrance animations
+ * - Accessible with proper heading hierarchy
+ * - Respects prefers-reduced-motion preference
+ *
+ * @example Basic usage:
+ * ```astro
+ * <BeforeAfterGallery
+ *   heading="Project Transformations"
+ *   subheading="See the dramatic improvements we've made for our clients."
+ *   comparisons={comparisons}
+ * />
+ * ```
+ *
+ * @example With filtering:
+ * ```astro
+ * <BeforeAfterGallery
+ *   heading="Our Work"
+ *   comparisons={comparisons}
+ *   enableFiltering={true}
+ *   columns={3}
+ * />
+ * ```
+ */
+
+import type { BeforeAfterGalleryProps } from '../types/before-after';
+import { COMPARISON_CATEGORIES } from '../types/before-after';
+import BeforeAfterSlider from './BeforeAfterSlider.astro';
+
+interface Props extends BeforeAfterGalleryProps {}
+
+const {
+  heading = 'Project Transformations',
+  subheading = 'See the dramatic improvements we\'ve made for our clients through our web design and development services.',
+  comparisons = [],
+  enableFiltering = false,
+  columns = 2,
+  id = 'before-after-gallery',
+  class: className = '',
+} = Astro.props;
+
+// Build CSS classes
+const sectionClasses = ['before-after-gallery', className].filter(Boolean).join(' ');
+
+// Get unique categories from comparisons
+const uniqueCategories = enableFiltering
+  ? [...new Set(comparisons.map(c => c.category).filter(Boolean))]
+  : [];
+
+// Filter categories to only show ones that have items
+const availableFilters = COMPARISON_CATEGORIES.filter(
+  cat => cat.value === 'all' || uniqueCategories.includes(cat.value)
+);
+---
+
+<section class={sectionClasses} id={id} aria-labelledby={`${id}-heading`}>
+  <div class="before-after-gallery__container">
+    <!-- Section Header -->
+    <header class="before-after-gallery__header">
+      <h2 id={`${id}-heading`} class="before-after-gallery__heading">
+        {heading}
+      </h2>
+      {subheading && (
+        <p class="before-after-gallery__subheading">{subheading}</p>
+      )}
+    </header>
+
+    <!-- Filter Buttons -->
+    {enableFiltering && availableFilters.length > 1 && (
+      <nav class="before-after-gallery__filters" aria-label="Filter transformations">
+        <div class="before-after-gallery__filter-group" role="group" aria-label="Category filters">
+          {availableFilters.map((filter, index) => (
+            <button
+              type="button"
+              class:list={[
+                'before-after-gallery__filter-btn',
+                { 'before-after-gallery__filter-btn--active': index === 0 }
+              ]}
+              data-filter={filter.value}
+              aria-pressed={index === 0 ? 'true' : 'false'}
+            >
+              {filter.label}
+            </button>
+          ))}
+        </div>
+      </nav>
+    )}
+
+    <!-- Gallery Grid -->
+    <div
+      class="before-after-gallery__grid"
+      data-columns={columns}
+      role="list"
+      aria-label="Before and after comparisons"
+    >
+      {comparisons.map((comparison, index) => (
+        <article
+          class="before-after-gallery__item"
+          data-category={comparison.category || 'all'}
+          role="listitem"
+          style={`--animation-delay: ${index * 0.1}s;`}
+        >
+          <BeforeAfterSlider
+            id={`slider-${comparison.id}`}
+            beforeImage={comparison.beforeImage}
+            afterImage={comparison.afterImage}
+          />
+          <div class="before-after-gallery__item-content">
+            <h3 class="before-after-gallery__item-title">{comparison.title}</h3>
+            {comparison.description && (
+              <p class="before-after-gallery__item-description">{comparison.description}</p>
+            )}
+            {comparison.clientName && (
+              <span class="before-after-gallery__item-client">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="14" height="14" aria-hidden="true">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                </svg>
+                {comparison.clientName}
+              </span>
+            )}
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <!-- Empty State -->
+    {comparisons.length === 0 && (
+      <div class="before-after-gallery__empty">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="48" height="48" aria-hidden="true">
+          <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+        </svg>
+        <p>No transformations to display yet.</p>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  /* =================================================================
+   * BEFORE/AFTER GALLERY SECTION STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .before-after-gallery {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+  }
+
+  .before-after-gallery__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  /* =================================================================
+   * SECTION HEADER
+   * ================================================================= */
+  .before-after-gallery__header {
+    text-align: center;
+    margin-bottom: var(--spacing-10);
+  }
+
+  .before-after-gallery__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-tight);
+    margin: 0 0 var(--spacing-4);
+  }
+
+  .before-after-gallery__subheading {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    max-width: 60ch;
+    margin: 0 auto;
+  }
+
+  /* =================================================================
+   * FILTER BUTTONS
+   * ================================================================= */
+  .before-after-gallery__filters {
+    margin-bottom: var(--spacing-8);
+  }
+
+  .before-after-gallery__filter-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-2);
+  }
+
+  .before-after-gallery__filter-btn {
+    padding: var(--spacing-2) var(--spacing-4);
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    color: var(--color-text-secondary);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition:
+      background-color var(--duration-150) var(--ease-smooth),
+      border-color var(--duration-150) var(--ease-smooth),
+      color var(--duration-150) var(--ease-smooth),
+      box-shadow var(--duration-150) var(--ease-smooth);
+  }
+
+  .before-after-gallery__filter-btn:hover {
+    background-color: var(--color-primary-50);
+    border-color: var(--color-primary-200);
+    color: var(--color-primary-700);
+  }
+
+  .before-after-gallery__filter-btn:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .before-after-gallery__filter-btn--active {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  .before-after-gallery__filter-btn--active:hover {
+    background-color: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+    color: var(--color-text-inverse);
+  }
+
+  /* =================================================================
+   * GALLERY GRID
+   * ================================================================= */
+  .before-after-gallery__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-8);
+  }
+
+  .before-after-gallery__grid[data-columns="2"] {
+    /* Mobile: 1 column */
+  }
+
+  .before-after-gallery__grid[data-columns="3"] {
+    /* Mobile: 1 column */
+  }
+
+  /* =================================================================
+   * GALLERY ITEMS
+   * ================================================================= */
+  .before-after-gallery__item {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-background-elevated);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--color-border);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition:
+      box-shadow var(--duration-300) var(--ease-smooth),
+      transform var(--duration-300) var(--ease-smooth);
+
+    /* Staggered entrance animation */
+    animation: fadeSlideUp 0.5s var(--ease-enter) backwards;
+    animation-delay: var(--animation-delay, 0s);
+  }
+
+  .before-after-gallery__item:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+  }
+
+  .before-after-gallery__item[data-hidden="true"] {
+    display: none;
+  }
+
+  .before-after-gallery__item-content {
+    padding: var(--spacing-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+
+  .before-after-gallery__item-title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .before-after-gallery__item-description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0;
+    /* Limit to 2 lines */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .before-after-gallery__item-client {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    margin-top: var(--spacing-1);
+  }
+
+  .before-after-gallery__item-client svg {
+    color: var(--color-primary-400);
+  }
+
+  /* Nested slider styling override */
+  .before-after-gallery__item :global(.before-after-slider) {
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  /* =================================================================
+   * EMPTY STATE
+   * ================================================================= */
+  .before-after-gallery__empty {
+    text-align: center;
+    padding: var(--spacing-16) var(--spacing-4);
+    color: var(--color-text-tertiary);
+  }
+
+  .before-after-gallery__empty svg {
+    margin-bottom: var(--spacing-4);
+    opacity: 0.5;
+  }
+
+  .before-after-gallery__empty p {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    margin: 0;
+  }
+
+  /* =================================================================
+   * ANIMATIONS
+   * ================================================================= */
+  @keyframes fadeSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  /* Tablet (640px+) */
+  @media screen and (min-width: 640px) {
+    .before-after-gallery {
+      padding: var(--spacing-20) var(--spacing-6);
+    }
+
+    .before-after-gallery__heading {
+      font-size: var(--font-size-4xl);
+    }
+
+    .before-after-gallery__grid[data-columns="2"],
+    .before-after-gallery__grid[data-columns="3"] {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* Desktop (1024px+) */
+  @media screen and (min-width: 1024px) {
+    .before-after-gallery {
+      padding: var(--spacing-24) var(--spacing-8);
+    }
+
+    .before-after-gallery__header {
+      margin-bottom: var(--spacing-12);
+    }
+
+    .before-after-gallery__grid[data-columns="3"] {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .before-after-gallery__filter-btn {
+      transition: none;
+    }
+
+    .before-after-gallery__item {
+      animation: none;
+      transition: none;
+    }
+
+    .before-after-gallery__item:hover {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .before-after-gallery {
+      background: none;
+      padding: var(--spacing-8) 0;
+    }
+
+    .before-after-gallery__filters {
+      display: none;
+    }
+
+    .before-after-gallery__item {
+      box-shadow: none;
+      border: 1px solid var(--color-border);
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+  @media (forced-colors: active) {
+    .before-after-gallery__filter-btn {
+      border: 2px solid currentColor;
+    }
+
+    .before-after-gallery__filter-btn--active {
+      background-color: Highlight;
+      border-color: Highlight;
+    }
+
+    .before-after-gallery__item {
+      border: 2px solid currentColor;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * BeforeAfterGallery Filter Functionality
+   * Handles category filtering for gallery items.
+   */
+
+  function initGalleryFilters(): void {
+    const galleries = document.querySelectorAll<HTMLElement>('.before-after-gallery');
+
+    galleries.forEach((gallery) => {
+      const filterButtons = gallery.querySelectorAll<HTMLButtonElement>('.before-after-gallery__filter-btn');
+      const items = gallery.querySelectorAll<HTMLElement>('.before-after-gallery__item');
+
+      if (filterButtons.length === 0) return;
+
+      filterButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const filterValue = button.dataset.filter;
+
+          // Update active button state
+          filterButtons.forEach((btn) => {
+            const isActive = btn === button;
+            btn.classList.toggle('before-after-gallery__filter-btn--active', isActive);
+            btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+          });
+
+          // Filter items
+          items.forEach((item) => {
+            const category = item.dataset.category || 'all';
+            const shouldShow = filterValue === 'all' || category === filterValue;
+            item.dataset.hidden = shouldShow ? 'false' : 'true';
+          });
+        });
+      });
+    });
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initGalleryFilters);
+  } else {
+    initGalleryFilters();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initGalleryFilters);
+</script>

@@ -1,0 +1,12 @@
+{
+  "id": "skip-to-content-link",
+  "category": "Accessibility",
+  "title": "Skip to Main Content Link",
+  "description": "Add accessible skip navigation link for keyboard users to bypass header and jump directly to main content. Improves WCAG compliance and user experience.",
+  "status": "verified",
+  "priority": 2,
+  "complexity": "simple",
+  "createdAt": "2026-01-26T01:51:05.738Z",
+  "updatedAt": "2026-01-27T01:36:49.586Z",
+  "descriptionHistory": []
+}

@@ -1,0 +1,12 @@
+{
+  "id": "partner-logos-section",
+  "category": "UI",
+  "title": "Partner and Supplier Logos Carousel",
+  "description": "Display trusted partner and supplier logos in an auto-scrolling carousel. Builds credibility through brand association and industry relationships.",
+  "status": "verified",
+  "priority": 3,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-26T01:51:05.750Z",
+  "updatedAt": "2026-01-27T16:13:06.013Z"
+}

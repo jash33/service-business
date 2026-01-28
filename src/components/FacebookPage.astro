@@ -1,0 +1,729 @@
+---
+/**
+ * Facebook Page Plugin Component
+ *
+ * Embeds a Facebook Page plugin showing recent posts, page likes,
+ * and social proof. Helps build community connection and enables
+ * cross-platform engagement with your Facebook audience.
+ *
+ * Features:
+ * - Shows recent timeline posts
+ * - Displays page like count and social proof
+ * - Shows friends who have liked the page (facepile)
+ * - Responsive design with adaptive width
+ * - Loading and error states
+ * - Analytics tracking integration
+ * - Astro View Transitions support
+ *
+ * @example
+ * ```astro
+ * ---
+ * import FacebookPage from '../components/FacebookPage.astro';
+ * ---
+ * <FacebookPage
+ *   title="Connect With Us"
+ *   subtitle="Join our community on Facebook"
+ * />
+ * ```
+ */
+
+import type { FacebookPageProps } from '../types/facebook-page';
+import {
+  FACEBOOK_PAGE_URL,
+  FACEBOOK_APP_ID,
+  isFacebookPageConfigured,
+  facebookPageConfig,
+  facebookPageContent,
+  getFacebookPageAttributes,
+} from '../config/facebook-page.config';
+
+interface Props extends FacebookPageProps {}
+
+const {
+  pageUrl = FACEBOOK_PAGE_URL,
+  title = facebookPageContent.default.title,
+  subtitle = facebookPageContent.default.subtitle,
+  tabs = facebookPageConfig.tabs,
+  width = facebookPageConfig.width,
+  height = facebookPageConfig.height,
+  hideCover = facebookPageConfig.hideCover,
+  showFacepile = facebookPageConfig.showFacepile,
+  smallHeader = facebookPageConfig.smallHeader,
+  adaptContainerWidth = facebookPageConfig.adaptContainerWidth,
+  showLoading = true,
+  className = '',
+  trackAnalytics = true,
+  ctaText = facebookPageContent.cta.text,
+  ctaUrl,
+} = Astro.props;
+
+// Check if Facebook Page is configured
+const isConfigured = isFacebookPageConfigured() || Boolean(pageUrl);
+
+// Get the page URL for CTA button
+const facebookUrl = ctaUrl || pageUrl;
+
+// Get data attributes for the fb-page element
+const fbPageAttrs = getFacebookPageAttributes({
+  pageUrl,
+  tabs,
+  width,
+  height,
+  hideCover,
+  showFacepile,
+  smallHeader,
+  adaptContainerWidth,
+});
+
+// Fallback content
+const fallback = facebookPageContent.fallback;
+const errorContent = facebookPageContent.error;
+---
+
+<section
+  class:list={['facebook-page', className]}
+  aria-labelledby={title ? 'facebook-page-heading' : undefined}
+  data-track-analytics={trackAnalytics}
+>
+  {/* Section Header */}
+  {(title || subtitle) && (
+    <div class="facebook-page__header">
+      {title && (
+        <h2 id="facebook-page-heading" class="facebook-page__title">
+          {title}
+        </h2>
+      )}
+      {subtitle && (
+        <p class="facebook-page__subtitle">
+          {subtitle}
+        </p>
+      )}
+    </div>
+  )}
+
+  {/* Widget Container */}
+  <div class="facebook-page__container">
+    {isConfigured ? (
+      <>
+        {/* Loading State */}
+        {showLoading && (
+          <div class="facebook-page__loading" aria-live="polite">
+            <div class="facebook-page__spinner" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" stroke-opacity="0.25" />
+                <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round" />
+              </svg>
+            </div>
+            <span class="facebook-page__loading-text">
+              {facebookPageContent.loading.text}
+            </span>
+          </div>
+        )}
+
+        {/* Facebook Page Plugin Container */}
+        <div class="facebook-page__widget" id="fb-page-container">
+          <div
+            class="fb-page"
+            data-href={fbPageAttrs['data-href']}
+            data-tabs={fbPageAttrs['data-tabs']}
+            data-width={fbPageAttrs['data-width']}
+            data-height={fbPageAttrs['data-height']}
+            data-small-header={smallHeader ? 'true' : 'false'}
+            data-adapt-container-width={adaptContainerWidth ? 'true' : 'false'}
+            data-hide-cover={hideCover ? 'true' : 'false'}
+            data-show-facepile={showFacepile ? 'true' : 'false'}
+            data-lazy="true"
+          >
+            <blockquote
+              cite={pageUrl}
+              class="fb-xfbml-parse-ignore"
+            >
+              <a href={pageUrl}>
+                Visit our Facebook Page
+              </a>
+            </blockquote>
+          </div>
+        </div>
+
+        {/* CTA Button */}
+        <div class="facebook-page__cta">
+          <a
+            href={facebookUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="facebook-page__cta-button"
+          >
+            <svg
+              class="facebook-page__cta-icon"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            </svg>
+            <span>{ctaText}</span>
+          </a>
+        </div>
+
+        {/* Error State (hidden by default, shown via JS) */}
+        <div class="facebook-page__error" role="alert" hidden>
+          <div class="facebook-page__error-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+          </div>
+          <p class="facebook-page__error-text">
+            {errorContent.message}
+          </p>
+          <a
+            href={facebookUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="facebook-page__error-button"
+          >
+            {errorContent.buttonText}
+          </a>
+        </div>
+      </>
+    ) : (
+      /* Fallback when not configured */
+      <div class="facebook-page__fallback">
+        <div class="facebook-page__fallback-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+          </svg>
+        </div>
+        <h3 class="facebook-page__fallback-title">{fallback.title}</h3>
+        <p class="facebook-page__fallback-text">{fallback.message}</p>
+        <p class="facebook-page__fallback-hint">
+          Configure <code>PUBLIC_FACEBOOK_PAGE_URL</code> in your environment variables to enable this feature.
+        </p>
+      </div>
+    )}
+  </div>
+</section>
+
+{/* Load Facebook SDK */}
+{isConfigured && (
+  <script is:inline define:vars={{ trackAnalytics, appId: FACEBOOK_APP_ID, pageUrl }}>
+    (function() {
+      let loadAttempts = 0;
+      const maxAttempts = 3;
+
+      // Load Facebook SDK
+      function loadFacebookSDK() {
+        if (window.FB) {
+          initFacebookPlugin();
+          return;
+        }
+
+        if (document.getElementById('facebook-jssdk')) {
+          // SDK script already exists, wait for it to load
+          waitForFB();
+          return;
+        }
+
+        // Create and inject the SDK script
+        const script = document.createElement('script');
+        script.id = 'facebook-jssdk';
+        script.src = 'https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v18.0' +
+          (appId ? '&appId=' + appId : '');
+        script.async = true;
+        script.defer = true;
+        script.crossOrigin = 'anonymous';
+        script.onload = waitForFB;
+        script.onerror = handleError;
+
+        // Insert before first script
+        const firstScript = document.getElementsByTagName('script')[0];
+        if (firstScript && firstScript.parentNode) {
+          firstScript.parentNode.insertBefore(script, firstScript);
+        } else {
+          document.head.appendChild(script);
+        }
+      }
+
+      // Wait for FB to be available
+      function waitForFB() {
+        let attempts = 0;
+        const maxWaitAttempts = 50;
+
+        const checkFB = setInterval(function() {
+          attempts++;
+
+          if (window.FB) {
+            clearInterval(checkFB);
+            initFacebookPlugin();
+          } else if (attempts >= maxWaitAttempts) {
+            clearInterval(checkFB);
+            handleError();
+          }
+        }, 100);
+      }
+
+      // Initialize Facebook plugin after SDK loads
+      function initFacebookPlugin() {
+        const container = document.getElementById('fb-page-container');
+        const loading = document.querySelector('.facebook-page__loading');
+        const widget = document.querySelector('.facebook-page__widget');
+
+        // Parse XFBML to render the plugin
+        if (window.FB && window.FB.XFBML) {
+          window.FB.XFBML.parse(container, function() {
+            // Plugin rendered successfully
+            if (loading) {
+              loading.style.display = 'none';
+            }
+            if (widget) {
+              widget.classList.add('facebook-page__widget--loaded');
+            }
+
+            // Track widget load event
+            if (trackAnalytics && window.gtag) {
+              window.gtag('event', 'facebook_widget_loaded', {
+                event_category: 'Social',
+                event_label: 'Facebook Page Plugin',
+                page_url: pageUrl,
+              });
+            }
+          });
+        }
+
+        // Hide loading after timeout as fallback
+        setTimeout(function() {
+          if (loading) {
+            loading.style.display = 'none';
+          }
+        }, 5000);
+      }
+
+      // Handle script load error
+      function handleError() {
+        loadAttempts++;
+
+        if (loadAttempts < maxAttempts) {
+          // Retry loading
+          setTimeout(loadFacebookSDK, 1000 * loadAttempts);
+          return;
+        }
+
+        const loading = document.querySelector('.facebook-page__loading');
+        const error = document.querySelector('.facebook-page__error');
+        const widget = document.querySelector('.facebook-page__widget');
+
+        if (loading) loading.hidden = true;
+        if (widget) widget.style.display = 'none';
+        if (error) error.hidden = false;
+
+        // Track error
+        if (trackAnalytics && window.gtag) {
+          window.gtag('event', 'facebook_widget_error', {
+            event_category: 'Social',
+            event_label: 'SDK Load Failed',
+            page_url: pageUrl,
+          });
+        }
+      }
+
+      // Initialize on DOM ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadFacebookSDK);
+      } else {
+        loadFacebookSDK();
+      }
+
+      // Re-initialize on Astro page transitions
+      document.addEventListener('astro:page-load', function() {
+        if (window.FB && window.FB.XFBML) {
+          const container = document.getElementById('fb-page-container');
+          if (container) {
+            window.FB.XFBML.parse(container);
+          }
+        } else {
+          loadFacebookSDK();
+        }
+      });
+    })();
+  </script>
+)}
+
+<style>
+  /* =================================================================
+   * FACEBOOK PAGE PLUGIN COMPONENT
+   * ================================================================= */
+
+  .facebook-page {
+    padding: var(--spacing-12) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+  }
+
+  /* -----------------------------------------------------------------
+   * Header
+   * ----------------------------------------------------------------- */
+  .facebook-page__header {
+    max-width: var(--container-4xl);
+    margin: 0 auto var(--spacing-8);
+    text-align: center;
+  }
+
+  .facebook-page__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-3);
+    letter-spacing: var(--letter-spacing-tight);
+  }
+
+  .facebook-page__subtitle {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: var(--line-height-relaxed);
+    max-width: 40rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* -----------------------------------------------------------------
+   * Container
+   * ----------------------------------------------------------------- */
+  .facebook-page__container {
+    max-width: var(--container-lg);
+    margin: 0 auto;
+    position: relative;
+    min-height: 400px;
+    background-color: var(--color-background-elevated);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--spacing-6);
+  }
+
+  /* -----------------------------------------------------------------
+   * Loading State
+   * ----------------------------------------------------------------- */
+  .facebook-page__loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-background-elevated);
+    z-index: var(--z-10);
+    gap: var(--spacing-4);
+  }
+
+  .facebook-page__spinner {
+    width: 3rem;
+    height: 3rem;
+    color: #1877f2; /* Facebook blue */
+    animation: facebook-spin 1s linear infinite;
+  }
+
+  .facebook-page__spinner svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  @keyframes facebook-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .facebook-page__loading-text {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+  }
+
+  /* -----------------------------------------------------------------
+   * Widget Styles
+   * ----------------------------------------------------------------- */
+  .facebook-page__widget {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    min-height: 300px;
+    opacity: 0;
+    transition: opacity var(--transition-base);
+  }
+
+  .facebook-page__widget--loaded {
+    opacity: 1;
+  }
+
+  .facebook-page__widget .fb-page {
+    max-width: 100%;
+  }
+
+  /* -----------------------------------------------------------------
+   * CTA Button
+   * ----------------------------------------------------------------- */
+  .facebook-page__cta {
+    margin-top: var(--spacing-6);
+    text-align: center;
+  }
+
+  .facebook-page__cta-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3) var(--spacing-6);
+    background-color: #1877f2; /* Facebook blue */
+    color: #ffffff;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    border-radius: var(--radius-lg);
+    transition: var(--transition-hover);
+  }
+
+  .facebook-page__cta-button:hover {
+    background-color: #166fe5;
+    transform: var(--transform-hover-lift-sm);
+  }
+
+  .facebook-page__cta-button:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.4);
+  }
+
+  .facebook-page__cta-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  /* -----------------------------------------------------------------
+   * Error State
+   * ----------------------------------------------------------------- */
+  .facebook-page__error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--spacing-12) var(--spacing-6);
+    min-height: 300px;
+  }
+
+  .facebook-page__error[hidden] {
+    display: none;
+  }
+
+  .facebook-page__error-icon {
+    width: 4rem;
+    height: 4rem;
+    color: var(--color-warning);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .facebook-page__error-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .facebook-page__error-text {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--spacing-6);
+    max-width: 30rem;
+  }
+
+  .facebook-page__error-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-3) var(--spacing-6);
+    background-color: #1877f2;
+    color: #ffffff;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    border-radius: var(--radius-lg);
+    transition: var(--transition-hover);
+  }
+
+  .facebook-page__error-button:hover {
+    background-color: #166fe5;
+  }
+
+  .facebook-page__error-button:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.4);
+  }
+
+  /* -----------------------------------------------------------------
+   * Fallback State
+   * ----------------------------------------------------------------- */
+  .facebook-page__fallback {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--spacing-16) var(--spacing-6);
+    min-height: 300px;
+  }
+
+  .facebook-page__fallback-icon {
+    width: 5rem;
+    height: 5rem;
+    color: #1877f2;
+    margin-bottom: var(--spacing-6);
+    opacity: 0.6;
+  }
+
+  .facebook-page__fallback-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .facebook-page__fallback-title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-3);
+  }
+
+  .facebook-page__fallback-text {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--spacing-4);
+    max-width: 30rem;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .facebook-page__fallback-hint {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .facebook-page__fallback-hint code {
+    background-color: var(--color-background-muted);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-xs);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  @media (max-width: 767px) {
+    .facebook-page {
+      padding: var(--spacing-8) var(--spacing-3);
+    }
+
+    .facebook-page__header {
+      margin-bottom: var(--spacing-6);
+    }
+
+    .facebook-page__title {
+      font-size: var(--font-size-2xl);
+    }
+
+    .facebook-page__subtitle {
+      font-size: var(--font-size-base);
+    }
+
+    .facebook-page__container {
+      border-radius: var(--radius-lg);
+      min-height: 350px;
+      padding: var(--spacing-4);
+    }
+
+    .facebook-page__fallback {
+      padding: var(--spacing-8) var(--spacing-4);
+    }
+
+    .facebook-page__fallback-icon {
+      width: 4rem;
+      height: 4rem;
+    }
+
+    .facebook-page__fallback-title {
+      font-size: var(--font-size-xl);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+
+  @media (prefers-reduced-motion: reduce) {
+    .facebook-page__spinner {
+      animation: none;
+    }
+
+    .facebook-page__cta-button,
+    .facebook-page__error-button {
+      transition: none;
+    }
+
+    .facebook-page__cta-button:hover {
+      transform: none;
+    }
+
+    .facebook-page__widget {
+      transition: none;
+    }
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+
+  @media (prefers-contrast: high) {
+    .facebook-page__container {
+      border: 2px solid var(--color-border-dark);
+    }
+
+    .facebook-page__cta-button,
+    .facebook-page__error-button {
+      border: 2px solid currentColor;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE ADJUSTMENTS
+   * ================================================================= */
+
+  :global(html[data-theme="dark"]) .facebook-page {
+    background-color: var(--color-background);
+  }
+
+  :global(html[data-theme="dark"]) .facebook-page__container {
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--color-border);
+  }
+
+  :global(html[data-theme="dark"]) .facebook-page__loading {
+    background-color: var(--color-background-elevated);
+  }
+
+  :global(html[data-theme="dark"]) .facebook-page__fallback-icon {
+    opacity: 0.8;
+  }
+
+  :global(html[data-theme="dark"]) .facebook-page__fallback-hint code {
+    background-color: var(--color-background-muted);
+  }
+</style>

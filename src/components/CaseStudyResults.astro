@@ -1,0 +1,409 @@
+---
+/**
+ * CaseStudyResults Component
+ * Displays result metrics in a visually appealing grid with icons,
+ * values, and optional before/after comparisons.
+ *
+ * @example
+ * ```astro
+ * <CaseStudyResults
+ *   metrics={caseStudy.results.metrics}
+ *   overview={caseStudy.results.overview}
+ *   columns={3}
+ * />
+ * ```
+ */
+
+import type { ResultMetric, CaseStudyResultsProps } from '../types/case-study';
+
+interface Props extends CaseStudyResultsProps {}
+
+const {
+  metrics,
+  overview,
+  class: className = '',
+  columns = 3,
+} = Astro.props;
+
+/**
+ * Get SVG icon for metric
+ */
+function getSvgIcon(icon?: ResultMetric['icon']): string {
+  const icons: Record<string, string> = {
+    traffic: `<path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>`,
+    conversion: `<path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>`,
+    revenue: `<path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>`,
+    time: `<path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>`,
+    satisfaction: `<path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>`,
+    leads: `<path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>`,
+    performance: `<path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>`,
+  };
+  return icons[icon || 'traffic'] || icons.traffic;
+}
+
+/**
+ * Get background color class for metric icon
+ */
+function getIconBgClass(icon?: ResultMetric['icon']): string {
+  const colors: Record<string, string> = {
+    traffic: 'results__icon--blue',
+    conversion: 'results__icon--green',
+    revenue: 'results__icon--gold',
+    time: 'results__icon--purple',
+    satisfaction: 'results__icon--yellow',
+    leads: 'results__icon--teal',
+    performance: 'results__icon--orange',
+  };
+  return colors[icon || 'traffic'] || colors.traffic;
+}
+---
+
+<section class={`results results--cols-${columns} ${className}`} aria-labelledby="results-heading">
+  <div class="results__container">
+    {overview && (
+      <div class="results__overview">
+        <h2 id="results-heading" class="results__title">Results</h2>
+        <p class="results__overview-text">{overview}</p>
+      </div>
+    )}
+
+    <ul class="results__grid" role="list">
+      {metrics.map((metric) => (
+        <li class="results__item">
+          <div class={`results__icon ${getIconBgClass(metric.icon)}`} aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="28" height="28">
+              <Fragment set:html={getSvgIcon(metric.icon)} />
+            </svg>
+          </div>
+          <div class="results__content">
+            <span class="results__value">{metric.value}</span>
+            <span class="results__label">{metric.label}</span>
+            {metric.previousValue && (
+              <span class="results__previous">{metric.previousValue}</span>
+            )}
+            {metric.description && (
+              <p class="results__description">{metric.description}</p>
+            )}
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  /* =================================================================
+   * RESULTS COMPONENT STYLES
+   * ================================================================= */
+
+  .results {
+    padding: var(--spacing-12) 0;
+    background-color: var(--color-background-subtle);
+  }
+
+  .results__container {
+    max-width: var(--container-6xl);
+    margin: 0 auto;
+    padding: 0 var(--spacing-4);
+  }
+
+  .results__overview {
+    text-align: center;
+    max-width: var(--container-3xl);
+    margin: 0 auto var(--spacing-10);
+  }
+
+  .results__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4);
+  }
+
+  .results__overview-text {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0;
+  }
+
+  /* =================================================================
+   * RESULTS GRID
+   * ================================================================= */
+
+  .results__grid {
+    display: grid;
+    gap: var(--spacing-6);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .results--cols-2 .results__grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  .results--cols-3 .results__grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  .results--cols-4 .results__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* =================================================================
+   * RESULT ITEM
+   * ================================================================= */
+
+  .results__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: var(--spacing-6);
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--duration-200) var(--ease-out),
+                box-shadow var(--duration-200) var(--ease-out);
+  }
+
+  .results__item:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* =================================================================
+   * ICON STYLES
+   * ================================================================= */
+
+  .results__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--spacing-16);
+    height: var(--spacing-16);
+    border-radius: var(--radius-xl);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .results__icon svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* Icon color variations */
+  .results__icon--blue {
+    background-color: var(--color-primary-100);
+    color: var(--color-primary-600);
+  }
+
+  .results__icon--green {
+    background-color: var(--color-success-100);
+    color: var(--color-success-600);
+  }
+
+  .results__icon--gold {
+    background-color: #fef3c7;
+    color: #d97706;
+  }
+
+  .results__icon--purple {
+    background-color: #f3e8ff;
+    color: #9333ea;
+  }
+
+  .results__icon--yellow {
+    background-color: #fef9c3;
+    color: #ca8a04;
+  }
+
+  .results__icon--teal {
+    background-color: #ccfbf1;
+    color: #0d9488;
+  }
+
+  .results__icon--orange {
+    background-color: #ffedd5;
+    color: #ea580c;
+  }
+
+  /* =================================================================
+   * CONTENT STYLES
+   * ================================================================= */
+
+  .results__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-1);
+  }
+
+  .results__value {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+    line-height: 1;
+  }
+
+  .results__label {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin-top: var(--spacing-2);
+  }
+
+  .results__previous {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-success-600);
+    background-color: var(--color-success-50);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-md);
+  }
+
+  .results__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: var(--spacing-2) 0 0;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  @media screen and (min-width: 640px) {
+    .results--cols-2 .results__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .results--cols-3 .results__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .results--cols-4 .results__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .results__item {
+      flex-direction: row;
+      text-align: left;
+      gap: var(--spacing-4);
+    }
+
+    .results__icon {
+      margin-bottom: 0;
+      flex-shrink: 0;
+    }
+
+    .results__content {
+      align-items: flex-start;
+    }
+  }
+
+  @media screen and (min-width: 768px) {
+    .results__container {
+      padding: 0 var(--spacing-6);
+    }
+
+    .results__title {
+      font-size: var(--font-size-4xl);
+    }
+
+    .results--cols-3 .results__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .results--cols-4 .results__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .results__item {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .results__icon {
+      margin-bottom: var(--spacing-4);
+    }
+
+    .results__content {
+      align-items: center;
+    }
+  }
+
+  @media screen and (min-width: 1024px) {
+    .results {
+      padding: var(--spacing-16) 0;
+    }
+
+    .results__value {
+      font-size: var(--font-size-5xl);
+    }
+  }
+
+  /* =================================================================
+   * ANIMATIONS
+   * ================================================================= */
+
+  .results__item {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: resultsReveal 0.5s ease-out forwards;
+  }
+
+  .results__item:nth-child(1) { animation-delay: 0.1s; }
+  .results__item:nth-child(2) { animation-delay: 0.15s; }
+  .results__item:nth-child(3) { animation-delay: 0.2s; }
+  .results__item:nth-child(4) { animation-delay: 0.25s; }
+  .results__item:nth-child(5) { animation-delay: 0.3s; }
+  .results__item:nth-child(6) { animation-delay: 0.35s; }
+
+  @keyframes resultsReveal {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+
+  @media (prefers-reduced-motion: reduce) {
+    .results__item {
+      opacity: 1;
+      transform: none;
+      animation: none;
+      transition: none;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+
+  @media print {
+    .results {
+      background: none;
+      padding: var(--spacing-8) 0;
+    }
+
+    .results__item {
+      box-shadow: none;
+      border: 1px solid var(--color-border);
+    }
+
+    .results__icon {
+      background: none;
+      border: 2px solid currentColor;
+    }
+  }
+</style>

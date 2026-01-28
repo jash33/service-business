@@ -192,6 +192,55 @@ export const DOWNLOAD_EXTENSIONS = [
 ];
 
 // =================================================================
+// CONVERSION EVENTS CONFIGURATION
+// =================================================================
+
+/**
+ * Events that should be marked as conversions in GA4
+ * These events represent valuable user actions for the business
+ *
+ * Note: After deployment, these events need to be configured as
+ * conversions in GA4 Admin > Events > Mark as conversion
+ */
+export const CONVERSION_EVENTS = {
+  /** Phone call clicks - high-intent action for service businesses */
+  phone_click: {
+    enabled: true,
+    description: 'User clicked a phone number to call',
+    value: 10, // Estimated conversion value in dollars
+  },
+  /** Contact form submissions */
+  contact_form_submit: {
+    enabled: true,
+    description: 'User submitted the contact form',
+    value: 25,
+  },
+  /** Quote/Estimate requests */
+  quote_request: {
+    enabled: true,
+    description: 'User requested a quote or estimate',
+    value: 50,
+  },
+} as const;
+
+/**
+ * Phone click tracking configuration
+ * Optimized for mobile user conversion tracking
+ */
+export const PHONE_CLICK_CONFIG = {
+  /** Enable enhanced phone click tracking */
+  enabled: true,
+  /** Track both tel: and sms: links */
+  trackSms: true,
+  /** Locations to prioritize in reports */
+  priorityLocations: ['sticky_cta', 'header', 'hero', 'contact_cta'],
+  /** Custom parameters to include in events */
+  includeDeviceInfo: true,
+  /** Debug logging in development */
+  debugMode: import.meta.env.DEV,
+};
+
+// =================================================================
 // PRIVACY COMPLIANCE
 // =================================================================
 

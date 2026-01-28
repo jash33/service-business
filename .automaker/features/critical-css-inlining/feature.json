@@ -1,0 +1,12 @@
+{
+  "id": "critical-css-inlining",
+  "category": "Performance",
+  "title": "Critical CSS Extraction and Inlining",
+  "description": "Extract and inline above-the-fold critical CSS to eliminate render-blocking resources. Improves First Contentful Paint and Lighthouse performance score.",
+  "status": "verified",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [],
+  "createdAt": "2026-01-26T01:51:05.778Z",
+  "updatedAt": "2026-01-26T09:35:16.251Z"
+}

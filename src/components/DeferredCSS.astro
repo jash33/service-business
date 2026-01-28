@@ -1,0 +1,41 @@
+---
+/**
+ * Deferred CSS Component
+ *
+ * Loads non-critical CSS in a non-render-blocking way using the
+ * media="print" onload pattern. This improves FCP by allowing
+ * the browser to paint before loading decorative styles.
+ *
+ * How it works:
+ * 1. Link is loaded with media="print" (doesn't block rendering)
+ * 2. Once loaded, onload switches it to media="all"
+ * 3. Noscript fallback ensures CSS loads for users without JS
+ *
+ * @example
+ * ```astro
+ * <head>
+ *   <DeferredCSS href="/styles/animations.css" />
+ * </head>
+ * ```
+ */
+
+interface Props {
+  /** URL path to the CSS file */
+  href: string;
+  /** Optional ID for the link element */
+  id?: string;
+}
+
+const { href, id } = Astro.props;
+---
+
+<link
+  rel="preload"
+  href={href}
+  as="style"
+  {id}
+  onload="this.onload=null;this.rel='stylesheet'"
+/>
+<noscript>
+  <link rel="stylesheet" href={href} {id} />
+</noscript>

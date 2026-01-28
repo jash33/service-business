@@ -1,0 +1,613 @@
+---
+/**
+ * TeamMemberCard Component
+ * A card component for displaying a single team member with their
+ * photo, bio, specializations, and contact information.
+ *
+ * Features:
+ * - Profile photo with placeholder fallback
+ * - Name, role, and bio display
+ * - Specializations as tags/badges
+ * - Contact information (email, phone)
+ * - Social media links
+ * - Hover animations for enhanced interactivity
+ * - Accessible with proper semantic structure
+ * - Touch-friendly target sizes on mobile
+ *
+ * @example Basic usage
+ * ```astro
+ * <TeamMemberCard
+ *   id="john-doe"
+ *   name="John Doe"
+ *   role="Lead Developer"
+ *   bio="Expert in web development with 8+ years experience."
+ *   specializations={["React", "Node.js"]}
+ * />
+ * ```
+ *
+ * @example With photo and contact info
+ * ```astro
+ * <TeamMemberCard
+ *   id="jane-smith"
+ *   name="Jane Smith"
+ *   role="UI/UX Designer"
+ *   bio="Creating beautiful user experiences."
+ *   photo="/images/team/jane.jpg"
+ *   specializations={["Figma", "User Research"]}
+ *   email="jane@example.com"
+ *   social={{ linkedin: "https://linkedin.com/in/janesmith" }}
+ * />
+ * ```
+ */
+
+import type { TeamMemberCardProps } from '../types/team';
+
+interface Props extends TeamMemberCardProps {}
+
+const {
+  id,
+  name,
+  role,
+  bio,
+  photo,
+  specializations = [],
+  email,
+  phone,
+  social,
+  yearsExperience,
+  certifications = [],
+  class: className = '',
+} = Astro.props;
+
+// Build CSS classes
+const cardClasses = ['team-card', className].filter(Boolean).join(' ');
+
+// Check if we have contact info to display
+const hasContactInfo = email || phone;
+const hasSocialLinks = social && Object.values(social).some(Boolean);
+---
+
+<article class={cardClasses} id={`team-${id}`}>
+  <!-- Profile Photo Section -->
+  <div class="team-card__photo-wrapper">
+    {photo ? (
+      <img
+        src={photo}
+        alt={`${name} - ${role}`}
+        class="team-card__photo"
+        width="200"
+        height="200"
+        loading="lazy"
+        decoding="async"
+      />
+    ) : (
+      <div class="team-card__photo-placeholder" role="img" aria-label={`${name} - Photo placeholder`}>
+        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="200" height="200" fill="currentColor" opacity="0.1"/>
+          <circle cx="100" cy="70" r="35" fill="currentColor" opacity="0.2"/>
+          <ellipse cx="100" cy="160" rx="55" ry="40" fill="currentColor" opacity="0.2"/>
+        </svg>
+      </div>
+    )}
+    {yearsExperience && (
+      <span class="team-card__experience-badge">
+        {yearsExperience}+ years
+      </span>
+    )}
+  </div>
+
+  <!-- Main Content Section -->
+  <div class="team-card__content">
+    <!-- Header: Name and Role -->
+    <header class="team-card__header">
+      <h3 class="team-card__name">{name}</h3>
+      <p class="team-card__role">{role}</p>
+    </header>
+
+    <!-- Bio -->
+    <p class="team-card__bio">{bio}</p>
+
+    <!-- Specializations Tags -->
+    {specializations.length > 0 && (
+      <div class="team-card__specializations" aria-label="Specializations">
+        {specializations.map((spec) => (
+          <span class="team-card__tag">{spec}</span>
+        ))}
+      </div>
+    )}
+
+    <!-- Certifications (if any) -->
+    {certifications.length > 0 && (
+      <div class="team-card__certifications">
+        <span class="team-card__certifications-label">Certifications:</span>
+        <span class="team-card__certifications-list">
+          {certifications.join(' • ')}
+        </span>
+      </div>
+    )}
+
+    <!-- Contact & Social Section -->
+    {(hasContactInfo || hasSocialLinks) && (
+      <footer class="team-card__footer">
+        {/* Contact Information */}
+        {hasContactInfo && (
+          <div class="team-card__contact">
+            {email && (
+              <a href={`mailto:${email}`} class="team-card__contact-link" aria-label={`Email ${name}`}>
+                <svg class="team-card__contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect width="20" height="16" x="2" y="4" rx="2"/>
+                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                </svg>
+                <span class="team-card__contact-text">{email}</span>
+              </a>
+            )}
+            {phone && (
+              <a href={`tel:${phone.replace(/[^\d+]/g, '')}`} class="team-card__contact-link" aria-label={`Call ${name}`}>
+                <svg class="team-card__contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                </svg>
+                <span class="team-card__contact-text">{phone}</span>
+              </a>
+            )}
+          </div>
+        )}
+
+        {/* Social Media Links */}
+        {hasSocialLinks && (
+          <div class="team-card__social" aria-label={`${name}'s social links`}>
+            {social?.linkedin && (
+              <a href={social.linkedin} class="team-card__social-link" target="_blank" rel="noopener noreferrer" aria-label={`${name} on LinkedIn`}>
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                </svg>
+              </a>
+            )}
+            {social?.twitter && (
+              <a href={social.twitter} class="team-card__social-link" target="_blank" rel="noopener noreferrer" aria-label={`${name} on Twitter`}>
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+              </a>
+            )}
+            {social?.github && (
+              <a href={social.github} class="team-card__social-link" target="_blank" rel="noopener noreferrer" aria-label={`${name} on GitHub`}>
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+                </svg>
+              </a>
+            )}
+            {social?.website && (
+              <a href={social.website} class="team-card__social-link" target="_blank" rel="noopener noreferrer" aria-label={`${name}'s website`}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="2" y1="12" x2="22" y2="12"/>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                </svg>
+              </a>
+            )}
+          </div>
+        )}
+      </footer>
+    )}
+  </div>
+</article>
+
+<style>
+  /* =================================================================
+   * TEAM MEMBER CARD COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .team-card {
+    /* Layout */
+    display: flex;
+    flex-direction: column;
+
+    /* Box model */
+    padding: var(--spacing-6);
+
+    /* Positioning for pseudo-elements */
+    position: relative;
+
+    /* Visual */
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+
+    /* Overflow for shine effect */
+    overflow: hidden;
+
+    /* Animation */
+    transition:
+      box-shadow var(--duration-300) var(--ease-out),
+      transform var(--duration-300) var(--ease-out),
+      border-color var(--duration-300) var(--ease-out);
+  }
+
+  /* Shine sweep effect - diagonal sweep across card on hover */
+  .team-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      transparent 100%
+    );
+    transform: skewX(-20deg);
+    transition: left var(--duration-700) var(--ease-out);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .team-card:hover {
+    box-shadow: var(--shadow-lg), var(--glow-card-hover);
+    transform: translateY(-6px);
+    border-color: var(--color-primary-300);
+  }
+
+  .team-card:hover::after {
+    left: 150%;
+  }
+
+  /* -----------------------------------------------------------------
+   * Photo Section
+   * ----------------------------------------------------------------- */
+  .team-card__photo-wrapper {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto var(--spacing-5);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-50) 0%,
+      var(--color-primary-100) 100%
+    );
+    box-shadow: var(--shadow-md);
+    z-index: 2;
+  }
+
+  .team-card__photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--duration-300) var(--ease-out);
+  }
+
+  .team-card:hover .team-card__photo {
+    transform: scale(1.05);
+  }
+
+  .team-card__photo-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary);
+  }
+
+  .team-card__photo-placeholder svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .team-card__experience-badge {
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-full);
+    white-space: nowrap;
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* -----------------------------------------------------------------
+   * Content Section
+   * ----------------------------------------------------------------- */
+  .team-card__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+    flex: 1;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .team-card__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+  }
+
+  .team-card__name {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-tight);
+    margin: 0;
+    transition: color var(--duration-200) var(--ease-out);
+  }
+
+  .team-card:hover .team-card__name {
+    color: var(--color-primary);
+  }
+
+  .team-card__role {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary);
+    margin: 0;
+  }
+
+  .team-card__bio {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0;
+  }
+
+  /* -----------------------------------------------------------------
+   * Specializations Tags
+   * ----------------------------------------------------------------- */
+  .team-card__specializations {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+    justify-content: center;
+  }
+
+  .team-card__tag {
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary-700);
+    background-color: var(--color-primary-50);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-full);
+    transition:
+      background-color var(--duration-150) var(--ease-out),
+      color var(--duration-150) var(--ease-out);
+  }
+
+  .team-card:hover .team-card__tag {
+    background-color: var(--color-primary-100);
+    color: var(--color-primary-800);
+  }
+
+  /* -----------------------------------------------------------------
+   * Certifications
+   * ----------------------------------------------------------------- */
+  .team-card__certifications {
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    line-height: var(--line-height-normal);
+  }
+
+  .team-card__certifications-label {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-secondary);
+  }
+
+  .team-card__certifications-list {
+    display: block;
+    margin-top: var(--spacing-1);
+  }
+
+  /* -----------------------------------------------------------------
+   * Footer: Contact & Social
+   * ----------------------------------------------------------------- */
+  .team-card__footer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    padding-top: var(--spacing-4);
+    border-top: 1px solid var(--color-border);
+    margin-top: auto;
+  }
+
+  /* Contact Links */
+  .team-card__contact {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    align-items: center;
+  }
+
+  .team-card__contact-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-md);
+    transition:
+      color var(--duration-150) var(--ease-out),
+      background-color var(--duration-150) var(--ease-out);
+  }
+
+  .team-card__contact-link:hover {
+    color: var(--color-primary);
+    background-color: var(--color-primary-50);
+  }
+
+  .team-card__contact-link:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  .team-card__contact-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  .team-card__contact-text {
+    word-break: break-word;
+  }
+
+  /* Social Links */
+  .team-card__social {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-3);
+  }
+
+  .team-card__social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    color: var(--color-text-tertiary);
+    background-color: var(--color-background-subtle);
+    border-radius: var(--radius-full);
+    transition:
+      color var(--duration-150) var(--ease-out),
+      background-color var(--duration-150) var(--ease-out),
+      transform var(--duration-150) var(--ease-spring-soft);
+  }
+
+  .team-card__social-link:hover {
+    color: var(--color-primary);
+    background-color: var(--color-primary-50);
+    transform: translateY(-2px);
+  }
+
+  .team-card__social-link:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  .team-card__social-link svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  /* Tablet and up (768px) */
+  @media screen and (min-width: 768px) {
+    .team-card {
+      padding: var(--spacing-8);
+    }
+
+    .team-card__photo-wrapper {
+      width: 140px;
+      height: 140px;
+    }
+
+    .team-card__name {
+      font-size: var(--font-size-2xl);
+    }
+
+    .team-card__bio {
+      font-size: var(--font-size-base);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .team-card,
+    .team-card__photo,
+    .team-card__name,
+    .team-card__tag,
+    .team-card__contact-link,
+    .team-card__social-link {
+      transition: none;
+    }
+
+    .team-card::after {
+      display: none;
+    }
+
+    .team-card:hover {
+      transform: none;
+      /* Keep subtle visual feedback without motion */
+      box-shadow: var(--shadow-lg);
+    }
+
+    .team-card:hover .team-card__photo {
+      transform: none;
+    }
+
+    .team-card__social-link:hover {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * Windows High Contrast support
+   * ================================================================= */
+  @media (forced-colors: active) {
+    .team-card {
+      border: 2px solid CanvasText;
+    }
+
+    .team-card__photo-wrapper {
+      border: 1px solid CanvasText;
+    }
+
+    .team-card__footer {
+      border-top: 1px solid CanvasText;
+    }
+
+    .team-card__tag {
+      border: 1px solid CanvasText;
+    }
+
+    .team-card__social-link {
+      border: 1px solid CanvasText;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .team-card {
+      box-shadow: none;
+      border: 1px solid var(--color-border);
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .team-card:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .team-card__social {
+      display: none;
+    }
+  }
+</style>

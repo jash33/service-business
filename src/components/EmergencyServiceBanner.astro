@@ -1,0 +1,416 @@
+---
+/**
+ * Emergency Service Banner Component
+ *
+ * A prominent, dismissible banner for emergency services with click-to-call functionality.
+ * Includes localStorage persistence to remember dismissal state.
+ * Features urgent styling to draw attention for emergency/urgent service offerings.
+ *
+ * @example
+ * ```astro
+ * <EmergencyServiceBanner
+ *   message="Need urgent help? We offer 24/7 emergency services!"
+ *   phoneNumber="+1-832-555-0123"
+ *   ctaText="Call Now"
+ * />
+ * ```
+ */
+
+interface Props {
+  /** The main message to display in the banner */
+  message?: string;
+  /** Phone number for click-to-call (including country code) */
+  phoneNumber?: string;
+  /** Display text for the phone number */
+  phoneDisplay?: string;
+  /** CTA button text */
+  ctaText?: string;
+  /** LocalStorage key for dismissal persistence */
+  storageKey?: string;
+  /** Number of hours before the banner shows again after dismissal (0 = never show again) */
+  dismissDurationHours?: number;
+}
+
+const {
+  message = "Need urgent help? We offer 24/7 emergency web support!",
+  phoneNumber = "+1-832-555-0123",
+  phoneDisplay = "(832) 555-0123",
+  ctaText = "Call Now",
+  storageKey = "emergency-banner-dismissed",
+  dismissDurationHours = 24,
+} = Astro.props;
+---
+
+<!-- Emergency Service Banner -->
+<div
+  id="emergency-service-banner"
+  class="emergency-banner"
+  role="region"
+  aria-label="Emergency services information"
+  data-storage-key={storageKey}
+  data-dismiss-duration={dismissDurationHours}
+  hidden
+>
+  <div class="emergency-banner__container">
+    <!-- Animated Alert Icon -->
+    <div class="emergency-banner__icon" aria-hidden="true">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+      </svg>
+    </div>
+
+    <!-- Message Content -->
+    <div class="emergency-banner__content">
+      <p class="emergency-banner__message">{message}</p>
+    </div>
+
+    <!-- Click-to-Call CTA -->
+    <a
+      href={`tel:${phoneNumber}`}
+      class="emergency-banner__cta"
+      aria-label={`Call emergency services at ${phoneDisplay}`}
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true" class="emergency-banner__phone-icon">
+        <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+      </svg>
+      <span class="emergency-banner__cta-text">{ctaText}</span>
+      <span class="emergency-banner__phone-number">{phoneDisplay}</span>
+    </a>
+
+    <!-- Dismiss Button -->
+    <button
+      type="button"
+      id="emergency-banner-dismiss"
+      class="emergency-banner__dismiss"
+      aria-label="Dismiss emergency service banner"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20" aria-hidden="true">
+        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<style>
+  /* Emergency Service Banner Styles */
+  .emergency-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--z-banner, 9998);
+    background: linear-gradient(
+      135deg,
+      var(--color-error-dark, #dc2626) 0%,
+      var(--color-error, #ef4444) 50%,
+      var(--color-warning-dark, #d97706) 100%
+    );
+    color: var(--color-text-inverse, #ffffff);
+    transform: translateY(-100%);
+    transition: transform var(--duration-300, 300ms) var(--ease-out, ease-out);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+  }
+
+  .emergency-banner[data-visible="true"] {
+    transform: translateY(0);
+  }
+
+  .emergency-banner__container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-3, 0.75rem);
+    max-width: var(--container-7xl, 1280px);
+    margin: 0 auto;
+    padding: var(--spacing-3, 0.75rem) var(--spacing-4, 1rem);
+    flex-wrap: wrap;
+  }
+
+  @media (min-width: 768px) {
+    .emergency-banner__container {
+      flex-wrap: nowrap;
+      padding: var(--spacing-3, 0.75rem) var(--spacing-6, 1.5rem);
+    }
+  }
+
+  /* Animated Alert Icon */
+  .emergency-banner__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    animation: pulse-icon 1.5s ease-in-out infinite;
+  }
+
+  .emergency-banner__icon svg {
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.5));
+  }
+
+  @keyframes pulse-icon {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.8;
+      transform: scale(1.1);
+    }
+  }
+
+  /* Message Content */
+  .emergency-banner__content {
+    flex: 1;
+    min-width: 0;
+    text-align: center;
+  }
+
+  @media (min-width: 768px) {
+    .emergency-banner__content {
+      text-align: left;
+    }
+  }
+
+  .emergency-banner__message {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: var(--font-size-sm, 0.875rem);
+    font-weight: var(--font-weight-medium, 500);
+    color: var(--color-text-inverse, #ffffff);
+    line-height: var(--line-height-snug, 1.375);
+    margin: 0;
+  }
+
+  @media (min-width: 768px) {
+    .emergency-banner__message {
+      font-size: var(--font-size-base, 1rem);
+    }
+  }
+
+  /* Click-to-Call CTA Button */
+  .emergency-banner__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2, 0.5rem);
+    padding: var(--spacing-2, 0.5rem) var(--spacing-4, 1rem);
+    background: var(--color-text-inverse, #ffffff);
+    color: var(--color-error-dark, #dc2626);
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: var(--font-size-sm, 0.875rem);
+    font-weight: var(--font-weight-semibold, 600);
+    text-decoration: none;
+    border-radius: var(--radius-full, 9999px);
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: all var(--duration-150, 150ms) var(--ease-in-out, ease-in-out);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .emergency-banner__cta:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    color: var(--color-error, #ef4444);
+  }
+
+  .emergency-banner__cta:focus-visible {
+    outline: 2px solid var(--color-text-inverse, #ffffff);
+    outline-offset: 2px;
+  }
+
+  .emergency-banner__cta:active {
+    transform: scale(0.98);
+  }
+
+  .emergency-banner__phone-icon {
+    flex-shrink: 0;
+    animation: ring-phone 2s ease-in-out infinite;
+  }
+
+  @keyframes ring-phone {
+    0%, 100% {
+      transform: rotate(0deg);
+    }
+    10%, 30% {
+      transform: rotate(-10deg);
+    }
+    20%, 40% {
+      transform: rotate(10deg);
+    }
+    50% {
+      transform: rotate(0deg);
+    }
+  }
+
+  .emergency-banner__cta-text {
+    display: inline;
+  }
+
+  .emergency-banner__phone-number {
+    display: none;
+  }
+
+  @media (min-width: 640px) {
+    .emergency-banner__phone-number {
+      display: inline;
+    }
+
+    .emergency-banner__cta-text::after {
+      content: ':';
+      margin-right: var(--spacing-1, 0.25rem);
+    }
+  }
+
+  /* Dismiss Button */
+  .emergency-banner__dismiss {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    border-radius: var(--radius-full, 9999px);
+    color: var(--color-text-inverse, #ffffff);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all var(--duration-150, 150ms) var(--ease-in-out, ease-in-out);
+  }
+
+  .emergency-banner__dismiss:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.1);
+  }
+
+  .emergency-banner__dismiss:focus-visible {
+    outline: 2px solid var(--color-text-inverse, #ffffff);
+    outline-offset: 2px;
+  }
+
+  .emergency-banner__dismiss:active {
+    transform: scale(0.95);
+  }
+
+  /* Reduced Motion Preferences */
+  @media (prefers-reduced-motion: reduce) {
+    .emergency-banner {
+      transition: none;
+    }
+
+    .emergency-banner__icon,
+    .emergency-banner__phone-icon {
+      animation: none;
+    }
+
+    .emergency-banner__cta:hover,
+    .emergency-banner__cta:active,
+    .emergency-banner__dismiss:hover,
+    .emergency-banner__dismiss:active {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Emergency Service Banner Functionality
+   * Handles show/hide logic with localStorage persistence
+   */
+  function initEmergencyBanner(): void {
+    const banner = document.getElementById('emergency-service-banner') as HTMLElement | null;
+    const dismissBtn = document.getElementById('emergency-banner-dismiss') as HTMLButtonElement | null;
+
+    if (!banner || !dismissBtn) return;
+
+    const storageKey = banner.dataset.storageKey || 'emergency-banner-dismissed';
+    const dismissDurationHours = parseInt(banner.dataset.dismissDuration || '24', 10);
+
+    /**
+     * Check if the banner should be shown based on localStorage
+     */
+    function shouldShowBanner(): boolean {
+      const dismissedData = localStorage.getItem(storageKey);
+
+      if (!dismissedData) {
+        return true;
+      }
+
+      try {
+        const { dismissedAt, duration } = JSON.parse(dismissedData);
+
+        // If duration is 0, never show again
+        if (duration === 0) {
+          return false;
+        }
+
+        // Check if enough time has passed
+        const dismissedTime = new Date(dismissedAt).getTime();
+        const now = Date.now();
+        const hoursElapsed = (now - dismissedTime) / (1000 * 60 * 60);
+
+        return hoursElapsed >= duration;
+      } catch {
+        // If parsing fails, show the banner
+        return true;
+      }
+    }
+
+    /**
+     * Show the banner with animation
+     */
+    function showBanner(): void {
+      banner.hidden = false;
+      // Trigger reflow for animation
+      banner.offsetHeight;
+      banner.setAttribute('data-visible', 'true');
+
+      // Adjust header position to account for banner
+      document.body.style.setProperty('--emergency-banner-height', `${banner.offsetHeight}px`);
+      document.body.classList.add('has-emergency-banner');
+    }
+
+    /**
+     * Hide the banner with animation
+     */
+    function hideBanner(): void {
+      banner.setAttribute('data-visible', 'false');
+
+      // Wait for animation to complete before hiding
+      setTimeout(() => {
+        banner.hidden = true;
+        document.body.style.removeProperty('--emergency-banner-height');
+        document.body.classList.remove('has-emergency-banner');
+      }, 300);
+    }
+
+    /**
+     * Dismiss the banner and save to localStorage
+     */
+    function dismissBanner(): void {
+      const dismissData = {
+        dismissedAt: new Date().toISOString(),
+        duration: dismissDurationHours,
+      };
+
+      localStorage.setItem(storageKey, JSON.stringify(dismissData));
+      hideBanner();
+    }
+
+    // Event listeners
+    dismissBtn.addEventListener('click', dismissBanner);
+
+    // Initialize - show banner if appropriate
+    if (shouldShowBanner()) {
+      // Small delay to ensure page is ready
+      setTimeout(showBanner, 100);
+    }
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initEmergencyBanner);
+  } else {
+    initEmergencyBanner();
+  }
+
+  // Re-initialize on Astro page transitions (View Transitions API)
+  document.addEventListener('astro:page-load', initEmergencyBanner);
+</script>

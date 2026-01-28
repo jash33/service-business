@@ -1,0 +1,327 @@
+---
+/**
+ * SkeletonCard Component
+ * A skeleton loading placeholder for card-based content (ProjectCard, BlogArticleCard).
+ * Displays an animated shimmer effect to indicate loading state.
+ *
+ * Features:
+ * - Matches the layout of ProjectCard and BlogArticleCard
+ * - Animated shimmer effect for visual feedback
+ * - Respects prefers-reduced-motion
+ * - Configurable variant for different card types
+ * - Accessible with proper ARIA attributes
+ *
+ * @example Basic usage (project card skeleton)
+ * ```astro
+ * <SkeletonCard variant="project" />
+ * ```
+ *
+ * @example Blog card skeleton
+ * ```astro
+ * <SkeletonCard variant="blog" />
+ * ```
+ *
+ * @example Custom aspect ratio
+ * ```astro
+ * <SkeletonCard variant="project" aspectRatio="4/3" />
+ * ```
+ */
+
+interface Props {
+  /** Card variant to match the target component layout */
+  variant?: 'project' | 'blog';
+  /** Custom aspect ratio for the image placeholder (default: 16/10 for project, 16/9 for blog) */
+  aspectRatio?: string;
+  /** Additional CSS classes */
+  class?: string;
+  /** Optional label for screen readers */
+  ariaLabel?: string;
+}
+
+const {
+  variant = 'project',
+  aspectRatio,
+  class: className = '',
+  ariaLabel = 'Loading content...',
+} = Astro.props;
+
+// Determine aspect ratio based on variant
+const computedAspectRatio = aspectRatio || (variant === 'blog' ? '16/9' : '16/10');
+
+// Build CSS classes
+const cardClasses = [
+  'skeleton-card',
+  `skeleton-card--${variant}`,
+  className,
+].filter(Boolean).join(' ');
+---
+
+<article
+  class={cardClasses}
+  aria-hidden="true"
+  aria-label={ariaLabel}
+  role="presentation"
+>
+  <!-- Image Skeleton -->
+  <div class="skeleton-card__image" style={`aspect-ratio: ${computedAspectRatio};`}>
+    <div class="skeleton skeleton-card__image-inner"></div>
+    {/* Badge placeholder */}
+    <div class="skeleton skeleton-card__badge"></div>
+  </div>
+
+  <!-- Content Skeleton -->
+  <div class="skeleton-card__content">
+    {/* Meta info for blog variant */}
+    {variant === 'blog' && (
+      <div class="skeleton-card__meta">
+        <span class="skeleton skeleton-card__meta-item"></span>
+        <span class="skeleton-card__meta-separator"></span>
+        <span class="skeleton skeleton-card__meta-item skeleton-card__meta-item--short"></span>
+      </div>
+    )}
+
+    {/* Title */}
+    <div class="skeleton skeleton-card__title"></div>
+
+    {/* Description - 2-3 lines */}
+    <div class="skeleton-card__description">
+      <div class="skeleton skeleton-card__line"></div>
+      <div class="skeleton skeleton-card__line"></div>
+      <div class="skeleton skeleton-card__line skeleton-card__line--short"></div>
+    </div>
+
+    {/* Tags */}
+    <div class="skeleton-card__tags">
+      <span class="skeleton skeleton-card__tag"></span>
+      <span class="skeleton skeleton-card__tag"></span>
+      <span class="skeleton skeleton-card__tag skeleton-card__tag--short"></span>
+    </div>
+  </div>
+
+  <!-- Footer Skeleton -->
+  <div class="skeleton-card__footer">
+    {variant === 'blog' ? (
+      <>
+        <div class="skeleton-card__author">
+          <div class="skeleton skeleton-card__avatar"></div>
+          <div class="skeleton skeleton-card__author-name"></div>
+        </div>
+        <div class="skeleton skeleton-card__read-more"></div>
+      </>
+    ) : (
+      <>
+        <div class="skeleton skeleton-card__button"></div>
+        <div class="skeleton skeleton-card__icon-button"></div>
+      </>
+    )}
+  </div>
+</article>
+
+<style>
+  /* =================================================================
+   * SKELETON CARD COMPONENT STYLES
+   * =================================================================
+   * Matches the layout of ProjectCard and BlogArticleCard components
+   * Uses design system variables for consistency
+   */
+
+  .skeleton-card {
+    /* Layout */
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    /* Visual */
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+  }
+
+  /* =================================================================
+   * IMAGE SKELETON
+   * ================================================================= */
+  .skeleton-card__image {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--color-background-muted);
+  }
+
+  .skeleton-card__image-inner {
+    position: absolute;
+    inset: 0;
+    border-radius: 0;
+  }
+
+  .skeleton-card__badge {
+    position: absolute;
+    top: var(--spacing-3);
+    left: var(--spacing-3);
+    width: 60px;
+    height: 22px;
+    border-radius: var(--radius-md);
+  }
+
+  /* =================================================================
+   * CONTENT SKELETON
+   * ================================================================= */
+  .skeleton-card__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    padding: var(--spacing-5);
+    flex: 1;
+  }
+
+  /* Meta info (blog variant) */
+  .skeleton-card__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+  }
+
+  .skeleton-card__meta-item {
+    width: 80px;
+    height: 14px;
+    border-radius: var(--radius-base);
+  }
+
+  .skeleton-card__meta-item--short {
+    width: 60px;
+  }
+
+  .skeleton-card__meta-separator {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: var(--color-border);
+  }
+
+  /* Title */
+  .skeleton-card__title {
+    width: 85%;
+    height: 24px;
+    border-radius: var(--radius-base);
+  }
+
+  /* Description */
+  .skeleton-card__description {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+
+  .skeleton-card__line {
+    width: 100%;
+    height: 14px;
+    border-radius: var(--radius-base);
+  }
+
+  .skeleton-card__line--short {
+    width: 70%;
+  }
+
+  /* Tags */
+  .skeleton-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+    margin-top: auto;
+  }
+
+  .skeleton-card__tag {
+    width: 60px;
+    height: 26px;
+    border-radius: var(--radius-md);
+  }
+
+  .skeleton-card__tag--short {
+    width: 45px;
+  }
+
+  /* =================================================================
+   * FOOTER SKELETON
+   * ================================================================= */
+  .skeleton-card__footer {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    padding: var(--spacing-4) var(--spacing-5);
+    border-top: 1px solid var(--color-border-light);
+  }
+
+  /* Project variant footer */
+  .skeleton-card__button {
+    flex: 1;
+    height: 36px;
+    border-radius: var(--radius-md);
+  }
+
+  .skeleton-card__icon-button {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-lg);
+  }
+
+  /* Blog variant footer */
+  .skeleton-card__author {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+  }
+
+  .skeleton-card__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+  }
+
+  .skeleton-card__author-name {
+    width: 80px;
+    height: 14px;
+    border-radius: var(--radius-base);
+  }
+
+  .skeleton-card__read-more {
+    width: 90px;
+    height: 20px;
+    border-radius: var(--radius-base);
+    margin-left: auto;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+  @media screen and (max-width: 767px) {
+    .skeleton-card__content {
+      padding: var(--spacing-4);
+    }
+
+    .skeleton-card__footer {
+      padding: var(--spacing-3) var(--spacing-4);
+    }
+  }
+
+  @media screen and (min-width: 768px) {
+    .skeleton-card__content {
+      padding: var(--spacing-6);
+    }
+
+    .skeleton-card__title {
+      height: 28px;
+    }
+
+    .skeleton-card__footer {
+      padding: var(--spacing-4) var(--spacing-6);
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES - Hide skeletons in print
+   * ================================================================= */
+  @media print {
+    .skeleton-card {
+      display: none;
+    }
+  }
+</style>

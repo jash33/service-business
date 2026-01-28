@@ -1,0 +1,830 @@
+---
+/**
+ * Blog Post Template
+ * Dynamic page for individual blog articles with full SEO support,
+ * article schema markup, table of contents, social sharing, author bio,
+ * and related posts.
+ *
+ * Features:
+ * - BlogPosting schema markup for SEO
+ * - Responsive article layout with sidebar TOC
+ * - Social sharing buttons
+ * - Author bio section
+ * - Related posts grid
+ * - Breadcrumb navigation
+ * - Reading progress indicator
+ * - Optimized for readability
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
+import SocialSharing from '../../components/SocialSharing.astro';
+import AuthorBio from '../../components/AuthorBio.astro';
+import RelatedPosts from '../../components/RelatedPosts.astro';
+import { BLOG_ARTICLES } from '../../config/blog.config';
+import { seoConfig } from '../../config/seo.config';
+import type { BlogArticle } from '../../types/blog';
+
+// Generate static paths for all articles
+export function getStaticPaths() {
+  return BLOG_ARTICLES.map((article) => ({
+    params: { slug: article.slug },
+    props: { article },
+  }));
+}
+
+interface Props {
+  article: BlogArticle;
+}
+
+const { article } = Astro.props;
+
+// Get current URL for sharing
+const currentUrl = new URL(Astro.url.pathname, seoConfig.siteUrl).toString();
+
+// Format dates
+const formattedPublishDate = new Date(article.publishedDate).toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+const formattedUpdateDate = article.updatedDate
+  ? new Date(article.updatedDate).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    })
+  : null;
+
+// Format category for display
+const categoryLabel = article.category
+  .split('-')
+  .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+  .join(' ');
+
+// Get related posts
+const relatedPosts = article.relatedPostIds
+  ? article.relatedPostIds
+      .map(id => BLOG_ARTICLES.find(a => a.id === id))
+      .filter(Boolean) as BlogArticle[]
+  : BLOG_ARTICLES
+      .filter(a => a.id !== article.id && a.category === article.category)
+      .slice(0, 3);
+
+// Has TOC?
+const hasToc = article.tableOfContents && article.tableOfContents.length > 0;
+---
+
+<Layout
+  title={article.title}
+  description={article.excerpt}
+  image={article.featuredImage.src}
+  hideBreadcrumbs={true}
+  jsonLd={{
+    type: 'BlogPosting',
+    headline: article.title,
+    description: article.excerpt,
+    author: article.author.name,
+    datePublished: article.publishedDate,
+    dateModified: article.updatedDate || article.publishedDate,
+    image: article.featuredImage.src,
+    articleSection: categoryLabel,
+    wordCount: article.wordCount || article.readingTime * 200,
+  }}
+>
+  <!-- Reading Progress Bar -->
+  <div class="reading-progress" aria-hidden="true">
+    <div class="reading-progress__bar" id="reading-progress-bar"></div>
+  </div>
+
+  <!-- Breadcrumb Navigation for Blog Post -->
+  <Breadcrumb
+    items={[
+      { name: 'Home', url: '/' },
+      { name: 'Blog', url: '/blog' },
+      { name: article.title }
+    ]}
+    class="blog-post__breadcrumb"
+  />
+
+  <article class="blog-post" itemscope itemtype="https://schema.org/BlogPosting">
+    <!-- Article Header -->
+    <header class="blog-post__header">
+      <div class="blog-post__meta">
+        <a href={`/blog?category=${article.category}`} class="blog-post__category">
+          {categoryLabel}
+        </a>
+        <span class="blog-post__meta-separator" aria-hidden="true">·</span>
+        <time class="blog-post__date" datetime={article.publishedDate} itemprop="datePublished">
+          {formattedPublishDate}
+        </time>
+        <span class="blog-post__meta-separator" aria-hidden="true">·</span>
+        <span class="blog-post__reading-time">{article.readingTime} min read</span>
+      </div>
+
+      <h1 class="blog-post__title" itemprop="headline">{article.title}</h1>
+
+      <p class="blog-post__excerpt" itemprop="description">{article.excerpt}</p>
+
+      <!-- Author Info (inline) -->
+      <div class="blog-post__author-inline" itemprop="author" itemscope itemtype="https://schema.org/Person">
+        {article.author.avatar && (
+          <img
+            src={article.author.avatar}
+            alt={`${article.author.name}'s avatar`}
+            class="blog-post__author-avatar"
+            width="48"
+            height="48"
+            loading="eager"
+          />
+        )}
+        <div class="blog-post__author-details">
+          <span class="blog-post__author-name" itemprop="name">{article.author.name}</span>
+          {formattedUpdateDate && (
+            <span class="blog-post__updated">
+              Updated: <time datetime={article.updatedDate} itemprop="dateModified">{formattedUpdateDate}</time>
+            </span>
+          )}
+        </div>
+      </div>
+
+      <!-- Social Sharing (top) -->
+      <SocialSharing
+        url={currentUrl}
+        title={article.title}
+        description={article.excerpt}
+        class="blog-post__share-top"
+      />
+    </header>
+
+    <!-- Featured Image -->
+    <figure class="blog-post__featured-image">
+      <picture>
+        {article.featuredImage.srcWebP && (
+          <source srcset={article.featuredImage.srcWebP} type="image/webp" />
+        )}
+        <img
+          src={article.featuredImage.src}
+          alt={article.featuredImage.alt}
+          width={article.featuredImage.width || 1200}
+          height={article.featuredImage.height || 630}
+          class="blog-post__image"
+          loading="eager"
+          itemprop="image"
+        />
+      </picture>
+      {article.featuredImage.alt && (
+        <figcaption class="blog-post__image-caption">{article.featuredImage.alt}</figcaption>
+      )}
+    </figure>
+
+    <!-- Main Content Area with Sidebar -->
+    <div class={`blog-post__layout ${hasToc ? 'blog-post__layout--with-toc' : ''}`}>
+      <!-- Table of Contents (Sidebar) -->
+      {hasToc && (
+        <aside class="blog-post__sidebar">
+          <TableOfContents items={article.tableOfContents!} />
+        </aside>
+      )}
+
+      <!-- Article Content -->
+      <div class="blog-post__content" itemprop="articleBody">
+        {article.content ? (
+          <Fragment set:html={article.content} />
+        ) : (
+          <div class="blog-post__placeholder">
+            <p>This article's full content is coming soon. Check back later for the complete post!</p>
+            <p>In the meantime, you can browse our other articles on the <a href="/blog">blog page</a>.</p>
+          </div>
+        )}
+      </div>
+    </div>
+
+    <!-- Article Footer -->
+    <footer class="blog-post__footer">
+      <!-- Tags -->
+      {article.tags.length > 0 && (
+        <div class="blog-post__tags">
+          <span class="blog-post__tags-label">Tags:</span>
+          <ul class="blog-post__tags-list">
+            {article.tags.map((tag) => (
+              <li class="blog-post__tag">
+                <a href={`/blog?tag=${tag.slug}`} class="blog-post__tag-link">
+                  {tag.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <!-- Social Sharing (bottom) -->
+      <SocialSharing
+        url={currentUrl}
+        title={article.title}
+        description={article.excerpt}
+        class="blog-post__share-bottom"
+      />
+
+      <!-- Author Bio -->
+      <AuthorBio author={article.author} class="blog-post__author-bio" />
+    </footer>
+  </article>
+
+  <!-- Related Posts -->
+  {relatedPosts.length > 0 && (
+    <div class="blog-post__related">
+      <RelatedPosts posts={relatedPosts} />
+    </div>
+  )}
+</Layout>
+
+<script>
+  // Reading progress indicator
+  function initReadingProgress() {
+    const progressBar = document.getElementById('reading-progress-bar');
+    if (!progressBar) return;
+
+    const article = document.querySelector('.blog-post__content');
+    if (!article) return;
+
+    function updateProgress() {
+      const articleRect = article!.getBoundingClientRect();
+      const articleTop = articleRect.top + window.scrollY;
+      const articleHeight = articleRect.height;
+      const windowHeight = window.innerHeight;
+      const scrollPosition = window.scrollY;
+
+      // Calculate progress
+      const startReading = articleTop - windowHeight / 2;
+      const endReading = articleTop + articleHeight - windowHeight / 2;
+      const currentProgress = scrollPosition - startReading;
+      const totalReadingDistance = endReading - startReading;
+
+      let percentage = (currentProgress / totalReadingDistance) * 100;
+      percentage = Math.max(0, Math.min(100, percentage));
+
+      progressBar!.style.width = `${percentage}%`;
+    }
+
+    // Throttle scroll events
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateProgress();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+
+    // Initial update
+    updateProgress();
+  }
+
+  // Run on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initReadingProgress);
+  } else {
+    initReadingProgress();
+  }
+
+  // Re-run on Astro page transitions
+  document.addEventListener('astro:page-load', initReadingProgress);
+</script>
+
+<style>
+  /* =================================================================
+   * BLOG POST TEMPLATE STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention
+   * Optimized for readability
+   */
+
+  /* Reading Progress Bar */
+  .reading-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background-color: var(--color-background-muted);
+    z-index: var(--z-sticky);
+  }
+
+  .reading-progress__bar {
+    height: 100%;
+    width: 0;
+    background: var(--gradient-primary);
+    transition: width 100ms linear;
+  }
+
+  /* Main Article Container */
+  .blog-post {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+    padding: var(--spacing-6) var(--spacing-4);
+  }
+
+  /* Breadcrumb Navigation */
+  .breadcrumb {
+    margin-bottom: var(--spacing-8);
+  }
+
+  .breadcrumb__list {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+  }
+
+  .breadcrumb__item {
+    display: flex;
+    align-items: center;
+  }
+
+  .breadcrumb__link {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition: color var(--duration-150) var(--ease-in-out);
+  }
+
+  .breadcrumb__link:hover {
+    color: var(--color-primary);
+  }
+
+  .breadcrumb__link:focus-visible {
+    outline: none;
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+
+  .breadcrumb__separator {
+    color: var(--color-text-tertiary);
+  }
+
+  .breadcrumb__item--current {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-medium);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 300px;
+  }
+
+  /* Article Header */
+  .blog-post__header {
+    max-width: var(--container-4xl);
+    margin: 0 auto var(--spacing-8);
+    text-align: center;
+  }
+
+  .blog-post__meta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-4);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .blog-post__category {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+    transition: color var(--duration-150) var(--ease-in-out);
+  }
+
+  .blog-post__category:hover {
+    color: var(--color-primary-dark);
+  }
+
+  .blog-post__meta-separator {
+    color: var(--color-border);
+  }
+
+  .blog-post__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-tight);
+    margin: 0 0 var(--spacing-4);
+  }
+
+  .blog-post__excerpt {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0 0 var(--spacing-6);
+  }
+
+  /* Author Inline */
+  .blog-post__author-inline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-3);
+    margin-bottom: var(--spacing-6);
+  }
+
+  .blog-post__author-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-full);
+    object-fit: cover;
+    border: 2px solid var(--color-border);
+  }
+
+  .blog-post__author-details {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+  }
+
+  .blog-post__author-name {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  .blog-post__updated {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+  }
+
+  .blog-post__share-top {
+    justify-content: center;
+  }
+
+  /* Featured Image */
+  .blog-post__featured-image {
+    max-width: var(--container-6xl);
+    margin: 0 auto var(--spacing-10);
+  }
+
+  .blog-post__image {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .blog-post__image-caption {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+    text-align: center;
+    margin-top: var(--spacing-3);
+    font-style: italic;
+  }
+
+  /* Content Layout */
+  .blog-post__layout {
+    max-width: var(--container-4xl);
+    margin: 0 auto;
+  }
+
+  .blog-post__layout--with-toc {
+    display: grid;
+    gap: var(--spacing-8);
+  }
+
+  .blog-post__sidebar {
+    display: none;
+  }
+
+  /* Article Content - Typography */
+  .blog-post__content {
+    font-family: var(--font-body);
+    font-size: var(--font-size-md);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-relaxed);
+  }
+
+  .blog-post__content :global(h2) {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: var(--spacing-10) 0 var(--spacing-4);
+    padding-top: var(--spacing-4);
+    scroll-margin-top: 100px;
+  }
+
+  .blog-post__content :global(h3) {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: var(--spacing-8) 0 var(--spacing-3);
+    scroll-margin-top: 100px;
+  }
+
+  .blog-post__content :global(h4) {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: var(--spacing-6) 0 var(--spacing-3);
+    scroll-margin-top: 100px;
+  }
+
+  .blog-post__content :global(p) {
+    margin: 0 0 var(--spacing-6);
+  }
+
+  .blog-post__content :global(a) {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color var(--duration-150) var(--ease-in-out);
+  }
+
+  .blog-post__content :global(a:hover) {
+    color: var(--color-primary-dark);
+  }
+
+  .blog-post__content :global(strong) {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  .blog-post__content :global(em) {
+    font-style: italic;
+  }
+
+  .blog-post__content :global(ul),
+  .blog-post__content :global(ol) {
+    margin: 0 0 var(--spacing-6);
+    padding-left: var(--spacing-6);
+  }
+
+  .blog-post__content :global(li) {
+    margin-bottom: var(--spacing-2);
+  }
+
+  .blog-post__content :global(blockquote) {
+    margin: var(--spacing-8) 0;
+    padding: var(--spacing-4) var(--spacing-6);
+    background-color: var(--color-background-subtle);
+    border-left: 4px solid var(--color-primary);
+    border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+    font-style: italic;
+    color: var(--color-text-secondary);
+  }
+
+  .blog-post__content :global(blockquote p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .blog-post__content :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    padding: var(--spacing-0-5) var(--spacing-1);
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-md);
+    color: var(--color-primary-700);
+  }
+
+  .blog-post__content :global(pre) {
+    margin: var(--spacing-6) 0;
+    padding: var(--spacing-4);
+    background-color: var(--color-primary-950);
+    border-radius: var(--radius-lg);
+    overflow-x: auto;
+  }
+
+  .blog-post__content :global(pre code) {
+    padding: 0;
+    background-color: transparent;
+    color: var(--color-text-inverse);
+    font-size: var(--font-size-sm);
+  }
+
+  .blog-post__content :global(img) {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-lg);
+    margin: var(--spacing-6) 0;
+  }
+
+  .blog-post__content :global(hr) {
+    border: none;
+    height: 2px;
+    background: var(--gradient-border-fade);
+    margin: var(--spacing-10) 0;
+  }
+
+  .blog-post__content :global(table) {
+    width: 100%;
+    margin: var(--spacing-6) 0;
+    border-collapse: collapse;
+    font-size: var(--font-size-sm);
+  }
+
+  .blog-post__content :global(th),
+  .blog-post__content :global(td) {
+    padding: var(--spacing-3) var(--spacing-4);
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .blog-post__content :global(th) {
+    font-weight: var(--font-weight-semibold);
+    background-color: var(--color-background-subtle);
+  }
+
+  .blog-post__placeholder {
+    padding: var(--spacing-8);
+    background-color: var(--color-background-subtle);
+    border-radius: var(--radius-xl);
+    text-align: center;
+  }
+
+  /* Article Footer */
+  .blog-post__footer {
+    max-width: var(--container-4xl);
+    margin: var(--spacing-12) auto 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-8);
+  }
+
+  .blog-post__tags {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-3);
+  }
+
+  .blog-post__tags-label {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-secondary);
+    padding-top: var(--spacing-1);
+  }
+
+  .blog-post__tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .blog-post__tag-link {
+    display: inline-block;
+    padding: var(--spacing-1) var(--spacing-3);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary-700);
+    background-color: var(--color-primary-50);
+    border: 1px solid var(--color-primary-100);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      border-color var(--duration-150) var(--ease-in-out);
+  }
+
+  .blog-post__tag-link:hover {
+    background-color: var(--color-primary-100);
+    border-color: var(--color-primary-200);
+  }
+
+  .blog-post__tag-link:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .blog-post__share-bottom {
+    padding: var(--spacing-6);
+    background-color: var(--color-background-subtle);
+    border-radius: var(--radius-xl);
+  }
+
+  /* Related Posts Section */
+  .blog-post__related {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+    padding: 0 var(--spacing-4) var(--spacing-12);
+    border-top: 1px solid var(--color-border);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  @media screen and (min-width: 768px) {
+    .blog-post {
+      padding: var(--spacing-10) var(--spacing-6);
+    }
+
+    .blog-post__title {
+      font-size: var(--font-size-4xl);
+    }
+
+    .blog-post__excerpt {
+      font-size: var(--font-size-xl);
+    }
+  }
+
+  @media screen and (min-width: 1024px) {
+    .blog-post__layout--with-toc {
+      grid-template-columns: 250px 1fr;
+    }
+
+    .blog-post__sidebar {
+      display: block;
+    }
+
+    .blog-post__title {
+      font-size: var(--font-size-5xl);
+    }
+  }
+
+  @media screen and (min-width: 1280px) {
+    .blog-post__layout--with-toc {
+      grid-template-columns: 280px 1fr;
+      gap: var(--spacing-12);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .reading-progress__bar {
+      transition: none;
+    }
+
+    .breadcrumb__link,
+    .blog-post__category,
+    .blog-post__tag-link,
+    .blog-post__content :global(a) {
+      transition: none;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .reading-progress {
+      display: none;
+    }
+
+    .blog-post {
+      max-width: 100%;
+      padding: 0;
+    }
+
+    .blog-post__sidebar {
+      display: none;
+    }
+
+    .blog-post__share-top,
+    .blog-post__share-bottom {
+      display: none;
+    }
+
+    .blog-post__related {
+      display: none;
+    }
+
+    .blog-post__image {
+      box-shadow: none;
+    }
+
+    .blog-post__content :global(a) {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .blog-post__content :global(a)::after {
+      content: " (" attr(href) ")";
+      font-size: 0.8em;
+      color: var(--color-text-secondary);
+    }
+  }
+</style>

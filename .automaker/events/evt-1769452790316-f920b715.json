@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769452790316-f920b715",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-26T18:39:50.316Z",
+  "projectPath": "C:\\Users\\James\\Repos\\service-business",
+  "projectName": "service-business",
+  "featureId": "instant-quote-calculator",
+  "featureName": "Interactive Price Quote Calculator",
+  "error": "Claude Code process exited with code 1",
+  "errorType": "execution"
+}

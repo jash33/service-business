@@ -1,0 +1,12 @@
+{
+  "id": "service-checklist-pdf",
+  "category": "Content",
+  "title": "Downloadable Service Checklists",
+  "description": "Offer PDF downloads of service preparation checklists and maintenance guides. Provides value to visitors and generates email leads through gated content.",
+  "status": "backlog",
+  "priority": 3,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-26T01:51:05.754Z",
+  "updatedAt": "2026-01-27T17:35:24.456Z"
+}

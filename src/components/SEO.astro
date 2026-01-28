@@ -4,6 +4,8 @@
  * A centralized, reusable component for managing all SEO-related meta tags,
  * Open Graph tags, Twitter Cards, and structured data (JSON-LD).
  *
+ * Now includes automatic OG image resolution using dynamically generated images.
+ *
  * @example Basic usage:
  * ```astro
  * <SEO
@@ -44,6 +46,7 @@ import type {
   ProductSchema,
   BreadcrumbSchema,
   WebPageSchema,
+  ServiceSchema,
   CustomMetaTag,
 } from '../types/seo';
 import {
@@ -56,7 +59,11 @@ import {
 } from '../config/seo.config';
 
 import { generateLocalBusinessSchema } from '../utils/local-business-jsonld';
+import { generateServiceSchema } from '../utils/service-schema-jsonld';
+import { getOGImageUrl } from '../utils/og-image-url';
+import { ogImageConfig } from '../config/og-image.config';
 import type { LocalBusinessSchema, LocalBusinessType } from '../types/seo';
+
 // Define props interface using Astro's Props pattern
 interface Props extends SEOProps {}
 
@@ -126,11 +133,17 @@ const processedTitle = noTitleTemplate
   : titleTemplate.replace('%s', title);
 
 // === Process image URLs (make absolute for social media crawlers) ===
-const absoluteImage = toAbsoluteUrl(
-  image || openGraph.image || seoConfig.defaultImage,
-  siteUrl
-);
+// Use the dynamically generated OG image if no custom image is specified
+const resolvedImage = image || openGraph.image;
+const absoluteImage = resolvedImage
+  ? toAbsoluteUrl(resolvedImage, siteUrl)
+  : getOGImageUrl(Astro.url.pathname, undefined);
+
 const resolvedImageAlt = imageAlt || openGraph.imageAlt || seoConfig.defaultImageAlt;
+
+// OG image dimensions (from config for generated images, or from props)
+const ogImageWidth = openGraph.imageWidth || ogImageConfig.width;
+const ogImageHeight = openGraph.imageHeight || ogImageConfig.height;
 
 // === Compute canonical URL ===
 const computedCanonicalUrl = canonicalUrl
@@ -358,6 +371,8 @@ function generateJsonLd(schema: JsonLdSchema): object {
     case 'FAQPage':
     case 'CollectionPage':
       return generateWebPageSchema(schema as WebPageSchema);
+    case 'Service':
+      return generateServiceSchema(schema as ServiceSchema, siteUrl);
     default:
       console.warn(`SEO Warning: Unknown JSON-LD schema type: ${(schema as JsonLdSchema).type}`);
       return {};
@@ -430,11 +445,11 @@ function cleanObject(obj: object): object {
     ))
 }
 
-<!-- Open Graph Image -->
+<!-- Open Graph Image (dynamically generated or custom) -->
 {absoluteImage && <meta property="og:image" content={absoluteImage} />}
 {resolvedImageAlt && <meta property="og:image:alt" content={escapeHtml(resolvedImageAlt)} />}
-{openGraph.imageWidth && <meta property="og:image:width" content={String(openGraph.imageWidth)} />}
-{openGraph.imageHeight && <meta property="og:image:height" content={String(openGraph.imageHeight)} />}
+<meta property="og:image:width" content={String(ogImageWidth)} />
+<meta property="og:image:height" content={String(ogImageHeight)} />
 
 <!-- Twitter Card Tags -->
 <meta name="twitter:card" content={twitterCard} />

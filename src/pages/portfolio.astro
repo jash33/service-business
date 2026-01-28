@@ -6,9 +6,78 @@
 
 import Layout from '../layouts/Layout.astro';
 import PortfolioSection from '../components/PortfolioSection.astro';
+import BeforeAfterGallery from '../components/BeforeAfterGallery.astro';
 import ContactCTA from '../components/ContactCTA.astro';
 import Button from '../components/Button.astro';
 import type { Project } from '../types/portfolio';
+import type { BeforeAfterComparison } from '../types/before-after';
+
+/**
+ * Sample portfolio projects
+ * These showcase different project types, technologies, and categories
+ */
+/**
+ * Before/After transformations showcasing dramatic improvements
+ */
+const transformations: BeforeAfterComparison[] = [
+  {
+    id: 'dental-transformation',
+    title: 'Houston Family Dental Care',
+    description: 'Complete website redesign transforming an outdated site into a modern, conversion-focused platform with online booking.',
+    beforeImage: {
+      src: '/portfolio/dental-care-before.svg',
+      alt: 'Houston Family Dental original website with outdated design',
+      width: 800,
+      height: 600,
+    },
+    afterImage: {
+      src: '/portfolio/dental-care-after.svg',
+      alt: 'Houston Family Dental redesigned website with modern design',
+      width: 800,
+      height: 600,
+    },
+    category: 'redesign',
+    clientName: 'Dr. Sarah Mitchell',
+  },
+  {
+    id: 'florist-transformation',
+    title: 'Houston Florist & Gifts',
+    description: 'E-commerce overhaul with new brand identity, streamlined shopping experience, and subscription service integration.',
+    beforeImage: {
+      src: '/portfolio/florist-before.svg',
+      alt: 'Houston Florist original website with dated pink design',
+      width: 800,
+      height: 600,
+    },
+    afterImage: {
+      src: '/portfolio/florist-after.svg',
+      alt: 'Houston Florist modern e-commerce website',
+      width: 800,
+      height: 600,
+    },
+    category: 'ecommerce',
+    clientName: 'Maria Santos',
+  },
+  {
+    id: 'law-firm-transformation',
+    title: 'Houston Law Group',
+    description: 'Professional rebrand with focus on trust signals, case results showcase, and lead generation optimization.',
+    beforeImage: {
+      src: '/portfolio/law-firm-before.svg',
+      alt: 'Houston Law Group original website with traditional design',
+      width: 800,
+      height: 600,
+    },
+    afterImage: {
+      src: '/portfolio/law-firm-after.svg',
+      alt: 'Houston Law Group modern professional website',
+      width: 800,
+      height: 600,
+    },
+    category: 'redesign',
+    clientName: 'Partner James Morrison',
+  },
+];
 
 /**
  * Sample portfolio projects
@@ -395,6 +464,16 @@ const projects: Project[] = [
       </div>
       <div class="portfolio-hero__decoration" aria-hidden="true"></div>
     </section>
+
+    <!-- Before/After Gallery Section -->
+    <BeforeAfterGallery
+      id="transformations"
+      heading="Project Transformations"
+      subheading="Drag the slider to see the dramatic before and after results of our web design projects. Experience the difference professional design makes."
+      comparisons={transformations}
+      enableFiltering={true}
+      columns={2}
+    />
 
     <!-- Portfolio Grid Section -->
     <PortfolioSection

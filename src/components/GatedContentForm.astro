@@ -1,0 +1,739 @@
+---
+/**
+ * GatedContentForm Component
+ * An email capture form for gated content downloads (checklists, guides, etc.).
+ * Collects email leads in exchange for full PDF downloads.
+ *
+ * Features:
+ * - Email validation with real-time feedback
+ * - Honeypot spam prevention
+ * - Loading and success/error states
+ * - Formspree API integration
+ * - Auto-download after submission
+ * - WCAG 2.1 AA compliant accessibility
+ * - Touch-friendly on mobile (44x44px minimum targets)
+ *
+ * @example
+ * ```astro
+ * <GatedContentForm
+ *   checklistId="monthly-maintenance"
+ *   checklistTitle="Monthly Maintenance Checklist"
+ *   downloadUrl="/resources/downloads/checklist.pdf"
+ *   fileSize="1.8 MB"
+ * />
+ * ```
+ */
+
+import type { GatedContentFormProps } from '../types/service-checklist';
+
+interface Props extends GatedContentFormProps {}
+
+const {
+  checklistId,
+  checklistTitle,
+  downloadUrl,
+  fileSize,
+  heading = 'Get the Full Checklist',
+  description = 'Enter your email to download the complete checklist with all items and printable format.',
+  class: className = '',
+} = Astro.props;
+
+// Get Formspree endpoint from environment variable
+const formspreeEndpoint = import.meta.env.PUBLIC_FORMSPREE_ENDPOINT || '';
+
+// Build CSS classes
+const formClasses = [
+  'gated-content-form',
+  className,
+].filter(Boolean).join(' ');
+---
+
+<div class={formClasses} data-gated-form>
+  <div class="gated-content-form__header">
+    <div class="gated-content-form__icon">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="10,9 9,9 8,9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h3 class="gated-content-form__title">{heading}</h3>
+    <p class="gated-content-form__description">{description}</p>
+    {fileSize && (
+      <span class="gated-content-form__file-info">
+        <svg class="gated-content-form__file-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        PDF Download ({fileSize})
+      </span>
+    )}
+  </div>
+
+  <form
+    id={`gated-form-${checklistId}`}
+    class="gated-content-form__form"
+    novalidate
+    data-formspree-endpoint={formspreeEndpoint}
+    data-download-url={downloadUrl}
+    data-checklist-id={checklistId}
+    data-checklist-title={checklistTitle}
+  >
+    <!-- Hidden fields for tracking -->
+    <input type="hidden" name="formType" value="gated-content-download" />
+    <input type="hidden" name="checklistId" value={checklistId} />
+    <input type="hidden" name="checklistTitle" value={checklistTitle} />
+    <input type="hidden" id={`form-start-time-${checklistId}`} name="formStartTime" value="" />
+
+    <!-- Honeypot field -->
+    <div class="gated-content-form__honeypot" aria-hidden="true" tabindex="-1">
+      <label for={`website-${checklistId}`}>Website</label>
+      <input type="text" id={`website-${checklistId}`} name="website" autocomplete="off" tabindex="-1" />
+    </div>
+
+    <!-- Email Field -->
+    <div class="gated-content-form__field">
+      <label for={`email-${checklistId}`} class="gated-content-form__label">
+        Email Address <span class="gated-content-form__required" aria-label="required">*</span>
+      </label>
+      <div class="gated-content-form__input-wrapper">
+        <input
+          type="email"
+          id={`email-${checklistId}`}
+          name="email"
+          class="gated-content-form__input"
+          required
+          autocomplete="email"
+          placeholder="your@email.com"
+          aria-describedby={`email-error-${checklistId}`}
+          aria-invalid="false"
+        />
+        <button type="submit" class="gated-content-form__submit">
+          <span class="gated-content-form__submit-text">Download</span>
+          <span class="gated-content-form__submit-loading" aria-hidden="true">
+            <svg class="gated-content-form__spinner" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-linecap="round" opacity="0.25"/>
+              <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+          </span>
+        </button>
+      </div>
+      <span id={`email-error-${checklistId}`} class="gated-content-form__error" role="alert" aria-live="polite"></span>
+    </div>
+
+    <!-- Privacy note -->
+    <p class="gated-content-form__privacy">
+      <svg class="gated-content-form__lock-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      We respect your privacy. Unsubscribe anytime.
+    </p>
+  </form>
+
+  <!-- Success state -->
+  <div class="gated-content-form__success" aria-live="polite" hidden>
+    <div class="gated-content-form__success-icon">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+        <polyline points="9,12 11,14 15,10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h4 class="gated-content-form__success-title">Download Starting!</h4>
+    <p class="gated-content-form__success-message">
+      Your download should begin automatically. If it doesn't, <a href={downloadUrl} download class="gated-content-form__manual-download">click here to download manually</a>.
+    </p>
+  </div>
+
+  <!-- Error state -->
+  <div class="gated-content-form__error-state" aria-live="assertive" hidden>
+    <div class="gated-content-form__error-icon">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+        <line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="12" cy="16" r="1" fill="currentColor"/>
+      </svg>
+    </div>
+    <h4 class="gated-content-form__error-title">Something went wrong</h4>
+    <p class="gated-content-form__error-message">
+      Please try again or <a href={downloadUrl} download class="gated-content-form__manual-download">download directly</a>.
+    </p>
+    <button type="button" class="gated-content-form__retry-btn">Try Again</button>
+  </div>
+</div>
+
+<script>
+  // Initialize all gated content forms
+  document.querySelectorAll('[data-gated-form]').forEach((formContainer) => {
+    const form = formContainer.querySelector('form') as HTMLFormElement;
+    const successState = formContainer.querySelector('.gated-content-form__success') as HTMLElement;
+    const errorState = formContainer.querySelector('.gated-content-form__error-state') as HTMLElement;
+    const retryBtn = formContainer.querySelector('.gated-content-form__retry-btn') as HTMLButtonElement;
+    const emailInput = form.querySelector('input[type="email"]') as HTMLInputElement;
+    const emailError = form.querySelector('.gated-content-form__error') as HTMLElement;
+    const submitBtn = form.querySelector('.gated-content-form__submit') as HTMLButtonElement;
+    const startTimeInput = form.querySelector('input[name="formStartTime"]') as HTMLInputElement;
+
+    // Set form start time for spam prevention
+    startTimeInput.value = Date.now().toString();
+
+    // Email validation
+    const validateEmail = (email: string): boolean => {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    };
+
+    // Show error
+    const showError = (message: string): void => {
+      emailError.textContent = message;
+      emailInput.setAttribute('aria-invalid', 'true');
+      emailInput.classList.add('gated-content-form__input--error');
+    };
+
+    // Clear error
+    const clearError = (): void => {
+      emailError.textContent = '';
+      emailInput.setAttribute('aria-invalid', 'false');
+      emailInput.classList.remove('gated-content-form__input--error');
+    };
+
+    // Set loading state
+    const setLoading = (loading: boolean): void => {
+      submitBtn.classList.toggle('gated-content-form__submit--loading', loading);
+      submitBtn.disabled = loading;
+    };
+
+    // Show success state
+    const showSuccess = (): void => {
+      form.hidden = true;
+      successState.hidden = false;
+      errorState.hidden = true;
+    };
+
+    // Show error state
+    const showErrorState = (): void => {
+      form.hidden = true;
+      successState.hidden = true;
+      errorState.hidden = false;
+    };
+
+    // Reset to form state
+    const resetToForm = (): void => {
+      form.hidden = false;
+      successState.hidden = true;
+      errorState.hidden = true;
+      form.reset();
+      startTimeInput.value = Date.now().toString();
+    };
+
+    // Trigger download
+    const triggerDownload = (url: string): void => {
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = '';
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+
+    // Handle input validation
+    emailInput.addEventListener('blur', () => {
+      if (emailInput.value && !validateEmail(emailInput.value)) {
+        showError('Please enter a valid email address');
+      } else {
+        clearError();
+      }
+    });
+
+    emailInput.addEventListener('input', () => {
+      if (emailInput.classList.contains('gated-content-form__input--error')) {
+        if (validateEmail(emailInput.value)) {
+          clearError();
+        }
+      }
+    });
+
+    // Handle retry button
+    retryBtn.addEventListener('click', resetToForm);
+
+    // Handle form submission
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Validate email
+      if (!validateEmail(emailInput.value)) {
+        showError('Please enter a valid email address');
+        emailInput.focus();
+        return;
+      }
+
+      // Check honeypot
+      const honeypot = form.querySelector('input[name="website"]') as HTMLInputElement;
+      if (honeypot.value) {
+        return; // Bot detected
+      }
+
+      // Check timing (submissions under 2 seconds are likely bots)
+      const timeDiff = Date.now() - parseInt(startTimeInput.value, 10);
+      if (timeDiff < 2000) {
+        return; // Too fast, likely a bot
+      }
+
+      setLoading(true);
+      clearError();
+
+      const formspreeEndpoint = form.dataset.formspreeEndpoint;
+      const downloadUrl = form.dataset.downloadUrl;
+      const checklistId = form.dataset.checklistId;
+      const checklistTitle = form.dataset.checklistTitle;
+
+      try {
+        // Submit to Formspree if endpoint is configured
+        if (formspreeEndpoint) {
+          const formData = new FormData(form);
+          formData.append('_subject', `New Download: ${checklistTitle}`);
+
+          const response = await fetch(formspreeEndpoint, {
+            method: 'POST',
+            body: formData,
+            headers: {
+              'Accept': 'application/json',
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error('Submission failed');
+          }
+        }
+
+        // Track download event (if analytics available)
+        if (typeof window !== 'undefined' && (window as any).gtag) {
+          (window as any).gtag('event', 'download', {
+            event_category: 'gated_content',
+            event_label: checklistTitle,
+            value: checklistId,
+          });
+        }
+
+        // Show success and trigger download
+        showSuccess();
+        if (downloadUrl) {
+          setTimeout(() => triggerDownload(downloadUrl), 500);
+        }
+
+      } catch (error) {
+        console.error('Form submission error:', error);
+        showErrorState();
+      } finally {
+        setLoading(false);
+      }
+    });
+  });
+</script>
+
+<style>
+  /* =================================================================
+   * GATED CONTENT FORM STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   */
+
+  .gated-content-form {
+    background: linear-gradient(135deg, var(--color-primary-50) 0%, var(--color-background-elevated) 100%);
+    border: 1px solid var(--color-primary-100);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-6);
+    max-width: 400px;
+  }
+
+  /* =================================================================
+   * HEADER
+   * ================================================================= */
+  .gated-content-form__header {
+    text-align: center;
+    margin-bottom: var(--spacing-5);
+  }
+
+  .gated-content-form__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background-color: var(--color-primary-100);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-3);
+  }
+
+  .gated-content-form__icon svg {
+    width: 24px;
+    height: 24px;
+    color: var(--color-primary-600);
+  }
+
+  .gated-content-form__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-2) 0;
+  }
+
+  .gated-content-form__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .gated-content-form__file-info {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    margin-top: var(--spacing-3);
+    padding: var(--spacing-1) var(--spacing-3);
+    background-color: var(--color-background-elevated);
+    border-radius: var(--radius-full);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    border: 1px solid var(--color-border-light);
+  }
+
+  .gated-content-form__file-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* =================================================================
+   * FORM
+   * ================================================================= */
+  .gated-content-form__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+  }
+
+  .gated-content-form__honeypot {
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+  }
+
+  .gated-content-form__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+
+  .gated-content-form__label {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+  }
+
+  .gated-content-form__required {
+    color: var(--color-error);
+  }
+
+  .gated-content-form__input-wrapper {
+    display: flex;
+    gap: var(--spacing-2);
+  }
+
+  .gated-content-form__input {
+    flex: 1;
+    padding: var(--spacing-3) var(--spacing-4);
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-primary);
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    transition:
+      border-color var(--duration-150) var(--ease-in-out),
+      box-shadow var(--duration-150) var(--ease-in-out);
+  }
+
+  .gated-content-form__input::placeholder {
+    color: var(--color-text-tertiary);
+  }
+
+  .gated-content-form__input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: var(--focus-ring);
+  }
+
+  .gated-content-form__input--error {
+    border-color: var(--color-error);
+  }
+
+  .gated-content-form__input--error:focus {
+    box-shadow: 0 0 0 3px rgba(var(--color-error-rgb, 220, 38, 38), 0.2);
+  }
+
+  .gated-content-form__submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-3) var(--spacing-5);
+    min-width: 120px;
+    min-height: 44px;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-inverse);
+    background-color: var(--color-primary);
+    border: none;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      transform var(--duration-150) var(--ease-in-out);
+  }
+
+  .gated-content-form__submit:hover:not(:disabled) {
+    background-color: var(--color-primary-600);
+    transform: translateY(-1px);
+  }
+
+  .gated-content-form__submit:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  .gated-content-form__submit:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .gated-content-form__submit:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .gated-content-form__submit-loading {
+    display: none;
+  }
+
+  .gated-content-form__submit--loading .gated-content-form__submit-text {
+    display: none;
+  }
+
+  .gated-content-form__submit--loading .gated-content-form__submit-loading {
+    display: block;
+  }
+
+  .gated-content-form__spinner {
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .gated-content-form__error {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-error);
+    min-height: 1.25rem;
+  }
+
+  .gated-content-form__privacy {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    margin: 0;
+  }
+
+  .gated-content-form__lock-icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+
+  /* =================================================================
+   * SUCCESS STATE
+   * ================================================================= */
+  .gated-content-form__success {
+    text-align: center;
+    padding: var(--spacing-4) 0;
+  }
+
+  .gated-content-form__success-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    background-color: var(--color-success-100, #dcfce7);
+    border-radius: var(--radius-full);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .gated-content-form__success-icon svg {
+    width: 28px;
+    height: 28px;
+    color: var(--color-success, #16a34a);
+  }
+
+  .gated-content-form__success-title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-2) 0;
+  }
+
+  .gated-content-form__success-message {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .gated-content-form__manual-download {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .gated-content-form__manual-download:hover {
+    color: var(--color-primary-600);
+  }
+
+  /* =================================================================
+   * ERROR STATE
+   * ================================================================= */
+  .gated-content-form__error-state {
+    text-align: center;
+    padding: var(--spacing-4) 0;
+  }
+
+  .gated-content-form__error-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    background-color: var(--color-error-100, #fee2e2);
+    border-radius: var(--radius-full);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .gated-content-form__error-icon svg {
+    width: 28px;
+    height: 28px;
+    color: var(--color-error, #dc2626);
+  }
+
+  .gated-content-form__error-title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-2) 0;
+  }
+
+  .gated-content-form__error-message {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--spacing-4) 0;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .gated-content-form__retry-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-2) var(--spacing-4);
+    min-height: 44px;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+    background-color: transparent;
+    border: 2px solid var(--color-primary);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      color var(--duration-150) var(--ease-in-out);
+  }
+
+  .gated-content-form__retry-btn:hover {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  .gated-content-form__retry-btn:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+  @media screen and (max-width: 480px) {
+    .gated-content-form {
+      padding: var(--spacing-5);
+    }
+
+    .gated-content-form__input-wrapper {
+      flex-direction: column;
+    }
+
+    .gated-content-form__submit {
+      width: 100%;
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .gated-content-form__input,
+    .gated-content-form__submit {
+      transition: none;
+    }
+
+    .gated-content-form__spinner {
+      animation: none;
+    }
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+  @media (forced-colors: active) {
+    .gated-content-form {
+      border: 2px solid currentColor;
+    }
+
+    .gated-content-form__input {
+      border: 2px solid currentColor;
+    }
+
+    .gated-content-form__submit,
+    .gated-content-form__retry-btn {
+      border: 2px solid currentColor;
+    }
+  }
+</style>

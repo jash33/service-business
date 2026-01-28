@@ -1,0 +1,99 @@
+---
+/**
+ * Service Checklist Detail Page
+ * Dynamic page that displays individual checklist details.
+ *
+ * Features:
+ * - Full checklist display with all sections and items
+ * - Interactive checkbox progress tracking
+ * - Gated content form for full PDF download
+ * - Related checklists
+ * - Print-friendly styling
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import ChecklistDetail from '../../components/ChecklistDetail.astro';
+import ContactCTA from '../../components/ContactCTA.astro';
+import {
+  SERVICE_CHECKLISTS,
+  getChecklistBySlug,
+  getRelatedChecklists,
+} from '../../config/service-checklists.config';
+import type { ServiceChecklist } from '../../types/service-checklist';
+
+// Get all possible slugs for static generation
+export function getStaticPaths() {
+  return SERVICE_CHECKLISTS.map((checklist) => ({
+    params: { slug: checklist.slug },
+  }));
+}
+
+// Get the checklist from the slug
+const { slug } = Astro.params;
+const checklist = getChecklistBySlug(slug);
+
+// 404 if checklist not found
+if (!checklist) {
+  return Astro.redirect('/404');
+}
+
+// Get related checklists
+const relatedChecklists = getRelatedChecklists(checklist);
+
+// SEO
+const pageTitle = `${checklist.title} | Service Checklists`;
+const pageDescription = checklist.description;
+
+// Breadcrumb items
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Service Checklists', href: '/service-checklists' },
+  { label: checklist.title, href: `/service-checklists/${slug}` },
+];
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  breadcrumbs={breadcrumbs}
+>
+  <article class="checklist-page">
+    <div class="checklist-page__container">
+      <ChecklistDetail
+        checklist={checklist}
+        relatedChecklists={relatedChecklists}
+      />
+    </div>
+  </article>
+
+  <!-- CTA Section -->
+  <ContactCTA
+    headline="Need Help With Your Project?"
+    supportingText="Our team can help you implement these best practices and more. Get in touch for a free consultation."
+    primaryCTA={{
+      text: "Contact Us",
+      href: "/contact"
+    }}
+    secondaryCTA={{
+      text: "View All Checklists",
+      href: "/service-checklists"
+    }}
+  />
+</Layout>
+
+<style>
+  .checklist-page {
+    padding: var(--spacing-8) var(--spacing-4) var(--spacing-12);
+  }
+
+  .checklist-page__container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  @media screen and (max-width: 640px) {
+    .checklist-page {
+      padding: var(--spacing-6) var(--spacing-4) var(--spacing-8);
+    }
+  }
+</style>

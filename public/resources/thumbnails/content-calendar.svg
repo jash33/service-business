@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
+  <rect width="400" height="300" fill="#f8fafc"/>
+  <rect x="40" y="40" width="320" height="220" rx="12" fill="#e6eaf2" stroke="#365395" stroke-width="2"/>
+  <rect x="60" y="60" width="280" height="35" rx="6" fill="#365395"/>
+  <text x="200" y="84" text-anchor="middle" fill="#fff" font-family="Arial" font-size="14" font-weight="bold">CONTENT CALENDAR 2024</text>
+  <rect x="60" y="105" width="65" height="35" rx="2" fill="#fff" stroke="#c2cbdf"/>
+  <text x="92" y="127" text-anchor="middle" fill="#365395" font-family="Arial" font-size="10">Mon</text>
+  <rect x="130" y="105" width="65" height="35" rx="2" fill="#fff" stroke="#c2cbdf"/>
+  <text x="162" y="127" text-anchor="middle" fill="#365395" font-family="Arial" font-size="10">Tue</text>
+  <rect x="200" y="105" width="65" height="35" rx="2" fill="#fff" stroke="#c2cbdf"/>
+  <text x="232" y="127" text-anchor="middle" fill="#365395" font-family="Arial" font-size="10">Wed</text>
+  <rect x="270" y="105" width="65" height="35" rx="2" fill="#fff" stroke="#c2cbdf"/>
+  <text x="302" y="127" text-anchor="middle" fill="#365395" font-family="Arial" font-size="10">Thu</text>
+  <rect x="60" y="145" width="65" height="50" rx="2" fill="#10b981" opacity="0.2" stroke="#10b981"/>
+  <text x="92" y="175" text-anchor="middle" fill="#059669" font-family="Arial" font-size="9">Blog Post</text>
+  <rect x="130" y="145" width="65" height="50" rx="2" fill="#8b5cf6" opacity="0.2" stroke="#8b5cf6"/>
+  <text x="162" y="175" text-anchor="middle" fill="#7c3aed" font-family="Arial" font-size="9">Social</text>
+  <rect x="200" y="145" width="65" height="50" rx="2" fill="#fff" stroke="#c2cbdf"/>
+  <rect x="270" y="145" width="65" height="50" rx="2" fill="#06b6d4" opacity="0.2" stroke="#06b6d4"/>
+  <text x="302" y="175" text-anchor="middle" fill="#0891b2" font-family="Arial" font-size="9">Email</text>
+  <rect x="60" y="200" width="65" height="50" rx="2" fill="#fff" stroke="#c2cbdf"/>
+  <rect x="130" y="200" width="65" height="50" rx="2" fill="#f59e0b" opacity="0.2" stroke="#f59e0b"/>
+  <text x="162" y="230" text-anchor="middle" fill="#d97706" font-family="Arial" font-size="9">Video</text>
+  <rect x="200" y="200" width="65" height="50" rx="2" fill="#10b981" opacity="0.2" stroke="#10b981"/>
+  <text x="232" y="230" text-anchor="middle" fill="#059669" font-family="Arial" font-size="9">Blog Post</text>
+</svg>

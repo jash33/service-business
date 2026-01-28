@@ -1,0 +1,316 @@
+---
+/**
+ * VideoTestimonialsSection Component
+ * A responsive section displaying video testimonials in a grid layout.
+ * Designed to build trust and credibility with authentic video customer testimonials.
+ *
+ * Features:
+ * - Responsive grid: 1 column (mobile) -> 2 columns (tablet) -> 3 columns (desktop)
+ * - Section heading and subheading
+ * - Lazy loading video players for performance
+ * - Consistent card sizing and spacing
+ * - Accessible with proper semantic structure
+ * - Loading/empty state handling
+ * - Smooth animations with reduced motion support
+ *
+ * @example Basic usage
+ * ```astro
+ * <VideoTestimonialsSection
+ *   heading="Hear From Our Clients"
+ *   testimonials={[
+ *     {
+ *       id: 'video-1',
+ *       name: 'John Smith',
+ *       location: 'Houston, TX',
+ *       quote: 'Great experience!',
+ *       videoProvider: 'youtube',
+ *       videoId: 'dQw4w9WgXcQ'
+ *     },
+ *   ]}
+ * />
+ * ```
+ *
+ * @example With subheading
+ * ```astro
+ * <VideoTestimonialsSection
+ *   heading="Video Testimonials"
+ *   subheading="Watch real customers share their experiences"
+ *   testimonials={testimonials}
+ * />
+ * ```
+ */
+
+import type { VideoTestimonialsSectionProps, VideoTestimonial } from '../types/video-testimonial';
+import VideoTestimonialCard from './VideoTestimonialCard.astro';
+
+interface Props extends VideoTestimonialsSectionProps {}
+
+const {
+  heading = 'Hear From Our Clients',
+  subheading,
+  testimonials = [],
+  id = 'video-testimonials',
+  class: className = '',
+} = Astro.props;
+
+// Build CSS classes
+const sectionClasses = [
+  'video-testimonials-section',
+  className,
+].filter(Boolean).join(' ');
+
+// Check if we have testimonials to display
+const hasTestimonials = testimonials && testimonials.length > 0;
+---
+
+<section class={sectionClasses} id={id} aria-labelledby={`${id}-heading`}>
+  <div class="video-testimonials-section__container">
+    <!-- Section Header -->
+    <header class="video-testimonials-section__header section-heading--decorated">
+      <h2 id={`${id}-heading`} class="video-testimonials-section__heading">{heading}</h2>
+      {subheading && (
+        <p class="video-testimonials-section__subheading">{subheading}</p>
+      )}
+    </header>
+
+    <!-- Video Testimonials Grid -->
+    {hasTestimonials ? (
+      <div class="video-testimonials-section__grid">
+        {testimonials.map((testimonial) => (
+          <VideoTestimonialCard
+            id={testimonial.id}
+            name={testimonial.name}
+            location={testimonial.location}
+            quote={testimonial.quote}
+            company={testimonial.company}
+            title={testimonial.title}
+            videoProvider={testimonial.videoProvider}
+            videoId={testimonial.videoId}
+            thumbnailUrl={testimonial.thumbnailUrl}
+            duration={testimonial.duration}
+            lazyLoad={true}
+          />
+        ))}
+      </div>
+    ) : (
+      <!-- Empty State -->
+      <div class="video-testimonials-section__empty" role="status" aria-live="polite">
+        <div class="video-testimonials-section__empty-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" />
+          </svg>
+        </div>
+        <p class="video-testimonials-section__empty-text">Video testimonials coming soon.</p>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  /* =================================================================
+   * VIDEO TESTIMONIALS SECTION COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .video-testimonials-section {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background);
+  }
+
+  .video-testimonials-section__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  /* Section Header */
+  .video-testimonials-section__header {
+    text-align: center;
+    margin-bottom: var(--spacing-12);
+  }
+
+  .video-testimonials-section__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4);
+    line-height: var(--line-height-tight);
+  }
+
+  .video-testimonials-section__subheading {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin: 0;
+    max-width: 40rem;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* Video Testimonials Grid */
+  .video-testimonials-section__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+  }
+
+  /* Empty State */
+  .video-testimonials-section__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-4);
+    padding: var(--spacing-16) var(--spacing-8);
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-xl);
+    border: 2px dashed var(--color-border);
+  }
+
+  .video-testimonials-section__empty-icon {
+    width: var(--spacing-16);
+    height: var(--spacing-16);
+    color: var(--color-text-tertiary);
+    opacity: 0.5;
+  }
+
+  .video-testimonials-section__empty-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .video-testimonials-section__empty-text {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-tertiary);
+    margin: 0;
+    text-align: center;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * =================================================================
+   */
+
+  /* Tablet (768px) - 2 columns */
+  @media screen and (min-width: 768px) {
+    .video-testimonials-section {
+      padding: var(--spacing-20) var(--spacing-8);
+    }
+
+    .video-testimonials-section__header {
+      margin-bottom: var(--spacing-16);
+    }
+
+    .video-testimonials-section__heading {
+      font-size: var(--font-size-4xl);
+    }
+
+    .video-testimonials-section__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-8);
+    }
+  }
+
+  /* Desktop (1024px) - 3 columns */
+  @media screen and (min-width: 1024px) {
+    .video-testimonials-section__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* Large Desktop (1280px) */
+  @media screen and (min-width: 1280px) {
+    .video-testimonials-section {
+      padding: var(--spacing-24) var(--spacing-8);
+    }
+  }
+
+  /* =================================================================
+   * ANIMATION - Staggered card appearance
+   * =================================================================
+   */
+  .video-testimonials-section__grid > :global(*) {
+    animation: fadeSlideUp 0.5s ease-out backwards;
+  }
+
+  .video-testimonials-section__grid > :global(*:nth-child(1)) {
+    animation-delay: 0.1s;
+  }
+
+  .video-testimonials-section__grid > :global(*:nth-child(2)) {
+    animation-delay: 0.2s;
+  }
+
+  .video-testimonials-section__grid > :global(*:nth-child(3)) {
+    animation-delay: 0.3s;
+  }
+
+  .video-testimonials-section__grid > :global(*:nth-child(4)) {
+    animation-delay: 0.4s;
+  }
+
+  .video-testimonials-section__grid > :global(*:nth-child(5)) {
+    animation-delay: 0.5s;
+  }
+
+  .video-testimonials-section__grid > :global(*:nth-child(6)) {
+    animation-delay: 0.6s;
+  }
+
+  .video-testimonials-section__grid > :global(*:nth-child(7)) {
+    animation-delay: 0.7s;
+  }
+
+  .video-testimonials-section__grid > :global(*:nth-child(8)) {
+    animation-delay: 0.8s;
+  }
+
+  .video-testimonials-section__grid > :global(*:nth-child(9)) {
+    animation-delay: 0.9s;
+  }
+
+  @keyframes fadeSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * =================================================================
+   */
+  @media (prefers-reduced-motion: reduce) {
+    .video-testimonials-section__grid > :global(*) {
+      animation: none;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * =================================================================
+   */
+  @media print {
+    .video-testimonials-section {
+      padding: var(--spacing-8) 0;
+      background-color: transparent;
+    }
+
+    .video-testimonials-section__grid {
+      gap: var(--spacing-4);
+    }
+
+    .video-testimonials-section__grid > :global(*) {
+      animation: none;
+    }
+  }
+</style>

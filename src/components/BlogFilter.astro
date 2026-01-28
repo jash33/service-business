@@ -1,0 +1,326 @@
+---
+/**
+ * BlogFilter Component
+ * A filter component for blog articles with category and tag filtering.
+ *
+ * Features:
+ * - Category filter buttons with counts
+ * - Tag filter chips
+ * - Active state highlighting
+ * - Accessible keyboard navigation
+ * - Reduced motion support
+ *
+ * @example Basic usage
+ * ```astro
+ * <BlogFilter
+ *   categories={[
+ *     { label: 'All', value: 'all', count: 12 },
+ *     { label: 'Web Design', value: 'web-design', count: 5 },
+ *   ]}
+ *   tags={[
+ *     { label: 'SEO', value: 'seo', count: 3 },
+ *     { label: 'UX', value: 'ux', count: 4 },
+ *   ]}
+ *   selectedCategory="all"
+ * />
+ * ```
+ */
+
+import type { BlogFilterOption } from '../types/blog';
+
+interface Props {
+  /** Available categories to filter by */
+  categories: BlogFilterOption[];
+  /** Available tags to filter by */
+  tags?: BlogFilterOption[];
+  /** Currently selected category */
+  selectedCategory?: string;
+  /** Currently selected tags */
+  selectedTags?: string[];
+  /** Additional CSS class names */
+  class?: string;
+}
+
+const {
+  categories = [],
+  tags = [],
+  selectedCategory = 'all',
+  selectedTags = [],
+  class: className = '',
+} = Astro.props;
+
+const filterClasses = [
+  'blog-filter',
+  className,
+].filter(Boolean).join(' ');
+---
+
+<div class={filterClasses} data-blog-filter>
+  <!-- Category Filter -->
+  <div class="blog-filter__section">
+    <h3 class="blog-filter__label" id="category-filter-label">Filter by Category</h3>
+    <div class="blog-filter__categories" role="group" aria-labelledby="category-filter-label">
+      {categories.map((category) => {
+        const isActive = selectedCategory === category.value;
+        const url = category.value === 'all' ? '/blog' : `/blog?category=${category.value}`;
+        return (
+          <a
+            href={url}
+            class={`blog-filter__category ${isActive ? 'blog-filter__category--active' : ''}`}
+            aria-current={isActive ? 'true' : undefined}
+            data-category={category.value}
+          >
+            {category.label}
+            {category.count !== undefined && (
+              <span class="blog-filter__count" aria-label={`${category.count} articles`}>
+                {category.count}
+              </span>
+            )}
+          </a>
+        );
+      })}
+    </div>
+  </div>
+
+  <!-- Tag Filter -->
+  {tags.length > 0 && (
+    <div class="blog-filter__section">
+      <h3 class="blog-filter__label" id="tag-filter-label">Filter by Tag</h3>
+      <div class="blog-filter__tags" role="group" aria-labelledby="tag-filter-label">
+        {tags.map((tag) => {
+          const isActive = selectedTags.includes(tag.value);
+          const url = `/blog?tag=${tag.value}`;
+          return (
+            <a
+              href={url}
+              class={`blog-filter__tag ${isActive ? 'blog-filter__tag--active' : ''}`}
+              aria-pressed={isActive ? 'true' : 'false'}
+              data-tag={tag.value}
+            >
+              {tag.label}
+              {tag.count !== undefined && (
+                <span class="blog-filter__count" aria-label={`${tag.count} articles`}>
+                  {tag.count}
+                </span>
+              )}
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  )}
+</div>
+
+<style>
+  /* =================================================================
+   * BLOG FILTER COMPONENT STYLES
+   * ================================================================= */
+
+  .blog-filter {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-6);
+  }
+
+  .blog-filter__section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+  }
+
+  .blog-filter__label {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+    margin: 0;
+  }
+
+  /* =================================================================
+   * CATEGORY BUTTONS
+   * ================================================================= */
+  .blog-filter__categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+  }
+
+  .blog-filter__category {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+    color: var(--color-text-secondary);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      border-color var(--duration-150) var(--ease-in-out),
+      color var(--duration-150) var(--ease-in-out),
+      box-shadow var(--duration-150) var(--ease-in-out);
+  }
+
+  .blog-filter__category:hover {
+    background-color: var(--color-primary-50);
+    border-color: var(--color-primary-200);
+    color: var(--color-primary-700);
+  }
+
+  .blog-filter__category:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .blog-filter__category--active {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  .blog-filter__category--active:hover {
+    background-color: var(--color-primary-600);
+    border-color: var(--color-primary-600);
+    color: var(--color-text-inverse);
+  }
+
+  .blog-filter__category--active .blog-filter__count {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: var(--color-text-inverse);
+  }
+
+  /* =================================================================
+   * TAG CHIPS
+   * ================================================================= */
+  .blog-filter__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+  }
+
+  .blog-filter__tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    padding: var(--spacing-1) var(--spacing-3);
+    background-color: var(--color-primary-50);
+    color: var(--color-primary-700);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    border: 1px solid var(--color-primary-100);
+    border-radius: var(--radius-full);
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      border-color var(--duration-150) var(--ease-in-out),
+      color var(--duration-150) var(--ease-in-out),
+      box-shadow var(--duration-150) var(--ease-in-out);
+  }
+
+  .blog-filter__tag:hover {
+    background-color: var(--color-primary-100);
+    border-color: var(--color-primary-200);
+    color: var(--color-primary-800);
+  }
+
+  .blog-filter__tag:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .blog-filter__tag--active {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  .blog-filter__tag--active:hover {
+    background-color: var(--color-primary-600);
+    border-color: var(--color-primary-600);
+    color: var(--color-text-inverse);
+  }
+
+  .blog-filter__tag--active .blog-filter__count {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: var(--color-text-inverse);
+  }
+
+  /* =================================================================
+   * COUNT BADGES
+   * ================================================================= */
+  .blog-filter__count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--spacing-5);
+    height: var(--spacing-5);
+    padding: 0 var(--spacing-1);
+    background-color: var(--color-background-muted);
+    color: var(--color-text-tertiary);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    border-radius: var(--radius-full);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+  @media screen and (max-width: 767px) {
+    .blog-filter__categories {
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      padding-bottom: var(--spacing-2);
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .blog-filter__categories::-webkit-scrollbar {
+      display: none;
+    }
+
+    .blog-filter__category {
+      white-space: nowrap;
+      min-width: 44px;
+      min-height: 44px;
+    }
+
+    .blog-filter__tag {
+      min-width: 44px;
+      min-height: 44px;
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .blog-filter__category,
+    .blog-filter__tag {
+      transition: none;
+    }
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+  @media (forced-colors: active) {
+    .blog-filter__category,
+    .blog-filter__tag {
+      border: 2px solid currentColor;
+    }
+
+    .blog-filter__category--active,
+    .blog-filter__tag--active {
+      background-color: Highlight;
+      color: HighlightText;
+    }
+  }
+</style>

@@ -1,0 +1,578 @@
+---
+/**
+ * Interactive Service Map Component
+ *
+ * Displays an interactive Google Maps embed showing the service coverage area
+ * for Houston Web Services. Includes custom styling, markers for key locations,
+ * and mobile-optimized controls.
+ *
+ * Features:
+ * - Interactive Google Maps embed with custom styling
+ * - Markers for primary service areas
+ * - Service coverage polygon/circle
+ * - Mobile-optimized touch controls
+ * - Lazy loading for performance
+ * - Fallback for no-JS environments
+ * - Reduced motion support
+ *
+ * @example
+ * ```astro
+ * ---
+ * import InteractiveServiceMap from '../components/InteractiveServiceMap.astro';
+ * ---
+ * <InteractiveServiceMap />
+ * ```
+ */
+
+interface MarkerLocation {
+  name: string;
+  lat: number;
+  lng: number;
+  isPrimary?: boolean;
+}
+
+interface Props {
+  /** Map height (CSS value) */
+  height?: string;
+  /** Initial zoom level */
+  zoom?: number;
+  /** Center latitude */
+  centerLat?: number;
+  /** Center longitude */
+  centerLng?: number;
+  /** Show service area polygon/circle */
+  showServiceArea?: boolean;
+  /** Custom markers to display */
+  markers?: MarkerLocation[];
+  /** Accessible label for the map */
+  ariaLabel?: string;
+}
+
+// Houston area coordinates and key service locations
+const defaultMarkers: MarkerLocation[] = [
+  { name: 'Downtown Houston', lat: 29.7604, lng: -95.3698, isPrimary: true },
+  { name: 'The Woodlands', lat: 30.1658, lng: -95.4613, isPrimary: true },
+  { name: 'Katy', lat: 29.7858, lng: -95.8245, isPrimary: true },
+  { name: 'Sugar Land', lat: 29.6197, lng: -95.6349, isPrimary: true },
+  { name: 'Pearland', lat: 29.5636, lng: -95.2860, isPrimary: true },
+  { name: 'Cypress', lat: 29.9691, lng: -95.6970, isPrimary: true },
+  { name: 'Galleria/Uptown', lat: 29.7399, lng: -95.4610, isPrimary: true },
+  { name: 'Energy Corridor', lat: 29.7773, lng: -95.6286, isPrimary: true },
+  { name: 'Texas Medical Center', lat: 29.7068, lng: -95.3987, isPrimary: true },
+  { name: 'The Heights', lat: 29.7905, lng: -95.4008, isPrimary: true },
+  { name: 'Clear Lake', lat: 29.5474, lng: -95.1113 },
+  { name: 'Humble', lat: 29.9988, lng: -95.2622 },
+];
+
+const {
+  height = '450px',
+  zoom = 10,
+  centerLat = 29.7604,
+  centerLng = -95.5,
+  showServiceArea = true,
+  markers = defaultMarkers,
+  ariaLabel = 'Interactive map showing Houston Web Services coverage area including Downtown Houston, Katy, Sugar Land, The Woodlands, Pearland, Cypress, and surrounding areas',
+} = Astro.props;
+
+// Generate unique ID for this map instance
+const mapId = `service-map-${Math.random().toString(36).substring(2, 9)}`;
+---
+
+<div
+  class="interactive-map"
+  data-map-id={mapId}
+  data-center-lat={centerLat}
+  data-center-lng={centerLng}
+  data-zoom={zoom}
+  data-show-service-area={showServiceArea}
+  data-markers={JSON.stringify(markers)}
+>
+  <!-- Map Container -->
+  <div
+    id={mapId}
+    class="interactive-map__container"
+    style={`height: ${height};`}
+    role="application"
+    aria-label={ariaLabel}
+  >
+    <!-- Loading State -->
+    <div class="interactive-map__loading">
+      <div class="interactive-map__loading-spinner" aria-hidden="true"></div>
+      <span class="interactive-map__loading-text">Loading interactive map...</span>
+    </div>
+  </div>
+
+  <!-- Fallback for no-JS or map load failure -->
+  <noscript>
+    <div class="interactive-map__fallback">
+      <svg class="interactive-map__fallback-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+      </svg>
+      <span class="interactive-map__fallback-label">Greater Houston Metro Area</span>
+      <span class="interactive-map__fallback-sublabel">Serving Harris, Fort Bend, Montgomery, Brazoria, & Galveston Counties</span>
+    </div>
+  </noscript>
+
+  <!-- Map Controls Info -->
+  <div class="interactive-map__controls-info" aria-hidden="true">
+    <span class="interactive-map__controls-hint">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
+        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+      </svg>
+      Click markers for details
+    </span>
+    <span class="interactive-map__controls-hint interactive-map__controls-hint--mobile">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
+        <path d="M9 11.24V7.5C9 6.12 10.12 5 11.5 5S14 6.12 14 7.5v3.74c1.21-.81 2-2.18 2-3.74C16 5.01 13.99 3 11.5 3S7 5.01 7 7.5c0 1.56.79 2.93 2 3.74zm9.84 4.63l-4.54-2.26c-.17-.07-.35-.11-.54-.11H13v-6c0-.83-.67-1.5-1.5-1.5S10 6.67 10 7.5v10.74l-3.43-.72c-.08-.01-.15-.03-.24-.03-.31 0-.59.13-.79.33l-.79.8 4.94 4.94c.27.27.65.44 1.06.44h6.79c.75 0 1.33-.55 1.44-1.28l.75-5.27c.01-.07.02-.14.02-.21 0-.59-.34-1.11-.84-1.36z"/>
+      </svg>
+      Use two fingers to pan
+    </span>
+  </div>
+</div>
+
+<style>
+  .interactive-map {
+    position: relative;
+    width: 100%;
+    border-radius: var(--radius-2xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--color-border);
+    background-color: var(--color-background-subtle);
+  }
+
+  .interactive-map__container {
+    width: 100%;
+    min-height: 300px;
+    position: relative;
+  }
+
+  /* Loading State */
+  .interactive-map__loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-4);
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-100) 0%,
+      var(--color-primary-50) 50%,
+      var(--color-background) 100%
+    );
+    z-index: 1;
+    transition: opacity var(--duration-300) var(--ease-out);
+  }
+
+  .interactive-map__loading.is-hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .interactive-map__loading-spinner {
+    width: var(--spacing-10);
+    height: var(--spacing-10);
+    border: 3px solid var(--color-primary-200);
+    border-top-color: var(--color-primary);
+    border-radius: var(--radius-full);
+    animation: mapSpinner 1s linear infinite;
+  }
+
+  @keyframes mapSpinner {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .interactive-map__loading-text {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  /* Fallback State */
+  .interactive-map__fallback {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-3);
+    padding: var(--spacing-12);
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-100) 0%,
+      var(--color-primary-50) 50%,
+      var(--color-background) 100%
+    );
+    min-height: 300px;
+  }
+
+  .interactive-map__fallback-icon {
+    width: var(--spacing-16);
+    height: var(--spacing-16);
+    color: var(--color-primary);
+    opacity: 0.6;
+  }
+
+  .interactive-map__fallback-label {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+  }
+
+  .interactive-map__fallback-sublabel {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    text-align: center;
+  }
+
+  /* Controls Info */
+  .interactive-map__controls-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-4);
+    padding: var(--spacing-3) var(--spacing-4);
+    background-color: var(--color-background-elevated);
+    border-top: 1px solid var(--color-border);
+    justify-content: center;
+  }
+
+  .interactive-map__controls-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  .interactive-map__controls-hint svg {
+    color: var(--color-primary);
+    opacity: 0.7;
+  }
+
+  .interactive-map__controls-hint--mobile {
+    display: none;
+  }
+
+  /* Mobile adjustments */
+  @media screen and (max-width: 768px) {
+    .interactive-map__container {
+      min-height: 280px;
+    }
+
+    .interactive-map__controls-hint--mobile {
+      display: inline-flex;
+    }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .interactive-map__loading-spinner {
+      animation: none;
+    }
+  }
+
+  /* Custom Google Maps InfoWindow styling override */
+  :global(.gm-style-iw) {
+    font-family: var(--font-body) !important;
+  }
+
+  :global(.gm-style-iw-d) {
+    overflow: hidden !important;
+  }
+
+  :global(.service-map-infowindow) {
+    padding: var(--spacing-2);
+    min-width: 120px;
+  }
+
+  :global(.service-map-infowindow__title) {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-1) 0;
+  }
+
+  :global(.service-map-infowindow__badge) {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary);
+    background-color: var(--color-primary-50);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+  }
+</style>
+
+<script>
+  /**
+   * Interactive Service Map Initialization
+   *
+   * Initializes Google Maps with custom styling and markers for
+   * the Houston Web Services coverage area.
+   */
+
+  // Google Maps custom styles for brand consistency
+  const mapStyles = [
+    {
+      featureType: 'all',
+      elementType: 'geometry.fill',
+      stylers: [{ saturation: -20 }]
+    },
+    {
+      featureType: 'water',
+      elementType: 'geometry.fill',
+      stylers: [{ color: '#c2cbdf' }]
+    },
+    {
+      featureType: 'road.highway',
+      elementType: 'geometry.fill',
+      stylers: [{ color: '#f8fafc' }]
+    },
+    {
+      featureType: 'road.highway',
+      elementType: 'geometry.stroke',
+      stylers: [{ color: '#e5e7eb' }]
+    },
+    {
+      featureType: 'poi.park',
+      elementType: 'geometry.fill',
+      stylers: [{ color: '#d1fae5' }]
+    },
+    {
+      featureType: 'poi.business',
+      stylers: [{ visibility: 'off' }]
+    },
+    {
+      featureType: 'poi.government',
+      stylers: [{ visibility: 'simplified' }]
+    },
+    {
+      featureType: 'administrative.locality',
+      elementType: 'labels.text.fill',
+      stylers: [{ color: '#365395' }]
+    }
+  ];
+
+  // Track initialized maps
+  const initializedMaps = new Set<string>();
+
+  /**
+   * Initialize a single map instance
+   */
+  function initMap(mapElement: HTMLElement): void {
+    const mapId = mapElement.dataset.mapId;
+    if (!mapId || initializedMaps.has(mapId)) return;
+
+    const container = document.getElementById(mapId);
+    if (!container) return;
+
+    // Check if Google Maps is loaded
+    if (typeof google === 'undefined' || !google.maps) {
+      console.warn('[ServiceMap] Google Maps not loaded');
+      return;
+    }
+
+    // Parse configuration from data attributes
+    const centerLat = parseFloat(mapElement.dataset.centerLat || '29.7604');
+    const centerLng = parseFloat(mapElement.dataset.centerLng || '-95.5');
+    const zoom = parseInt(mapElement.dataset.zoom || '10', 10);
+    const showServiceArea = mapElement.dataset.showServiceArea === 'true';
+
+    let markers: Array<{ name: string; lat: number; lng: number; isPrimary?: boolean }> = [];
+    try {
+      markers = JSON.parse(mapElement.dataset.markers || '[]');
+    } catch (e) {
+      console.error('[ServiceMap] Failed to parse markers:', e);
+    }
+
+    // Create the map
+    const map = new google.maps.Map(container, {
+      center: { lat: centerLat, lng: centerLng },
+      zoom: zoom,
+      styles: mapStyles,
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: true,
+      zoomControl: true,
+      zoomControlOptions: {
+        position: google.maps.ControlPosition.RIGHT_CENTER
+      },
+      gestureHandling: 'cooperative', // Better mobile experience
+      scrollwheel: false, // Prevent accidental zooms
+    });
+
+    // Add service area circle
+    if (showServiceArea) {
+      new google.maps.Circle({
+        strokeColor: '#365395',
+        strokeOpacity: 0.3,
+        strokeWeight: 2,
+        fillColor: '#365395',
+        fillOpacity: 0.08,
+        map: map,
+        center: { lat: 29.7604, lng: -95.3698 }, // Downtown Houston
+        radius: 65000, // ~40 miles radius
+      });
+    }
+
+    // Create info window for markers
+    const infoWindow = new google.maps.InfoWindow();
+
+    // Add markers
+    markers.forEach((location) => {
+      const marker = new google.maps.Marker({
+        position: { lat: location.lat, lng: location.lng },
+        map: map,
+        title: location.name,
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: location.isPrimary ? 10 : 7,
+          fillColor: location.isPrimary ? '#365395' : '#8b5cf6',
+          fillOpacity: 1,
+          strokeColor: '#ffffff',
+          strokeWeight: 2,
+        },
+        animation: google.maps.Animation.DROP,
+      });
+
+      // Info window content
+      const infoContent = `
+        <div class="service-map-infowindow">
+          <h3 class="service-map-infowindow__title">${location.name}</h3>
+          ${location.isPrimary ? '<span class="service-map-infowindow__badge">Featured Area</span>' : ''}
+        </div>
+      `;
+
+      marker.addListener('click', () => {
+        infoWindow.setContent(infoContent);
+        infoWindow.open(map, marker);
+      });
+    });
+
+    // Hide loading state
+    const loadingEl = container.querySelector('.interactive-map__loading');
+    if (loadingEl) {
+      loadingEl.classList.add('is-hidden');
+      setTimeout(() => loadingEl.remove(), 300);
+    }
+
+    // Mark as initialized
+    initializedMaps.add(mapId);
+    console.log('[ServiceMap] Map initialized:', mapId);
+  }
+
+  /**
+   * Load Google Maps API dynamically
+   */
+  function loadGoogleMapsAPI(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      // Check if already loaded
+      if (typeof google !== 'undefined' && google.maps) {
+        resolve();
+        return;
+      }
+
+      // Check if script is already loading
+      const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
+      if (existingScript) {
+        existingScript.addEventListener('load', () => resolve());
+        existingScript.addEventListener('error', () => reject(new Error('Failed to load Google Maps')));
+        return;
+      }
+
+      // Create callback for API load
+      const callbackName = 'initGoogleMapsCallback';
+      (window as any)[callbackName] = () => {
+        resolve();
+        delete (window as any)[callbackName];
+      };
+
+      // Create and inject script
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=&callback=${callbackName}&loading=async`;
+      script.async = true;
+      script.defer = true;
+      script.onerror = () => reject(new Error('Failed to load Google Maps'));
+
+      document.head.appendChild(script);
+    });
+  }
+
+  /**
+   * Initialize all maps on the page
+   */
+  async function initAllMaps(): Promise<void> {
+    const mapElements = document.querySelectorAll<HTMLElement>('.interactive-map');
+    if (mapElements.length === 0) return;
+
+    try {
+      await loadGoogleMapsAPI();
+      mapElements.forEach(initMap);
+    } catch (error) {
+      console.error('[ServiceMap] Failed to initialize maps:', error);
+      // Show fallback on error
+      mapElements.forEach((el) => {
+        const container = el.querySelector('.interactive-map__container');
+        const loading = container?.querySelector('.interactive-map__loading');
+        if (loading) {
+          loading.innerHTML = `
+            <svg class="interactive-map__fallback-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="64" height="64" style="color: var(--color-primary); opacity: 0.6;">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+            </svg>
+            <span class="interactive-map__fallback-label" style="font-family: var(--font-heading); font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); color: var(--color-primary);">Greater Houston Metro Area</span>
+            <span class="interactive-map__fallback-sublabel" style="font-family: var(--font-body); font-size: var(--font-size-sm); color: var(--color-text-secondary); text-align: center;">Serving Harris, Fort Bend, Montgomery, Brazoria, & Galveston Counties</span>
+          `;
+        }
+      });
+    }
+  }
+
+  // Initialize using Intersection Observer for lazy loading
+  function setupLazyLoad(): void {
+    const mapElements = document.querySelectorAll<HTMLElement>('.interactive-map');
+    if (mapElements.length === 0) return;
+
+    // Check if reduced motion is preferred - load immediately in that case
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            initAllMaps();
+            observer.disconnect();
+          }
+        });
+      },
+      {
+        rootMargin: '200px', // Start loading when 200px away
+        threshold: 0
+      }
+    );
+
+    mapElements.forEach((el) => observer.observe(el));
+
+    // Also initialize if already in view or reduced motion preferred
+    if (prefersReducedMotion) {
+      initAllMaps();
+    }
+  }
+
+  // Run on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupLazyLoad);
+  } else {
+    setupLazyLoad();
+  }
+
+  // Re-run on Astro page transitions
+  document.addEventListener('astro:page-load', setupLazyLoad);
+</script>

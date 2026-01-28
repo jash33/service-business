@@ -1,0 +1,396 @@
+---
+/**
+ * Sticky Mobile CTA Component
+ *
+ * A persistent bottom bar on mobile with call and message buttons.
+ * Improves mobile conversion with always-visible contact options.
+ *
+ * Features:
+ * - Mobile-only display (hidden on desktop)
+ * - Fixed positioning at the bottom of the viewport
+ * - Call and Message buttons for quick contact
+ * - iOS safe area support for notched devices
+ * - Smooth animation on page load
+ * - Respects user's motion preferences
+ * - WCAG 2.1 AA compliant
+ * - Dark mode support
+ *
+ * @example
+ * ```astro
+ * <StickyMobileCTA />
+ * ```
+ *
+ * @example With custom phone number
+ * ```astro
+ * <StickyMobileCTA phoneNumber="+1-555-123-4567" />
+ * ```
+ */
+
+import { localBusinessSchema } from '../config/seo.config';
+
+interface Props {
+  /** Override the phone number from config */
+  phoneNumber?: string;
+  /** Show the CTA bar (can be controlled externally) */
+  visible?: boolean;
+}
+
+const {
+  phoneNumber = localBusinessSchema.telephone,
+  visible = true,
+} = Astro.props;
+
+// Clean phone number for tel: and sms: links (remove formatting)
+const cleanPhoneNumber = phoneNumber.replace(/[^\d+]/g, '');
+---
+
+<div
+  id="sticky-mobile-cta"
+  class="sticky-cta"
+  role="navigation"
+  aria-label="Quick contact options"
+  data-visible={visible ? 'true' : 'false'}
+>
+  <div class="sticky-cta__container">
+    <a
+      href={`tel:${cleanPhoneNumber}`}
+      class="sticky-cta__button sticky-cta__button--primary"
+      aria-label="Call us now"
+      data-track-location="sticky_cta"
+      data-track-type="call"
+    >
+      <svg
+        class="sticky-cta__icon"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        width="20"
+        height="20"
+        aria-hidden="true"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M1.5 4.5a3 3 0 0 1 3-3h1.372c.86 0 1.61.586 1.819 1.42l1.105 4.423a1.875 1.875 0 0 1-.694 1.955l-1.293.97c-.135.101-.164.249-.126.352a11.285 11.285 0 0 0 6.697 6.697c.103.038.25.009.352-.126l.97-1.293a1.875 1.875 0 0 1 1.955-.694l4.423 1.105c.834.209 1.42.959 1.42 1.82V19.5a3 3 0 0 1-3 3h-2.25C8.552 22.5 1.5 15.448 1.5 6.75V4.5Z"
+          clip-rule="evenodd"
+        />
+      </svg>
+      <span class="sticky-cta__text">Call</span>
+    </a>
+
+    <a
+      href={`sms:${cleanPhoneNumber}`}
+      class="sticky-cta__button sticky-cta__button--secondary"
+      aria-label="Send us a text message"
+      data-track-location="sticky_cta"
+      data-track-type="sms"
+    >
+      <svg
+        class="sticky-cta__icon"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        width="20"
+        height="20"
+        aria-hidden="true"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M4.848 2.771A49.144 49.144 0 0 1 12 2.25c2.43 0 4.817.178 7.152.52 1.978.292 3.348 2.024 3.348 3.97v6.02c0 1.946-1.37 3.678-3.348 3.97a48.901 48.901 0 0 1-3.476.383.39.39 0 0 0-.297.17l-2.755 4.133a.75.75 0 0 1-1.248 0l-2.755-4.133a.39.39 0 0 0-.297-.17 48.9 48.9 0 0 1-3.476-.384c-1.978-.29-3.348-2.024-3.348-3.97V6.741c0-1.946 1.37-3.68 3.348-3.97ZM6.75 8.25a.75.75 0 0 1 .75-.75h9a.75.75 0 0 1 0 1.5h-9a.75.75 0 0 1-.75-.75Zm.75 2.25a.75.75 0 0 0 0 1.5H12a.75.75 0 0 0 0-1.5H7.5Z"
+          clip-rule="evenodd"
+        />
+      </svg>
+      <span class="sticky-cta__text">Message</span>
+    </a>
+  </div>
+</div>
+
+<style>
+  /* =================================================================
+   * STICKY MOBILE CTA BAR
+   * A persistent bottom bar on mobile with call and message buttons.
+   * ================================================================= */
+
+  .sticky-cta {
+    /* Fixed positioning at bottom of viewport */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    /* Z-index: above content but below modals */
+    z-index: var(--z-fixed, 300);
+
+    /* Background with subtle top border */
+    background: var(--color-background, #ffffff);
+    border-top: 1px solid var(--color-border, #e5e7eb);
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+
+    /* Animation */
+    transform: translateY(100%);
+    transition: transform var(--duration-300, 300ms) var(--ease-out, ease-out);
+
+    /* Hide on desktop by default */
+    display: none;
+  }
+
+  /* Show on mobile devices only (max-width: 768px) */
+  @media (max-width: 768px) {
+    .sticky-cta {
+      display: block;
+    }
+  }
+
+  /* Visible state - slide up into view */
+  .sticky-cta[data-visible="true"] {
+    transform: translateY(0);
+  }
+
+  /* Container for the buttons */
+  .sticky-cta__container {
+    display: flex;
+    gap: var(--spacing-2, 0.5rem);
+    padding: var(--spacing-3, 0.75rem) var(--spacing-4, 1rem);
+
+    /* iOS safe area support - add padding for notched devices */
+    padding-bottom: max(var(--spacing-3, 0.75rem), env(safe-area-inset-bottom));
+
+    /* Ensure container doesn't exceed viewport */
+    max-width: 100%;
+  }
+
+  /* =================================================================
+   * BUTTON STYLES
+   * ================================================================= */
+
+  .sticky-cta__button {
+    /* Reset */
+    appearance: none;
+    border: none;
+    text-decoration: none;
+
+    /* Layout */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2, 0.5rem);
+    flex: 1;
+
+    /* Sizing - touch-friendly */
+    min-height: 48px;
+    padding: var(--spacing-3, 0.75rem) var(--spacing-4, 1rem);
+
+    /* Typography */
+    font-family: var(--font-body, sans-serif);
+    font-size: var(--font-size-base, 1rem);
+    font-weight: var(--font-weight-semibold, 600);
+    line-height: var(--line-height-none, 1);
+    text-align: center;
+    white-space: nowrap;
+
+    /* Visual */
+    border-radius: var(--radius-lg, 0.5rem);
+    cursor: pointer;
+    user-select: none;
+
+    /* Transitions */
+    transition:
+      background-color var(--duration-150, 150ms) var(--ease-in-out, ease-in-out),
+      border-color var(--duration-150, 150ms) var(--ease-in-out, ease-in-out),
+      color var(--duration-150, 150ms) var(--ease-in-out, ease-in-out),
+      transform var(--duration-150, 150ms) var(--ease-in-out, ease-in-out),
+      box-shadow var(--duration-150, 150ms) var(--ease-in-out, ease-in-out);
+  }
+
+  /* Primary button (Call) - Solid background */
+  .sticky-cta__button--primary {
+    background-color: var(--color-primary, #365395);
+    color: var(--color-text-inverse, #ffffff);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.1));
+  }
+
+  .sticky-cta__button--primary:hover {
+    background-color: var(--color-primary-hover, #304b8d);
+    box-shadow: var(--shadow-md, 0 4px 6px rgba(0, 0, 0, 0.1));
+  }
+
+  .sticky-cta__button--primary:active {
+    background-color: var(--color-primary-active, #284182);
+    transform: scale(0.98);
+  }
+
+  /* Secondary button (Message) - Outlined style */
+  .sticky-cta__button--secondary {
+    background-color: transparent;
+    color: var(--color-primary, #365395);
+    border: var(--border-width-2, 2px) solid var(--color-primary, #365395);
+  }
+
+  .sticky-cta__button--secondary:hover {
+    background-color: var(--color-primary-50, #e6eaf2);
+    border-color: var(--color-primary-hover, #304b8d);
+    color: var(--color-primary-hover, #304b8d);
+  }
+
+  .sticky-cta__button--secondary:active {
+    background-color: var(--color-primary-100, #c2cbdf);
+    transform: scale(0.98);
+  }
+
+  /* =================================================================
+   * FOCUS STYLES - WCAG 2.1 AA Compliant
+   * ================================================================= */
+
+  .sticky-cta__button:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 var(--focus-ring-offset, 2px) var(--color-background, #ffffff),
+      0 0 0 calc(var(--focus-ring-offset, 2px) + var(--focus-ring-width, 2px)) var(--focus-ring-color, #365395);
+  }
+
+  /* Remove focus outline for mouse users */
+  .sticky-cta__button:focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* =================================================================
+   * ICON STYLES
+   * ================================================================= */
+
+  .sticky-cta__icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  /* =================================================================
+   * TEXT STYLES
+   * ================================================================= */
+
+  .sticky-cta__text {
+    /* Hide text on very small screens, show icon only */
+    display: inline;
+  }
+
+  @media (max-width: 360px) {
+    .sticky-cta__text {
+      /* Keep text visible but reduce button padding */
+    }
+
+    .sticky-cta__button {
+      padding: var(--spacing-3, 0.75rem) var(--spacing-3, 0.75rem);
+      font-size: var(--font-size-sm, 0.875rem);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * ================================================================= */
+
+  @media (prefers-reduced-motion: reduce) {
+    .sticky-cta {
+      transition: none;
+    }
+
+    .sticky-cta__button {
+      transition: none;
+    }
+
+    .sticky-cta__button:active {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * Ensure visibility in Windows High Contrast mode
+   * ================================================================= */
+
+  @media (forced-colors: active) {
+    .sticky-cta {
+      border-top: 2px solid currentColor;
+    }
+
+    .sticky-cta__button {
+      border: 2px solid currentColor;
+    }
+
+    .sticky-cta__button--primary {
+      background-color: Highlight;
+      color: HighlightText;
+    }
+
+    .sticky-cta__button--secondary {
+      background-color: Canvas;
+      color: CanvasText;
+    }
+
+    .sticky-cta__button:focus-visible {
+      outline: 3px solid Highlight;
+      outline-offset: 2px;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * Hide the sticky CTA bar when printing
+   * ================================================================= */
+
+  @media print {
+    .sticky-cta {
+      display: none !important;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Sticky Mobile CTA Bar Script
+   * Handles initialization, visibility state management, and analytics tracking
+   */
+
+  function initStickyMobileCTA(): void {
+    const stickyBar = document.getElementById('sticky-mobile-cta') as HTMLElement;
+
+    if (!stickyBar) return;
+
+    // Small delay to ensure smooth animation after page load
+    setTimeout(() => {
+      stickyBar.setAttribute('data-visible', 'true');
+    }, 100);
+
+    // Track click events for analytics
+    const buttons = stickyBar.querySelectorAll('.sticky-cta__button');
+    buttons.forEach((button) => {
+      button.addEventListener('click', (event) => {
+        const target = event.currentTarget as HTMLAnchorElement;
+        const href = target.getAttribute('href') || '';
+        const buttonText = target.querySelector('.sticky-cta__text')?.textContent?.trim();
+
+        // Dispatch custom event for analytics tracking
+        // The global analytics link tracking will handle the actual GA4 event
+        const eventType = href.startsWith('tel:') ? 'sticky_cta_call' : 'sticky_cta_message';
+        window.dispatchEvent(
+          new CustomEvent('sticky-cta-click', {
+            detail: {
+              type: eventType,
+              href: href,
+              location: 'sticky_cta',
+              text: buttonText,
+            },
+          })
+        );
+      });
+    });
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initStickyMobileCTA);
+  } else {
+    initStickyMobileCTA();
+  }
+
+  // Re-initialize on Astro page transitions (View Transitions API)
+  document.addEventListener('astro:page-load', initStickyMobileCTA);
+</script>

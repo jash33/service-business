@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="oldLawBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#f5f5f5"/>
+      <stop offset="100%" style="stop-color:#e0e0e0"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="800" height="600" fill="url(#oldLawBg)"/>
+  <!-- Old dark header -->
+  <rect x="0" y="0" width="800" height="120" fill="#1a237e"/>
+  <text x="400" y="50" font-family="Times New Roman, serif" font-size="32" fill="#c5cae9" text-anchor="middle">HOUSTON LAW GROUP</text>
+  <text x="400" y="80" font-family="Times New Roman" font-size="14" fill="#7986cb" text-anchor="middle">Attorneys at Law • Established 1995</text>
+  <!-- Old navigation -->
+  <rect x="0" y="100" width="800" height="40" fill="#283593"/>
+  <text x="80" y="125" font-family="Arial" font-size="12" fill="#c5cae9">HOME</text>
+  <text x="180" y="125" font-family="Arial" font-size="12" fill="#c5cae9">PRACTICE AREAS</text>
+  <text x="330" y="125" font-family="Arial" font-size="12" fill="#c5cae9">ATTORNEYS</text>
+  <text x="460" y="125" font-family="Arial" font-size="12" fill="#c5cae9">TESTIMONIALS</text>
+  <text x="600" y="125" font-family="Arial" font-size="12" fill="#c5cae9">CONTACT US</text>
+  <!-- Main content - old two-column layout -->
+  <rect x="40" y="160" width="450" height="320" fill="#fff" stroke="#bdbdbd"/>
+  <text x="60" y="200" font-family="Times New Roman" font-size="24" fill="#1a237e">Welcome to Houston Law Group</text>
+  <text x="60" y="240" font-family="Arial" font-size="13" fill="#424242">Our experienced attorneys have been serving</text>
+  <text x="60" y="260" font-family="Arial" font-size="13" fill="#424242">the Houston community for over 25 years.</text>
+  <text x="60" y="295" font-family="Arial" font-size="13" fill="#424242">We specialize in:</text>
+  <text x="60" y="320" font-family="Arial" font-size="12" fill="#616161">• Personal Injury</text>
+  <text x="60" y="340" font-family="Arial" font-size="12" fill="#616161">• Family Law</text>
+  <text x="60" y="360" font-family="Arial" font-size="12" fill="#616161">• Criminal Defense</text>
+  <text x="60" y="380" font-family="Arial" font-size="12" fill="#616161">• Estate Planning</text>
+  <rect x="60" y="410" width="150" height="40" fill="#1a237e"/>
+  <text x="90" y="435" font-family="Arial" font-size="14" fill="#fff">Free Consultation</text>
+  <!-- Sidebar -->
+  <rect x="510" y="160" width="250" height="320" fill="#e8eaf6" stroke="#9fa8da"/>
+  <text x="530" y="195" font-family="Arial" font-size="16" font-weight="bold" fill="#1a237e">Contact Information</text>
+  <text x="530" y="230" font-family="Arial" font-size="12" fill="#424242">📞 (555) 123-4567</text>
+  <text x="530" y="255" font-family="Arial" font-size="12" fill="#424242">📧 info@houstonlaw.com</text>
+  <text x="530" y="280" font-family="Arial" font-size="12" fill="#424242">📍 123 Main Street</text>
+  <text x="530" y="300" font-family="Arial" font-size="12" fill="#424242">     Houston, TX 77001</text>
+  <text x="530" y="340" font-family="Arial" font-size="14" font-weight="bold" fill="#1a237e">Office Hours:</text>
+  <text x="530" y="365" font-family="Arial" font-size="11" fill="#616161">Mon-Fri: 9:00 AM - 6:00 PM</text>
+  <text x="530" y="385" font-family="Arial" font-size="11" fill="#616161">Sat: By Appointment</text>
+  <!-- Footer -->
+  <rect x="0" y="520" width="800" height="80" fill="#0d1137"/>
+  <text x="400" y="555" font-family="Arial" font-size="11" fill="#7986cb" text-anchor="middle">© 2012 Houston Law Group. All Rights Reserved. | Privacy Policy | Terms of Service</text>
+  <!-- BEFORE watermark -->
+  <text x="400" y="480" font-family="Arial Black" font-size="60" fill="rgba(26,35,126,0.08)" text-anchor="middle">BEFORE</text>
+</svg>

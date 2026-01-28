@@ -1,0 +1,1817 @@
+---
+/**
+ * Service Request Form Component
+ * A multi-step service request form with service selection, scheduling preferences,
+ * project details, and file upload functionality.
+ *
+ * Features:
+ * - 3-step wizard with progress indicator
+ * - Service type and property selection
+ * - Scheduling preferences with date picker
+ * - File upload for project photos
+ * - Real-time client-side validation
+ * - Honeypot spam prevention
+ * - WCAG 2.1 AA compliant accessibility
+ * - Formspree API integration
+ *
+ * @example
+ * ```astro
+ * <ServiceRequestForm />
+ * ```
+ */
+
+import {
+  SERVICE_TYPE_OPTIONS,
+  PROPERTY_TYPE_OPTIONS,
+  PROPERTY_SIZE_OPTIONS,
+  FREQUENCY_OPTIONS,
+  TIME_SLOT_OPTIONS,
+  BUDGET_RANGE_OPTIONS,
+  URGENCY_OPTIONS,
+  ADDITIONAL_SERVICES_OPTIONS,
+  FORM_STEPS,
+  DEFAULT_SERVICE_FORM_VALIDATION_CONFIG,
+} from '../types/service-request-form';
+
+const serviceOptions = SERVICE_TYPE_OPTIONS;
+const propertyOptions = PROPERTY_TYPE_OPTIONS;
+const sizeOptions = PROPERTY_SIZE_OPTIONS;
+const frequencyOptions = FREQUENCY_OPTIONS;
+const timeSlotOptions = TIME_SLOT_OPTIONS;
+const budgetOptions = BUDGET_RANGE_OPTIONS;
+const urgencyOptions = URGENCY_OPTIONS;
+const additionalServices = ADDITIONAL_SERVICES_OPTIONS;
+const steps = FORM_STEPS;
+const config = DEFAULT_SERVICE_FORM_VALIDATION_CONFIG;
+
+// Get Formspree endpoint from environment variable
+const formspreeEndpoint = import.meta.env.PUBLIC_FORMSPREE_ENDPOINT || '';
+---
+
+<section class="service-request-section" aria-labelledby="service-request-heading">
+  <div class="service-request-container">
+    <div class="service-request-header">
+      <h2 id="service-request-heading" class="service-request-title">Request a Quote</h2>
+      <p class="service-request-description">
+        Tell us about your project and we'll provide a detailed quote within 24 hours.
+      </p>
+    </div>
+
+    <!-- Progress Steps -->
+    <div class="progress-steps" role="navigation" aria-label="Form progress">
+      {steps.map((step, index) => (
+        <div
+          class="progress-step"
+          data-step={step.id}
+          data-active={index === 0 ? "true" : "false"}
+          data-completed="false"
+        >
+          <div class="progress-step__indicator">
+            <span class="progress-step__number">{step.id}</span>
+            <svg class="progress-step__check" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="progress-step__content">
+            <span class="progress-step__title">{step.title}</span>
+            <span class="progress-step__description">{step.description}</span>
+          </div>
+          {index < steps.length - 1 && (
+            <div class="progress-step__connector" aria-hidden="true"></div>
+          )}
+        </div>
+      ))}
+    </div>
+
+    <form
+      id="service-request-form"
+      class="service-request-form"
+      novalidate
+      aria-describedby="form-description"
+      data-formspree-endpoint={formspreeEndpoint}
+      data-max-files={config.maxFiles}
+      data-max-file-size={config.maxFileSize}
+      data-allowed-types={config.allowedFileTypes.join(',')}
+    >
+      <!-- Hidden field for spam prevention timing -->
+      <input type="hidden" id="form-start-time" name="formStartTime" value="" />
+
+      <!-- Honeypot field - hidden from real users -->
+      <div class="service-request-form__honeypot" aria-hidden="true" tabindex="-1">
+        <label for="website-url">Website URL</label>
+        <input
+          type="text"
+          id="website-url"
+          name="websiteUrl"
+          autocomplete="off"
+          tabindex="-1"
+        />
+      </div>
+
+      <p id="form-description" class="sr-only">
+        This is a 3-step form. Required fields are marked with an asterisk (*).
+      </p>
+
+      <!-- Step 1: Service Selection -->
+      <div class="form-step" data-step="1" data-visible="true">
+        <h3 class="form-step__title">Select Your Service</h3>
+
+        <!-- Service Type -->
+        <div class="service-request-form__field">
+          <label for="service-type" class="service-request-form__label">
+            Service Type <span class="service-request-form__required" aria-label="required">*</span>
+          </label>
+          <select
+            id="service-type"
+            name="serviceType"
+            class="service-request-form__select"
+            required
+            aria-describedby="service-type-error"
+            aria-invalid="false"
+          >
+            {serviceOptions.map((option) => (
+              <option value={option.value} disabled={option.value === ''} selected={option.value === ''}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <span id="service-type-error" class="service-request-form__error" role="alert" aria-live="polite"></span>
+        </div>
+
+        <!-- Property Type -->
+        <div class="service-request-form__field">
+          <label for="property-type" class="service-request-form__label">
+            Property Type <span class="service-request-form__required" aria-label="required">*</span>
+          </label>
+          <select
+            id="property-type"
+            name="propertyType"
+            class="service-request-form__select"
+            required
+            aria-describedby="property-type-error"
+            aria-invalid="false"
+          >
+            {propertyOptions.map((option) => (
+              <option value={option.value} disabled={option.value === ''} selected={option.value === ''}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <span id="property-type-error" class="service-request-form__error" role="alert" aria-live="polite"></span>
+        </div>
+
+        <!-- Property Size -->
+        <div class="service-request-form__field">
+          <label for="property-size" class="service-request-form__label">
+            Property Size <span class="service-request-form__required" aria-label="required">*</span>
+          </label>
+          <select
+            id="property-size"
+            name="propertySize"
+            class="service-request-form__select"
+            required
+            aria-describedby="property-size-error"
+            aria-invalid="false"
+          >
+            {sizeOptions.map((option) => (
+              <option value={option.value} disabled={option.value === ''} selected={option.value === ''}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <span id="property-size-error" class="service-request-form__error" role="alert" aria-live="polite"></span>
+        </div>
+
+        <!-- Additional Services (Checkboxes) -->
+        <fieldset class="service-request-form__fieldset">
+          <legend class="service-request-form__legend">
+            Additional Services <span class="service-request-form__optional">(optional)</span>
+          </legend>
+          <div class="service-request-form__checkbox-group">
+            {additionalServices.map((service) => (
+              <div class="service-request-form__checkbox-item">
+                <input
+                  type="checkbox"
+                  id={`additional-${service.id}`}
+                  name="additionalServices"
+                  value={service.id}
+                  class="service-request-form__checkbox"
+                />
+                <label for={`additional-${service.id}`} class="service-request-form__checkbox-label">
+                  <span class="service-request-form__checkbox-text">{service.label}</span>
+                  {service.description && (
+                    <span class="service-request-form__checkbox-description">{service.description}</span>
+                  )}
+                </label>
+              </div>
+            ))}
+          </div>
+        </fieldset>
+      </div>
+
+      <!-- Step 2: Scheduling -->
+      <div class="form-step" data-step="2" data-visible="false">
+        <h3 class="form-step__title">Schedule Your Service</h3>
+
+        <!-- Service Frequency -->
+        <div class="service-request-form__field">
+          <label for="frequency" class="service-request-form__label">
+            Service Frequency <span class="service-request-form__required" aria-label="required">*</span>
+          </label>
+          <select
+            id="frequency"
+            name="frequency"
+            class="service-request-form__select"
+            required
+            aria-describedby="frequency-error"
+            aria-invalid="false"
+          >
+            {frequencyOptions.map((option) => (
+              <option value={option.value} disabled={option.value === ''} selected={option.value === ''}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <span id="frequency-error" class="service-request-form__error" role="alert" aria-live="polite"></span>
+        </div>
+
+        <!-- Preferred Date -->
+        <div class="service-request-form__field">
+          <label for="preferred-date" class="service-request-form__label">
+            Preferred Date <span class="service-request-form__required" aria-label="required">*</span>
+          </label>
+          <input
+            type="date"
+            id="preferred-date"
+            name="preferredDate"
+            class="service-request-form__input"
+            required
+            aria-describedby="preferred-date-error"
+            aria-invalid="false"
+          />
+          <span id="preferred-date-error" class="service-request-form__error" role="alert" aria-live="polite"></span>
+        </div>
+
+        <!-- Preferred Time Slot -->
+        <div class="service-request-form__field">
+          <label for="time-slot" class="service-request-form__label">
+            Preferred Time <span class="service-request-form__required" aria-label="required">*</span>
+          </label>
+          <select
+            id="time-slot"
+            name="preferredTimeSlot"
+            class="service-request-form__select"
+            required
+            aria-describedby="time-slot-error"
+            aria-invalid="false"
+          >
+            {timeSlotOptions.map((option) => (
+              <option value={option.value} disabled={option.value === ''} selected={option.value === ''}>
+                {option.label}{option.timeRange ? ` (${option.timeRange})` : ''}
+              </option>
+            ))}
+          </select>
+          <span id="time-slot-error" class="service-request-form__error" role="alert" aria-live="polite"></span>
+        </div>
+
+        <!-- Alternate Date -->
+        <div class="service-request-form__field">
+          <label for="alternate-date" class="service-request-form__label">
+            Alternate Date <span class="service-request-form__optional">(optional)</span>
+          </label>
+          <input
+            type="date"
+            id="alternate-date"
+            name="alternateDate"
+            class="service-request-form__input"
+            aria-describedby="alternate-date-hint"
+          />
+          <span id="alternate-date-hint" class="service-request-form__hint">Provide a backup date if available</span>
+        </div>
+
+        <!-- Urgency -->
+        <div class="service-request-form__field">
+          <label for="urgency" class="service-request-form__label">
+            How Urgent? <span class="service-request-form__required" aria-label="required">*</span>
+          </label>
+          <select
+            id="urgency"
+            name="urgency"
+            class="service-request-form__select"
+            required
+            aria-describedby="urgency-error"
+            aria-invalid="false"
+          >
+            {urgencyOptions.map((option) => (
+              <option value={option.value} disabled={option.value === ''} selected={option.value === ''}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <span id="urgency-error" class="service-request-form__error" role="alert" aria-live="polite"></span>
+        </div>
+      </div>
+
+      <!-- Step 3: Project Details -->
+      <div class="form-step" data-step="3" data-visible="false">
+        <h3 class="form-step__title">Your Details</h3>
+
+        <!-- Name -->
+        <div class="service-request-form__field">
+          <label for="name" class="service-request-form__label">
+            Full Name <span class="service-request-form__required" aria-label="required">*</span>
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            class="service-request-form__input"
+            required
+            autocomplete="name"
+            maxlength={config.maxNameLength}
+            aria-describedby="name-error"
+            aria-invalid="false"
+            placeholder="Your full name"
+          />
+          <span id="name-error" class="service-request-form__error" role="alert" aria-live="polite"></span>
+        </div>
+
+        <!-- Email -->
+        <div class="service-request-form__field">
+          <label for="email" class="service-request-form__label">
+            Email <span class="service-request-form__required" aria-label="required">*</span>
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            class="service-request-form__input"
+            required
+            autocomplete="email"
+            maxlength={config.maxEmailLength}
+            aria-describedby="email-error"
+            aria-invalid="false"
+            placeholder="your@email.com"
+          />
+          <span id="email-error" class="service-request-form__error" role="alert" aria-live="polite"></span>
+        </div>
+
+        <!-- Phone -->
+        <div class="service-request-form__field">
+          <label for="phone" class="service-request-form__label">
+            Phone <span class="service-request-form__required" aria-label="required">*</span>
+          </label>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            class="service-request-form__input"
+            required
+            autocomplete="tel"
+            maxlength={config.maxPhoneLength}
+            aria-describedby="phone-hint phone-error"
+            aria-invalid="false"
+            placeholder="(123) 456-7890"
+          />
+          <span id="phone-hint" class="service-request-form__hint">US format: (123) 456-7890</span>
+          <span id="phone-error" class="service-request-form__error" role="alert" aria-live="polite"></span>
+        </div>
+
+        <!-- Address -->
+        <div class="service-request-form__field">
+          <label for="address" class="service-request-form__label">
+            Service Address <span class="service-request-form__required" aria-label="required">*</span>
+          </label>
+          <input
+            type="text"
+            id="address"
+            name="address"
+            class="service-request-form__input"
+            required
+            autocomplete="street-address"
+            maxlength={config.maxAddressLength}
+            aria-describedby="address-error"
+            aria-invalid="false"
+            placeholder="123 Main St"
+          />
+          <span id="address-error" class="service-request-form__error" role="alert" aria-live="polite"></span>
+        </div>
+
+        <!-- City & Zip Row -->
+        <div class="service-request-form__row">
+          <div class="service-request-form__field">
+            <label for="city" class="service-request-form__label">
+              City <span class="service-request-form__required" aria-label="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="city"
+              name="city"
+              class="service-request-form__input"
+              required
+              autocomplete="address-level2"
+              aria-describedby="city-error"
+              aria-invalid="false"
+              placeholder="Houston"
+            />
+            <span id="city-error" class="service-request-form__error" role="alert" aria-live="polite"></span>
+          </div>
+          <div class="service-request-form__field">
+            <label for="zip-code" class="service-request-form__label">
+              ZIP Code <span class="service-request-form__required" aria-label="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="zip-code"
+              name="zipCode"
+              class="service-request-form__input"
+              required
+              autocomplete="postal-code"
+              pattern="[0-9]{5}"
+              maxlength="5"
+              aria-describedby="zip-code-error"
+              aria-invalid="false"
+              placeholder="77001"
+            />
+            <span id="zip-code-error" class="service-request-form__error" role="alert" aria-live="polite"></span>
+          </div>
+        </div>
+
+        <!-- Budget Range -->
+        <div class="service-request-form__field">
+          <label for="budget-range" class="service-request-form__label">
+            Budget Range <span class="service-request-form__optional">(optional)</span>
+          </label>
+          <select
+            id="budget-range"
+            name="budgetRange"
+            class="service-request-form__select"
+            aria-describedby="budget-range-hint"
+          >
+            {budgetOptions.map((option) => (
+              <option value={option.value} selected={option.value === ''}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <span id="budget-range-hint" class="service-request-form__hint">Helps us provide accurate quotes</span>
+        </div>
+
+        <!-- Special Instructions -->
+        <div class="service-request-form__field service-request-form__field--full">
+          <label for="special-instructions" class="service-request-form__label">
+            Special Instructions <span class="service-request-form__optional">(optional)</span>
+          </label>
+          <textarea
+            id="special-instructions"
+            name="specialInstructions"
+            class="service-request-form__textarea"
+            rows="4"
+            maxlength={config.maxMessageLength}
+            aria-describedby="instructions-hint instructions-count"
+            placeholder="Any specific areas of concern, access instructions, pets, etc."
+          ></textarea>
+          <div class="service-request-form__textarea-footer">
+            <span id="instructions-hint" class="service-request-form__hint">Tell us about any special requirements</span>
+            <span id="instructions-count" class="service-request-form__char-count">
+              <span class="service-request-form__char-current">0</span>/{config.maxMessageLength}
+            </span>
+          </div>
+        </div>
+
+        <!-- File Upload -->
+        <div class="service-request-form__field service-request-form__field--full">
+          <label for="file-upload" class="service-request-form__label">
+            Project Photos <span class="service-request-form__optional">(optional)</span>
+          </label>
+          <div class="file-upload-zone" id="file-upload-zone">
+            <input
+              type="file"
+              id="file-upload"
+              name="projectPhotos"
+              class="file-upload-input"
+              multiple
+              accept={config.allowedFileTypes.join(',')}
+              aria-describedby="file-upload-hint file-upload-error"
+            />
+            <div class="file-upload-content">
+              <svg class="file-upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              <p class="file-upload-text">
+                <span class="file-upload-link">Click to upload</span> or drag and drop
+              </p>
+              <p class="file-upload-hint-text">PNG, JPG, GIF, WebP, or PDF (max {config.maxFiles} files, {Math.round(config.maxFileSize / 1024 / 1024)}MB each)</p>
+            </div>
+          </div>
+          <span id="file-upload-hint" class="service-request-form__hint">Upload photos of the space for a more accurate quote</span>
+          <span id="file-upload-error" class="service-request-form__error" role="alert" aria-live="polite"></span>
+
+          <!-- File Preview List -->
+          <div class="file-preview-list" id="file-preview-list" hidden></div>
+        </div>
+      </div>
+
+      <!-- Form Messages -->
+      <div id="form-error" class="service-request-form__message service-request-form__message--error" role="alert" hidden>
+        <svg class="service-request-form__message-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+        </svg>
+        <span id="form-error-text">An error occurred. Please try again.</span>
+      </div>
+
+      <div id="form-success" class="service-request-form__message service-request-form__message--success" role="status" hidden>
+        <svg class="service-request-form__message-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+        </svg>
+        <div class="service-request-form__success-content">
+          <strong>Request Submitted Successfully!</strong>
+          <p>We'll review your request and send you a detailed quote within 24 hours.</p>
+        </div>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="service-request-form__actions">
+        <button
+          type="button"
+          id="prev-button"
+          class="service-request-form__nav-btn service-request-form__nav-btn--prev"
+          hidden
+        >
+          <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
+          </svg>
+          Previous
+        </button>
+
+        <button
+          type="button"
+          id="next-button"
+          class="service-request-form__nav-btn service-request-form__nav-btn--next"
+        >
+          Next Step
+          <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+          </svg>
+        </button>
+
+        <button
+          type="submit"
+          id="submit-button"
+          class="service-request-form__submit"
+          hidden
+        >
+          <span class="service-request-form__submit-text">Submit Quote Request</span>
+          <span class="service-request-form__submit-loading">
+            <svg class="service-request-form__spinner" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Submitting...
+          </span>
+        </button>
+      </div>
+
+      <!-- Privacy Notice -->
+      <div class="service-request-form__privacy">
+        <p>
+          By submitting this form, you agree to our
+          <a href="/privacy" class="service-request-form__link">Privacy Policy</a>.
+          We'll never share your information with third parties.
+        </p>
+      </div>
+    </form>
+  </div>
+</section>
+
+<style>
+  /* =================================================================
+   * SERVICE REQUEST FORM SECTION
+   * ================================================================= */
+  .service-request-section {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+  }
+
+  .service-request-container {
+    max-width: var(--container-4xl);
+    margin: 0 auto;
+  }
+
+  .service-request-header {
+    text-align: center;
+    margin-bottom: var(--spacing-10);
+  }
+
+  .service-request-title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-4);
+    line-height: var(--line-height-tight);
+  }
+
+  .service-request-description {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    max-width: 40rem;
+    margin: 0 auto;
+  }
+
+  /* =================================================================
+   * PROGRESS STEPS
+   * ================================================================= */
+  .progress-steps {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-10);
+    padding: 0 var(--spacing-4);
+  }
+
+  .progress-step {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    position: relative;
+  }
+
+  .progress-step__indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--radius-full);
+    background-color: var(--color-background);
+    border: 2px solid var(--color-border);
+    color: var(--color-text-tertiary);
+    font-weight: var(--font-weight-semibold);
+    transition: all var(--duration-200) var(--ease-in-out);
+    flex-shrink: 0;
+  }
+
+  .progress-step__check {
+    display: none;
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .progress-step__content {
+    display: none;
+  }
+
+  .progress-step__title {
+    display: block;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  .progress-step__description {
+    display: block;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  .progress-step__connector {
+    width: 3rem;
+    height: 2px;
+    background-color: var(--color-border);
+    transition: background-color var(--duration-200) var(--ease-in-out);
+  }
+
+  /* Active Step */
+  .progress-step[data-active="true"] .progress-step__indicator {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  /* Completed Step */
+  .progress-step[data-completed="true"] .progress-step__indicator {
+    background-color: var(--color-success);
+    border-color: var(--color-success);
+    color: var(--color-text-inverse);
+  }
+
+  .progress-step[data-completed="true"] .progress-step__number {
+    display: none;
+  }
+
+  .progress-step[data-completed="true"] .progress-step__check {
+    display: block;
+  }
+
+  .progress-step[data-completed="true"] .progress-step__connector {
+    background-color: var(--color-success);
+  }
+
+  /* =================================================================
+   * FORM CONTAINER
+   * ================================================================= */
+  .service-request-form {
+    background-color: var(--color-background);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-lg);
+    padding: var(--spacing-8);
+    max-width: var(--container-3xl);
+    margin: 0 auto;
+  }
+
+  .service-request-form__honeypot {
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* =================================================================
+   * FORM STEPS
+   * ================================================================= */
+  .form-step {
+    display: none;
+  }
+
+  .form-step[data-visible="true"] {
+    display: block;
+    animation: fadeIn var(--duration-300) var(--ease-out);
+  }
+
+  .form-step__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-6);
+    padding-bottom: var(--spacing-4);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateX(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* =================================================================
+   * FORM FIELDS
+   * ================================================================= */
+  .service-request-form__field {
+    margin-bottom: var(--spacing-5);
+  }
+
+  .service-request-form__field--full {
+    grid-column: 1 / -1;
+  }
+
+  .service-request-form__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-4);
+  }
+
+  .service-request-form__label {
+    display: block;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-2);
+  }
+
+  .service-request-form__required {
+    color: var(--color-error);
+    margin-left: var(--spacing-1);
+  }
+
+  .service-request-form__optional {
+    font-weight: var(--font-weight-normal);
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+  }
+
+  /* Input & Select Styles */
+  .service-request-form__input,
+  .service-request-form__select,
+  .service-request-form__textarea {
+    display: block;
+    width: 100%;
+    padding: var(--spacing-3) var(--spacing-4);
+    font-size: var(--font-size-base);
+    font-family: var(--font-body);
+    color: var(--color-text-primary);
+    background-color: var(--color-background);
+    border: var(--border-width-1) solid var(--color-border);
+    border-radius: var(--radius-lg);
+    transition:
+      border-color var(--duration-150) var(--ease-in-out),
+      box-shadow var(--duration-150) var(--ease-in-out);
+  }
+
+  .service-request-form__input::placeholder,
+  .service-request-form__textarea::placeholder {
+    color: var(--color-text-placeholder);
+  }
+
+  /* Hover State */
+  .service-request-form__input:hover:not(:focus):not([aria-invalid="true"]),
+  .service-request-form__select:hover:not(:focus):not([aria-invalid="true"]),
+  .service-request-form__textarea:hover:not(:focus):not([aria-invalid="true"]) {
+    border-color: var(--color-border-dark);
+  }
+
+  /* Focus State */
+  .service-request-form__input:focus,
+  .service-request-form__select:focus,
+  .service-request-form__textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--color-primary-100);
+  }
+
+  /* Error State */
+  .service-request-form__input[aria-invalid="true"],
+  .service-request-form__select[aria-invalid="true"],
+  .service-request-form__textarea[aria-invalid="true"] {
+    border-color: var(--color-error);
+    background-color: var(--color-error-light);
+  }
+
+  /* Select Styles */
+  .service-request-form__select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+    background-position: right var(--spacing-3) center;
+    background-repeat: no-repeat;
+    background-size: 1.25rem;
+    padding-right: var(--spacing-10);
+    cursor: pointer;
+  }
+
+  /* Textarea */
+  .service-request-form__textarea {
+    min-height: 6rem;
+    resize: vertical;
+  }
+
+  .service-request-form__textarea-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--spacing-2);
+  }
+
+  .service-request-form__char-count {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* =================================================================
+   * FIELDSET & CHECKBOXES
+   * ================================================================= */
+  .service-request-form__fieldset {
+    border: none;
+    padding: 0;
+    margin: var(--spacing-6) 0;
+  }
+
+  .service-request-form__legend {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-3);
+  }
+
+  .service-request-form__checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-3);
+  }
+
+  .service-request-form__checkbox-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-3);
+    padding: var(--spacing-3);
+    background-color: var(--color-background-subtle);
+    border-radius: var(--radius-lg);
+    transition: background-color var(--duration-150) var(--ease-in-out);
+  }
+
+  .service-request-form__checkbox-item:hover {
+    background-color: var(--color-background-muted);
+  }
+
+  .service-request-form__checkbox {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: 0.125rem;
+    accent-color: var(--color-primary);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .service-request-form__checkbox-label {
+    cursor: pointer;
+    flex: 1;
+  }
+
+  .service-request-form__checkbox-text {
+    display: block;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+  }
+
+  .service-request-form__checkbox-description {
+    display: block;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    margin-top: var(--spacing-1);
+  }
+
+  /* =================================================================
+   * HINT & ERROR TEXT
+   * ================================================================= */
+  .service-request-form__hint {
+    display: block;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    margin-top: var(--spacing-1);
+  }
+
+  .service-request-form__error {
+    font-size: var(--font-size-sm);
+    color: var(--color-error-text);
+    min-height: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    margin-top: var(--spacing-1);
+  }
+
+  .service-request-form__error:empty {
+    display: none;
+  }
+
+  /* =================================================================
+   * FILE UPLOAD
+   * ================================================================= */
+  .file-upload-zone {
+    position: relative;
+    border: 2px dashed var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-8);
+    text-align: center;
+    transition: all var(--duration-150) var(--ease-in-out);
+    cursor: pointer;
+  }
+
+  .file-upload-zone:hover,
+  .file-upload-zone.drag-over {
+    border-color: var(--color-primary);
+    background-color: var(--color-primary-50);
+  }
+
+  .file-upload-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .file-upload-content {
+    pointer-events: none;
+  }
+
+  .file-upload-icon {
+    width: 3rem;
+    height: 3rem;
+    color: var(--color-text-tertiary);
+    margin: 0 auto var(--spacing-4);
+  }
+
+  .file-upload-text {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-2);
+  }
+
+  .file-upload-link {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .file-upload-hint-text {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  /* File Preview List */
+  .file-preview-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-3);
+    margin-top: var(--spacing-4);
+  }
+
+  .file-preview-list[hidden] {
+    display: none;
+  }
+
+  .file-preview-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    padding: var(--spacing-3);
+    background-color: var(--color-background-subtle);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+  }
+
+  .file-preview-image {
+    width: 3rem;
+    height: 3rem;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+  }
+
+  .file-preview-icon {
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-primary-100);
+    color: var(--color-primary);
+    border-radius: var(--radius-md);
+  }
+
+  .file-preview-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .file-preview-name {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 10rem;
+  }
+
+  .file-preview-size {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  .file-preview-remove {
+    padding: var(--spacing-1);
+    background: none;
+    border: none;
+    color: var(--color-text-tertiary);
+    cursor: pointer;
+    border-radius: var(--radius-md);
+    transition: all var(--duration-150) var(--ease-in-out);
+  }
+
+  .file-preview-remove:hover {
+    background-color: var(--color-error-light);
+    color: var(--color-error);
+  }
+
+  .file-preview-remove svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  /* =================================================================
+   * FORM MESSAGES
+   * ================================================================= */
+  .service-request-form__message {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-3);
+    padding: var(--spacing-4);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--spacing-6);
+  }
+
+  .service-request-form__message[hidden] {
+    display: none;
+  }
+
+  .service-request-form__message--success {
+    background-color: var(--color-success-light);
+    border: var(--border-width-1) solid var(--color-success-border);
+    color: var(--color-success-text);
+  }
+
+  .service-request-form__message--error {
+    background-color: var(--color-error-light);
+    border: var(--border-width-1) solid var(--color-error-border);
+    color: var(--color-error-text);
+  }
+
+  .service-request-form__message-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  .service-request-form__success-content p {
+    margin: var(--spacing-1) 0 0;
+    font-weight: var(--font-weight-normal);
+  }
+
+  /* =================================================================
+   * NAVIGATION BUTTONS
+   * ================================================================= */
+  .service-request-form__actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-4);
+    margin-top: var(--spacing-8);
+    padding-top: var(--spacing-6);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .service-request-form__nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3) var(--spacing-6);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--duration-150) var(--ease-in-out);
+  }
+
+  .service-request-form__nav-btn svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .service-request-form__nav-btn--prev {
+    background-color: var(--color-background);
+    border: var(--border-width-1) solid var(--color-border);
+    color: var(--color-text-secondary);
+  }
+
+  .service-request-form__nav-btn--prev:hover:not(:disabled) {
+    border-color: var(--color-border-dark);
+    color: var(--color-text-primary);
+  }
+
+  .service-request-form__nav-btn--next {
+    background-color: var(--color-primary);
+    border: none;
+    color: var(--color-text-inverse);
+    margin-left: auto;
+  }
+
+  .service-request-form__nav-btn--next:hover:not(:disabled) {
+    background-color: var(--color-primary-hover);
+  }
+
+  .service-request-form__nav-btn[hidden] {
+    display: none;
+  }
+
+  /* Submit Button */
+  .service-request-form__submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3) var(--spacing-8);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-inverse);
+    background-color: var(--color-primary);
+    border: none;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--duration-150) var(--ease-in-out);
+    margin-left: auto;
+  }
+
+  .service-request-form__submit:hover:not(:disabled) {
+    background-color: var(--color-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .service-request-form__submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .service-request-form__submit[hidden] {
+    display: none;
+  }
+
+  .service-request-form__submit-loading {
+    display: none;
+    align-items: center;
+    gap: var(--spacing-2);
+  }
+
+  .service-request-form__submit[data-loading="true"] .service-request-form__submit-text {
+    display: none;
+  }
+
+  .service-request-form__submit[data-loading="true"] .service-request-form__submit-loading {
+    display: flex;
+  }
+
+  .service-request-form__spinner {
+    width: 1.25rem;
+    height: 1.25rem;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* =================================================================
+   * PRIVACY NOTICE
+   * ================================================================= */
+  .service-request-form__privacy {
+    margin-top: var(--spacing-6);
+    padding: var(--spacing-4);
+    background-color: var(--color-background-subtle);
+    border-radius: var(--radius-lg);
+    text-align: center;
+  }
+
+  .service-request-form__privacy p {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+    margin: 0;
+  }
+
+  .service-request-form__link {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .service-request-form__link:hover {
+    color: var(--color-primary-hover);
+  }
+
+  /* =================================================================
+   * SCREEN READER ONLY
+   * ================================================================= */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+  @media (min-width: 768px) {
+    .progress-step__content {
+      display: block;
+    }
+
+    .progress-step__connector {
+      width: 4rem;
+    }
+
+    .service-request-form__checkbox-group {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .service-request-section {
+      padding: var(--spacing-10) var(--spacing-4);
+    }
+
+    .service-request-title {
+      font-size: var(--font-size-3xl);
+    }
+
+    .service-request-form {
+      padding: var(--spacing-6);
+    }
+
+    .service-request-form__row {
+      grid-template-columns: 1fr;
+    }
+
+    .service-request-form__checkbox-group {
+      grid-template-columns: 1fr;
+    }
+
+    .service-request-form__actions {
+      flex-direction: column;
+    }
+
+    .service-request-form__nav-btn,
+    .service-request-form__submit {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .service-request-form__nav-btn--next,
+    .service-request-form__submit {
+      margin-left: 0;
+    }
+
+    .progress-steps {
+      gap: var(--spacing-1);
+    }
+
+    .progress-step__connector {
+      width: 2rem;
+    }
+
+    .progress-step__indicator {
+      width: 2rem;
+      height: 2rem;
+      font-size: var(--font-size-sm);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .form-step[data-visible="true"] {
+      animation: none;
+    }
+
+    .service-request-form__submit:hover:not(:disabled) {
+      transform: none;
+    }
+
+    .service-request-form__spinner {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Service Request Form Client-Side Logic
+   * Handles multi-step navigation, validation, file uploads, and form submission
+   */
+
+  // Validation config
+  const VALIDATION_CONFIG = {
+    minMessageLength: 10,
+    maxMessageLength: 2000,
+    maxNameLength: 100,
+    maxAddressLength: 200,
+    maxEmailLength: 254,
+    maxPhoneLength: 20,
+    minSubmitTime: 3000,
+    maxFileSize: 10 * 1024 * 1024,
+    maxFiles: 5,
+  };
+
+  // Regex patterns
+  const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+  const US_PHONE_REGEX = /^(\+1\s?)?(\([0-9]{3}\)|[0-9]{3})[\s.\-]?[0-9]{3}[\s.\-]?[0-9]{4}$/;
+  const ZIP_REGEX = /^[0-9]{5}$/;
+
+  // Form elements
+  const form = document.getElementById('service-request-form') as HTMLFormElement;
+  const formStartTimeInput = document.getElementById('form-start-time') as HTMLInputElement;
+  const honeypotInput = document.getElementById('website-url') as HTMLInputElement;
+  const prevButton = document.getElementById('prev-button') as HTMLButtonElement;
+  const nextButton = document.getElementById('next-button') as HTMLButtonElement;
+  const submitButton = document.getElementById('submit-button') as HTMLButtonElement;
+  const formError = document.getElementById('form-error') as HTMLDivElement;
+  const formErrorText = document.getElementById('form-error-text') as HTMLSpanElement;
+  const formSuccess = document.getElementById('form-success') as HTMLDivElement;
+
+  // File upload elements
+  const fileUploadZone = document.getElementById('file-upload-zone') as HTMLDivElement;
+  const fileUploadInput = document.getElementById('file-upload') as HTMLInputElement;
+  const filePreviewList = document.getElementById('file-preview-list') as HTMLDivElement;
+  const fileUploadError = document.getElementById('file-upload-error') as HTMLSpanElement;
+
+  // Textarea elements
+  const specialInstructionsTextarea = document.getElementById('special-instructions') as HTMLTextAreaElement;
+  const charCurrentSpan = document.querySelector('.service-request-form__char-current') as HTMLSpanElement;
+
+  // Progress step elements
+  const progressSteps = document.querySelectorAll('.progress-step');
+  const formSteps = document.querySelectorAll('.form-step');
+
+  // State
+  let currentStep = 1;
+  const totalSteps = 3;
+  let uploadedFiles: File[] = [];
+
+  // Initialize
+  function init() {
+    formStartTimeInput.value = Date.now().toString();
+    setMinDate();
+    setupEventListeners();
+    updateNavButtons();
+  }
+
+  // Set minimum date to today
+  function setMinDate() {
+    const today = new Date().toISOString().split('T')[0];
+    const preferredDateInput = document.getElementById('preferred-date') as HTMLInputElement;
+    const alternateDateInput = document.getElementById('alternate-date') as HTMLInputElement;
+    if (preferredDateInput) preferredDateInput.min = today;
+    if (alternateDateInput) alternateDateInput.min = today;
+  }
+
+  // Setup event listeners
+  function setupEventListeners() {
+    // Navigation buttons
+    prevButton?.addEventListener('click', goToPrevStep);
+    nextButton?.addEventListener('click', goToNextStep);
+    form?.addEventListener('submit', handleSubmit);
+
+    // Character count for textarea
+    specialInstructionsTextarea?.addEventListener('input', updateCharCount);
+
+    // File upload
+    fileUploadInput?.addEventListener('change', handleFileSelect);
+    fileUploadZone?.addEventListener('dragover', handleDragOver);
+    fileUploadZone?.addEventListener('dragleave', handleDragLeave);
+    fileUploadZone?.addEventListener('drop', handleDrop);
+
+    // Field validation on blur
+    const requiredFields = form.querySelectorAll('[required]');
+    requiredFields.forEach(field => {
+      field.addEventListener('blur', () => validateField(field as HTMLInputElement | HTMLSelectElement));
+    });
+  }
+
+  // Update character count
+  function updateCharCount() {
+    if (!charCurrentSpan || !specialInstructionsTextarea) return;
+    const count = specialInstructionsTextarea.value.length;
+    charCurrentSpan.textContent = count.toString();
+  }
+
+  // Navigation functions
+  function goToNextStep() {
+    if (validateCurrentStep()) {
+      if (currentStep < totalSteps) {
+        updateStep(currentStep + 1);
+      }
+    }
+  }
+
+  function goToPrevStep() {
+    if (currentStep > 1) {
+      updateStep(currentStep - 1);
+    }
+  }
+
+  function updateStep(newStep: number) {
+    // Update progress steps
+    progressSteps.forEach((step, index) => {
+      const stepNum = index + 1;
+      step.setAttribute('data-active', stepNum === newStep ? 'true' : 'false');
+      step.setAttribute('data-completed', stepNum < newStep ? 'true' : 'false');
+    });
+
+    // Update form steps visibility
+    formSteps.forEach((step) => {
+      const stepAttr = step.getAttribute('data-step');
+      step.setAttribute('data-visible', stepAttr === newStep.toString() ? 'true' : 'false');
+    });
+
+    currentStep = newStep;
+    updateNavButtons();
+
+    // Scroll to top of form
+    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function updateNavButtons() {
+    // Show/hide prev button
+    if (prevButton) {
+      prevButton.hidden = currentStep === 1;
+    }
+
+    // Show/hide next button
+    if (nextButton) {
+      nextButton.hidden = currentStep === totalSteps;
+    }
+
+    // Show/hide submit button
+    if (submitButton) {
+      submitButton.hidden = currentStep !== totalSteps;
+    }
+  }
+
+  // Validation functions
+  function validateCurrentStep(): boolean {
+    let isValid = true;
+    const currentFormStep = document.querySelector(`.form-step[data-step="${currentStep}"]`);
+    if (!currentFormStep) return false;
+
+    const requiredFields = currentFormStep.querySelectorAll('[required]');
+    requiredFields.forEach((field) => {
+      if (!validateField(field as HTMLInputElement | HTMLSelectElement)) {
+        isValid = false;
+      }
+    });
+
+    return isValid;
+  }
+
+  function validateField(field: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement): boolean {
+    const value = field.value.trim();
+    const fieldName = field.name;
+    let errorMessage = '';
+    let isValid = true;
+
+    // Check if required and empty
+    if (field.hasAttribute('required') && !value) {
+      errorMessage = 'This field is required';
+      isValid = false;
+    }
+    // Email validation
+    else if (fieldName === 'email' && value && !EMAIL_REGEX.test(value)) {
+      errorMessage = 'Please enter a valid email address';
+      isValid = false;
+    }
+    // Phone validation
+    else if (fieldName === 'phone' && value && !US_PHONE_REGEX.test(value)) {
+      errorMessage = 'Please enter a valid US phone number';
+      isValid = false;
+    }
+    // ZIP code validation
+    else if (fieldName === 'zipCode' && value && !ZIP_REGEX.test(value)) {
+      errorMessage = 'Please enter a valid 5-digit ZIP code';
+      isValid = false;
+    }
+    // Date validation (must be in the future)
+    else if ((fieldName === 'preferredDate' || fieldName === 'alternateDate') && value) {
+      const selectedDate = new Date(value);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (selectedDate < today) {
+        errorMessage = 'Please select a future date';
+        isValid = false;
+      }
+    }
+
+    // Update field state
+    field.setAttribute('aria-invalid', (!isValid).toString());
+
+    // Update error message
+    const errorElement = document.getElementById(`${field.id}-error`);
+    if (errorElement) {
+      errorElement.textContent = errorMessage;
+    }
+
+    return isValid;
+  }
+
+  // File upload functions
+  function handleFileSelect(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files) {
+      addFiles(Array.from(input.files));
+    }
+  }
+
+  function handleDragOver(event: DragEvent) {
+    event.preventDefault();
+    fileUploadZone?.classList.add('drag-over');
+  }
+
+  function handleDragLeave(event: DragEvent) {
+    event.preventDefault();
+    fileUploadZone?.classList.remove('drag-over');
+  }
+
+  function handleDrop(event: DragEvent) {
+    event.preventDefault();
+    fileUploadZone?.classList.remove('drag-over');
+    if (event.dataTransfer?.files) {
+      addFiles(Array.from(event.dataTransfer.files));
+    }
+  }
+
+  function addFiles(files: File[]) {
+    fileUploadError.textContent = '';
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'application/pdf'];
+
+    for (const file of files) {
+      // Check max files
+      if (uploadedFiles.length >= VALIDATION_CONFIG.maxFiles) {
+        fileUploadError.textContent = `Maximum ${VALIDATION_CONFIG.maxFiles} files allowed`;
+        break;
+      }
+
+      // Check file type
+      if (!allowedTypes.includes(file.type)) {
+        fileUploadError.textContent = `Invalid file type: ${file.name}. Allowed: JPG, PNG, GIF, WebP, PDF`;
+        continue;
+      }
+
+      // Check file size
+      if (file.size > VALIDATION_CONFIG.maxFileSize) {
+        fileUploadError.textContent = `File too large: ${file.name}. Max size: 10MB`;
+        continue;
+      }
+
+      // Add file if not already added
+      if (!uploadedFiles.some(f => f.name === file.name && f.size === file.size)) {
+        uploadedFiles.push(file);
+      }
+    }
+
+    updateFilePreview();
+  }
+
+  function removeFile(index: number) {
+    uploadedFiles.splice(index, 1);
+    updateFilePreview();
+  }
+
+  function updateFilePreview() {
+    if (!filePreviewList) return;
+
+    filePreviewList.innerHTML = '';
+    filePreviewList.hidden = uploadedFiles.length === 0;
+
+    uploadedFiles.forEach((file, index) => {
+      const item = document.createElement('div');
+      item.className = 'file-preview-item';
+
+      const isImage = file.type.startsWith('image/');
+
+      if (isImage) {
+        const img = document.createElement('img');
+        img.className = 'file-preview-image';
+        img.src = URL.createObjectURL(file);
+        img.alt = file.name;
+        item.appendChild(img);
+      } else {
+        const iconDiv = document.createElement('div');
+        iconDiv.className = 'file-preview-icon';
+        iconDiv.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+        </svg>`;
+        item.appendChild(iconDiv);
+      }
+
+      const info = document.createElement('div');
+      info.className = 'file-preview-info';
+      info.innerHTML = `
+        <span class="file-preview-name">${file.name}</span>
+        <span class="file-preview-size">${formatFileSize(file.size)}</span>
+      `;
+      item.appendChild(info);
+
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'file-preview-remove';
+      removeBtn.setAttribute('aria-label', `Remove ${file.name}`);
+      removeBtn.innerHTML = `<svg viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+      </svg>`;
+      removeBtn.addEventListener('click', () => removeFile(index));
+      item.appendChild(removeBtn);
+
+      filePreviewList.appendChild(item);
+    });
+  }
+
+  function formatFileSize(bytes: number): string {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+
+  // Form submission
+  async function handleSubmit(event: Event) {
+    event.preventDefault();
+
+    // Validate all steps
+    for (let step = 1; step <= totalSteps; step++) {
+      const stepElement = document.querySelector(`.form-step[data-step="${step}"]`);
+      if (stepElement) {
+        const requiredFields = stepElement.querySelectorAll('[required]');
+        let stepValid = true;
+        requiredFields.forEach((field) => {
+          if (!validateField(field as HTMLInputElement | HTMLSelectElement)) {
+            stepValid = false;
+          }
+        });
+        if (!stepValid) {
+          updateStep(step);
+          return;
+        }
+      }
+    }
+
+    // Check honeypot
+    if (honeypotInput?.value) {
+      console.warn('Spam submission detected');
+      return;
+    }
+
+    // Check minimum time
+    const startTime = parseInt(formStartTimeInput?.value || '0');
+    if (Date.now() - startTime < VALIDATION_CONFIG.minSubmitTime) {
+      showError('Please take your time filling out the form');
+      return;
+    }
+
+    // Get form data
+    const formData = new FormData(form);
+
+    // Add files to form data
+    uploadedFiles.forEach((file, index) => {
+      formData.append(`projectPhoto${index + 1}`, file);
+    });
+
+    // Get endpoint
+    const endpoint = form.dataset.formspreeEndpoint;
+    if (!endpoint) {
+      showError('Form configuration error. Please contact us directly.');
+      return;
+    }
+
+    // Set loading state
+    submitButton.disabled = true;
+    submitButton.setAttribute('data-loading', 'true');
+    formError.hidden = true;
+
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        showSuccess();
+      } else {
+        const data = await response.json();
+        throw new Error(data.error || 'Submission failed');
+      }
+    } catch (error) {
+      showError('An error occurred. Please try again or contact us directly.');
+      console.error('Form submission error:', error);
+    } finally {
+      submitButton.disabled = false;
+      submitButton.setAttribute('data-loading', 'false');
+    }
+  }
+
+  function showError(message: string) {
+    formErrorText.textContent = message;
+    formError.hidden = false;
+    formSuccess.hidden = true;
+    formError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function showSuccess() {
+    formSuccess.hidden = false;
+    formError.hidden = true;
+    form.reset();
+    uploadedFiles = [];
+    updateFilePreview();
+    updateStep(1);
+    formSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  // Initialize on DOM ready
+  init();
+</script>

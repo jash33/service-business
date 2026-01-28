@@ -1,0 +1,12 @@
+{
+  "id": "sticky-cta-bar",
+  "category": "UI",
+  "title": "Sticky Bottom CTA Bar",
+  "description": "Add a persistent bottom bar on mobile with call and message buttons. Improves mobile conversion with always-visible contact options.",
+  "status": "in_progress",
+  "priority": 1,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-26T01:51:05.767Z",
+  "updatedAt": "2026-01-26T03:31:31.219Z"
+}

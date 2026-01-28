@@ -1,0 +1,12 @@
+{
+  "id": "instant-quote-calculator",
+  "category": "Core",
+  "title": "Interactive Price Quote Calculator",
+  "description": "Create a client-side calculator that estimates project costs based on selected options and parameters. Provides instant pricing transparency and qualified leads.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "complex",
+  "createdAt": "2026-01-26T01:51:05.741Z",
+  "updatedAt": "2026-01-26T18:59:57.873Z",
+  "descriptionHistory": []
+}

@@ -1,0 +1,12 @@
+{
+  "id": "email-newsletter-signup",
+  "category": "Marketing",
+  "title": "Email Newsletter Subscription Form",
+  "description": "Add newsletter signup form with Mailchimp/ConvertKit integration. Includes double opt-in, GDPR compliance, and success confirmation. Positioned in footer and as popup.",
+  "status": "verified",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [],
+  "createdAt": "2026-01-26T01:51:05.733Z",
+  "updatedAt": "2026-01-26T09:45:46.191Z"
+}

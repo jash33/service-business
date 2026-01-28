@@ -1,0 +1,446 @@
+---
+/**
+ * Service Request Page
+ * A dedicated page for service quote requests with a multi-step form.
+ *
+ * Features:
+ * - Multi-step service request form
+ * - Service selection, scheduling, and project details
+ * - File upload for project photos
+ * - Spam prevention (honeypot + time-based)
+ * - Full accessibility support
+ * - SEO optimized with structured data
+ */
+
+import Layout from '../layouts/Layout.astro';
+import ServiceRequestForm from '../components/ServiceRequestForm.astro';
+---
+
+<Layout
+  title="Request a Quote"
+  description="Request a detailed quote for our professional cleaning services. Fill out our simple form with your service needs, scheduling preferences, and project details."
+  openGraph={{
+    type: 'website',
+  }}
+  jsonLd={{
+    type: 'WebPage',
+    name: 'Request a Service Quote',
+    description: 'Get a personalized quote for professional cleaning services. Our multi-step form helps us understand your needs for an accurate estimate.',
+  }}
+>
+  <main>
+    <!-- Hero Section -->
+    <section class="request-hero" aria-labelledby="request-hero-heading">
+      <div class="request-hero__container">
+        <h1 id="request-hero-heading" class="request-hero__title">
+          Get Your Free Quote
+        </h1>
+        <p class="request-hero__subtitle">
+          Tell us about your cleaning needs and we'll provide a detailed, no-obligation quote within 24 hours.
+        </p>
+        <div class="request-hero__features">
+          <div class="request-hero__feature">
+            <svg class="request-hero__feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+            <span>No obligation</span>
+          </div>
+          <div class="request-hero__feature">
+            <svg class="request-hero__feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+            <span>24-hour response</span>
+          </div>
+          <div class="request-hero__feature">
+            <svg class="request-hero__feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+            <span>Transparent pricing</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Service Request Form Section -->
+    <ServiceRequestForm />
+
+    <!-- Why Choose Us Section -->
+    <section class="why-choose-us" aria-labelledby="why-choose-heading">
+      <div class="why-choose-us__container">
+        <h2 id="why-choose-heading" class="why-choose-us__title">Why Choose Us?</h2>
+
+        <div class="why-choose-us__grid">
+          <div class="why-choose-us__card">
+            <div class="why-choose-us__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                <path d="m9 12 2 2 4-4" />
+              </svg>
+            </div>
+            <h3 class="why-choose-us__card-title">Licensed & Insured</h3>
+            <p class="why-choose-us__card-text">
+              Fully licensed and insured for your peace of mind. All our staff are background-checked professionals.
+            </p>
+          </div>
+
+          <div class="why-choose-us__card">
+            <div class="why-choose-us__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+            </div>
+            <h3 class="why-choose-us__card-title">Flexible Scheduling</h3>
+            <p class="why-choose-us__card-text">
+              We work around your schedule with same-day and weekend availability. Easy online booking.
+            </p>
+          </div>
+
+          <div class="why-choose-us__card">
+            <div class="why-choose-us__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+              </svg>
+            </div>
+            <h3 class="why-choose-us__card-title">5-Star Service</h3>
+            <p class="why-choose-us__card-text">
+              Hundreds of satisfied customers and a 100% satisfaction guarantee on every job.
+            </p>
+          </div>
+
+          <div class="why-choose-us__card">
+            <div class="why-choose-us__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
+                <path d="M7 13s.5 1 2 1 2.5-1 2.5-1" />
+                <path d="M12.5 13s.5 1 2 1 2.5-1 2.5-1" />
+                <path d="M8 9h.01M16 9h.01" />
+              </svg>
+            </div>
+            <h3 class="why-choose-us__card-title">Eco-Friendly Options</h3>
+            <p class="why-choose-us__card-text">
+              Green cleaning products available upon request. Safe for your family, pets, and the environment.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="request-faq" aria-labelledby="faq-heading">
+      <div class="request-faq__container">
+        <h2 id="faq-heading" class="request-faq__title">Frequently Asked Questions</h2>
+
+        <div class="request-faq__list">
+          <details class="request-faq__item">
+            <summary class="request-faq__question">How soon can I get a quote?</summary>
+            <p class="request-faq__answer">
+              We respond to all quote requests within 24 hours during business days. For urgent requests,
+              please call us directly for immediate assistance.
+            </p>
+          </details>
+
+          <details class="request-faq__item">
+            <summary class="request-faq__question">What information do you need for an accurate quote?</summary>
+            <p class="request-faq__answer">
+              The more details you provide, the more accurate your quote will be. Key information includes
+              property size, type of cleaning needed, any special requirements, and your preferred schedule.
+              Photos help us understand the scope of work better.
+            </p>
+          </details>
+
+          <details class="request-faq__item">
+            <summary class="request-faq__question">Are your prices fixed or can they change?</summary>
+            <p class="request-faq__answer">
+              Our quotes are based on the information provided. If the actual conditions differ significantly
+              from what was described, we'll discuss any adjustments with you before proceeding. We believe
+              in transparent, upfront pricing with no hidden fees.
+            </p>
+          </details>
+
+          <details class="request-faq__item">
+            <summary class="request-faq__question">Do I need to be home during the cleaning?</summary>
+            <p class="request-faq__answer">
+              No, you don't need to be present. Many of our clients provide access instructions (key, code, etc.)
+              and we take care of everything while they're away. All our staff are background-checked and bonded.
+            </p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  /* =================================================================
+   * HERO SECTION
+   * ================================================================= */
+  .request-hero {
+    padding: var(--spacing-20) var(--spacing-4) var(--spacing-12);
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-50) 0%,
+      var(--color-background) 100%
+    );
+    text-align: center;
+  }
+
+  .request-hero__container {
+    max-width: var(--container-4xl);
+    margin: 0 auto;
+  }
+
+  .request-hero__title {
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-4);
+    letter-spacing: var(--letter-spacing-tight);
+  }
+
+  .request-hero__subtitle {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    max-width: 40rem;
+    margin: 0 auto var(--spacing-8);
+    line-height: var(--line-height-relaxed);
+  }
+
+  .request-hero__features {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-6);
+  }
+
+  .request-hero__feature {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+  }
+
+  .request-hero__feature-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--color-success);
+  }
+
+  /* =================================================================
+   * WHY CHOOSE US SECTION
+   * ================================================================= */
+  .why-choose-us {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background);
+  }
+
+  .why-choose-us__container {
+    max-width: var(--container-6xl);
+    margin: 0 auto;
+  }
+
+  .why-choose-us__title {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    text-align: center;
+    margin-bottom: var(--spacing-10);
+  }
+
+  .why-choose-us__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+  }
+
+  @media (min-width: 640px) {
+    .why-choose-us__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .why-choose-us__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .why-choose-us__card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: var(--spacing-6);
+    background-color: var(--color-background-subtle);
+    border-radius: var(--radius-xl);
+    transition: all var(--duration-200) var(--ease-in-out);
+  }
+
+  .why-choose-us__card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .why-choose-us__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: var(--spacing-4);
+    padding: var(--spacing-2);
+    background-color: var(--color-primary-100);
+    border-radius: var(--radius-full);
+    color: var(--color-primary);
+  }
+
+  .why-choose-us__icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .why-choose-us__card-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-2);
+  }
+
+  .why-choose-us__card-text {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* =================================================================
+   * FAQ SECTION
+   * ================================================================= */
+  .request-faq {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+  }
+
+  .request-faq__container {
+    max-width: var(--container-3xl);
+    margin: 0 auto;
+  }
+
+  .request-faq__title {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    text-align: center;
+    margin-bottom: var(--spacing-10);
+  }
+
+  .request-faq__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+  }
+
+  .request-faq__item {
+    background-color: var(--color-background);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    overflow: hidden;
+  }
+
+  .request-faq__question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-4) var(--spacing-6);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    list-style: none;
+    transition: background-color var(--duration-150) var(--ease-in-out);
+  }
+
+  .request-faq__question::-webkit-details-marker {
+    display: none;
+  }
+
+  .request-faq__question::after {
+    content: '+';
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-light);
+    color: var(--color-text-tertiary);
+    transition: transform var(--duration-200) var(--ease-in-out);
+  }
+
+  .request-faq__item[open] .request-faq__question::after {
+    content: '-';
+  }
+
+  .request-faq__question:hover {
+    background-color: var(--color-background-subtle);
+  }
+
+  .request-faq__answer {
+    padding: 0 var(--spacing-6) var(--spacing-4);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0;
+  }
+
+  /* =================================================================
+   * RESPONSIVE ADJUSTMENTS
+   * ================================================================= */
+  @media (max-width: 767px) {
+    .request-hero {
+      padding: var(--spacing-12) var(--spacing-4) var(--spacing-8);
+    }
+
+    .request-hero__title {
+      font-size: var(--font-size-3xl);
+    }
+
+    .request-hero__subtitle {
+      font-size: var(--font-size-base);
+    }
+
+    .request-hero__features {
+      flex-direction: column;
+      align-items: center;
+      gap: var(--spacing-3);
+    }
+
+    .why-choose-us,
+    .request-faq {
+      padding: var(--spacing-12) var(--spacing-4);
+    }
+
+    .why-choose-us__title,
+    .request-faq__title {
+      font-size: var(--font-size-2xl);
+    }
+
+    .why-choose-us__card:hover {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .why-choose-us__card {
+      transition: none;
+    }
+
+    .why-choose-us__card:hover {
+      transform: none;
+    }
+
+    .request-faq__question::after {
+      transition: none;
+    }
+  }
+</style>

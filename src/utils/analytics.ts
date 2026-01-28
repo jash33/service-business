@@ -18,6 +18,7 @@ import type {
   ConsentPreferences,
   ConsentState,
   WebVitals,
+  PhoneClickEventParams,
 } from '../types/analytics';
 
 import {
@@ -420,6 +421,32 @@ function initTimeTracking(): void {
 }
 
 /**
+ * Determine the click location based on the element's position in the DOM
+ */
+function getClickLocation(element: HTMLElement): string {
+  // Check for data attribute first (explicit location)
+  const dataLocation = element.getAttribute('data-track-location');
+  if (dataLocation) return dataLocation;
+
+  // Check parent elements for data attribute
+  const parentWithLocation = element.closest('[data-track-location]');
+  if (parentWithLocation) {
+    return parentWithLocation.getAttribute('data-track-location') || 'unknown';
+  }
+
+  // Determine location based on DOM position
+  if (element.closest('footer')) return 'footer';
+  if (element.closest('header') || element.closest('nav')) return 'header';
+  if (element.closest('.sticky-cta')) return 'sticky_cta';
+  if (element.closest('.hero')) return 'hero';
+  if (element.closest('.contact-cta')) return 'contact_cta';
+  if (element.closest('aside')) return 'sidebar';
+  if (element.closest('main')) return 'main_content';
+
+  return 'unknown';
+}
+
+/**
  * Track link clicks
  */
 function initLinkTracking(): void {
@@ -443,12 +470,11 @@ function initLinkTracking(): void {
       });
     }
 
-    // Track phone clicks
-    if (href.startsWith('tel:')) {
-      trackEvent('phone_click', {
-        link_url: href,
-        page_path: window.location.pathname,
-      });
+    // Track phone clicks (tel: and sms:)
+    if (href.startsWith('tel:') || href.startsWith('sms:')) {
+      const location = getClickLocation(link);
+      const linkText = link.textContent?.trim() || link.getAttribute('aria-label') || undefined;
+      trackPhoneClick(href, location, linkText);
     }
 
     // Track email clicks
@@ -546,6 +572,81 @@ export function trackPortfolioView(projectName: string, projectCategory: string)
     project_category: projectCategory,
     page_path: typeof window !== 'undefined' ? window.location.pathname : undefined,
   });
+}
+
+// =================================================================
+// PHONE CLICK TRACKING
+// =================================================================
+
+/**
+ * Check if the current device is mobile
+ */
+function isMobileDevice(): boolean {
+  if (typeof window === 'undefined') return false;
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  ) || window.innerWidth <= 768;
+}
+
+/**
+ * Extract phone number from tel: or sms: link
+ */
+function extractPhoneNumber(href: string): string {
+  return href.replace(/^(tel:|sms:)/, '').replace(/[^\d+]/g, '');
+}
+
+/**
+ * Track phone number click events with enhanced parameters for GA4 conversions
+ *
+ * @param href - The tel: or sms: link URL
+ * @param location - Where on the page the click occurred (e.g., 'footer', 'header', 'sticky_cta')
+ * @param linkText - Optional text content of the link/button
+ *
+ * @example
+ * ```typescript
+ * // Track a call button click
+ * trackPhoneClick('tel:+18325550123', 'sticky_cta', 'Call');
+ *
+ * // Track a phone link in the footer
+ * trackPhoneClick('tel:+18325550123', 'footer', '(832) 555-0123');
+ * ```
+ */
+export function trackPhoneClick(
+  href: string,
+  location: string,
+  linkText?: string
+): void {
+  if (typeof window === 'undefined' || !analyticsEnabled) return;
+
+  const isSms = href.startsWith('sms:');
+  const phoneNumber = extractPhoneNumber(href);
+  const isMobile = isMobileDevice();
+
+  const eventParams: PhoneClickEventParams = {
+    phone_number: phoneNumber,
+    click_location: location,
+    click_type: isSms ? 'sms' : 'call',
+    is_mobile: isMobile,
+    link_url: href,
+    link_text: linkText,
+    page_path: window.location.pathname,
+    page_title: document.title,
+  };
+
+  // Track the phone_click event
+  trackEvent('phone_click', eventParams);
+
+  // Also push to dataLayer for GTM compatibility
+  if (window.dataLayer) {
+    window.dataLayer.push({
+      event: 'phone_click',
+      ...eventParams,
+    });
+  }
+
+  if (ga4Config.debug) {
+    console.log('[Analytics] Phone click tracked:', eventParams);
+  }
 }
 
 // =================================================================

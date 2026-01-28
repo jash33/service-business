@@ -1,0 +1,12 @@
+{
+  "id": "instagram-feed-widget",
+  "category": "Integration",
+  "title": "Instagram Feed Gallery Widget",
+  "description": "Display recent Instagram posts in a grid gallery format. Showcases behind-the-scenes work and builds visual brand presence on the website.",
+  "status": "in_progress",
+  "priority": 3,
+  "complexity": "moderate",
+  "dependencies": [],
+  "createdAt": "2026-01-26T01:51:05.745Z",
+  "updatedAt": "2026-01-27T15:33:40.573Z"
+}

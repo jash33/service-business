@@ -3,11 +3,12 @@
  * Optimized Image Component
  *
  * A performance-optimized image component that supports:
- * - Lazy loading (native or intersection observer)
- * - Responsive images with srcset
- * - WebP format with fallback
- * - Proper width/height to prevent CLS
- * - Loading placeholder/blur-up effect
+ * - Native lazy loading with loading="lazy" attribute
+ * - Responsive images with srcset for bandwidth optimization
+ * - WebP format with fallback for older browsers
+ * - Proper width/height attributes to prevent CLS (Cumulative Layout Shift)
+ * - Blur-up placeholder effect with smooth fade transition
+ * - Support for base64 or low-resolution placeholder images
  *
  * @example Basic usage:
  * ```astro
@@ -19,7 +20,7 @@
  * />
  * ```
  *
- * @example With responsive sizes:
+ * @example With responsive sizes and blur-up:
  * ```astro
  * <OptimizedImage
  *   src="/images/portfolio/project.jpg"
@@ -28,6 +29,19 @@
  *   height={600}
  *   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
  *   responsive
+ *   placeholder
+ * />
+ * ```
+ *
+ * @example With custom blur placeholder:
+ * ```astro
+ * <OptimizedImage
+ *   src="/images/portfolio/project.jpg"
+ *   alt="Project screenshot"
+ *   width={800}
+ *   height={600}
+ *   placeholder
+ *   placeholderSrc="data:image/jpeg;base64,/9j/4AAQSkZJRg..."
  * />
  * ```
  */
@@ -43,6 +57,8 @@ interface Props {
   height: number;
   /** CSS class for the image */
   class?: string;
+  /** CSS class for the wrapper div */
+  wrapperClass?: string;
   /** Loading strategy: 'lazy' | 'eager' */
   loading?: 'lazy' | 'eager';
   /** Decoding hint */
@@ -55,8 +71,12 @@ interface Props {
   responsive?: boolean;
   /** Use blur-up placeholder */
   placeholder?: boolean;
+  /** Custom placeholder image (base64 or low-res URL) */
+  placeholderSrc?: string;
   /** Custom srcset */
   srcset?: string;
+  /** WebP source URL (auto-generated if not provided) */
+  srcWebP?: string;
   /** Object fit style */
   objectFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
   /** Object position */
@@ -69,13 +89,16 @@ const {
   width,
   height,
   class: className = '',
+  wrapperClass = '',
   loading = 'lazy',
   decoding = 'async',
   fetchPriority = 'auto',
   sizes,
   responsive = false,
   placeholder = false,
+  placeholderSrc,
   srcset,
+  srcWebP,
   objectFit,
   objectPosition,
 } = Astro.props;
@@ -91,20 +114,29 @@ function getWebPSrc(imageSrc: string): string {
   return imageSrc.substring(0, lastDot) + '.webp';
 }
 
-// Function to generate srcset string
+// Function to generate srcset string with width descriptors
 function generateSrcSet(imageSrc: string, widths: number[]): string {
-  return widths
-    .filter(w => w <= width) // Only include widths smaller than original
-    .map(w => {
-      // For dynamic image resizing, you would append width parameter
-      // This assumes images are pre-generated at various sizes
-      return `${imageSrc} ${w}w`;
-    })
+  // Filter widths to those smaller than or equal to original
+  const filteredWidths = widths.filter(w => w <= width);
+
+  // Always include the original width if not already in the list
+  if (!filteredWidths.includes(width)) {
+    filteredWidths.push(width);
+  }
+
+  return filteredWidths
+    .sort((a, b) => a - b)
+    .map(w => `${imageSrc} ${w}w`)
     .join(', ');
 }
 
 // Compute srcset
 const computedSrcSet = srcset || (responsive ? generateSrcSet(src, responsiveWidths) : undefined);
+
+// Compute WebP srcset
+const computedWebPSrcSet = computedSrcSet
+  ? computedSrcSet.replace(/\.(jpg|jpeg|png|gif)/gi, '.webp')
+  : undefined;
 
 // Compute sizes (default responsive sizes)
 const computedSizes = sizes || (responsive
@@ -114,6 +146,9 @@ const computedSizes = sizes || (responsive
 // Check if image is SVG (no WebP conversion needed)
 const isSVG = src.endsWith('.svg');
 
+// Compute the WebP source
+const webPSource = srcWebP || getWebPSrc(src);
+
 // Compute style object
 const imageStyle = [
   objectFit && `object-fit: ${objectFit}`,
@@ -122,22 +157,48 @@ const imageStyle = [
 
 // Compute aspect ratio for placeholder
 const aspectRatio = width / height;
+
+// Determine if we have a blur placeholder image
+const hasBlurPlaceholder = placeholder && placeholderSrc;
+
+// Generate a unique ID for this image instance
+const imageId = `opt-img-${Math.random().toString(36).substring(2, 9)}`;
 ---
 
 <div
-  class:list={['optimized-image-wrapper', { 'has-placeholder': placeholder }]}
+  class:list={[
+    'optimized-image-wrapper',
+    { 'has-placeholder': placeholder },
+    { 'has-blur-placeholder': hasBlurPlaceholder },
+    wrapperClass,
+  ]}
   style={`aspect-ratio: ${aspectRatio};`}
+  data-optimized-image-wrapper
 >
+  {/* Blur placeholder image */}
+  {hasBlurPlaceholder && (
+    <img
+      src={placeholderSrc}
+      alt=""
+      aria-hidden="true"
+      class="optimized-image-blur-placeholder"
+      width={width}
+      height={height}
+      style={imageStyle || undefined}
+    />
+  )}
+
   {!isSVG ? (
     <picture>
       {/* WebP source for modern browsers */}
       <source
         type="image/webp"
-        srcset={computedSrcSet ? computedSrcSet.replace(/\.(jpg|jpeg|png|gif)/gi, '.webp') : getWebPSrc(src)}
+        srcset={computedWebPSrcSet || webPSource}
         sizes={computedSizes}
       />
       {/* Fallback for older browsers */}
       <img
+        id={imageId}
         src={src}
         alt={alt}
         width={width}
@@ -149,10 +210,12 @@ const aspectRatio = width / height;
         srcset={computedSrcSet}
         sizes={computedSizes}
         style={imageStyle || undefined}
+        data-optimized-image
       />
     </picture>
   ) : (
     <img
+      id={imageId}
       src={src}
       alt={alt}
       width={width}
@@ -162,12 +225,13 @@ const aspectRatio = width / height;
       fetchpriority={fetchPriority}
       class:list={['optimized-image', className]}
       style={imageStyle || undefined}
+      data-optimized-image
     />
   )}
 
-  {/* Placeholder overlay for blur-up effect */}
-  {placeholder && (
-    <div class="optimized-image-placeholder" aria-hidden="true"></div>
+  {/* Shimmer placeholder overlay for blur-up effect (when no blur image) */}
+  {placeholder && !hasBlurPlaceholder && (
+    <div class="optimized-image-shimmer-placeholder" aria-hidden="true"></div>
   )}
 </div>
 
@@ -185,7 +249,7 @@ const aspectRatio = width / height;
     transition: opacity var(--duration-300, 300ms) var(--ease-out, ease-out);
   }
 
-  /* Placeholder for blur-up effect */
+  /* Placeholder state - hide main image until loaded */
   .has-placeholder .optimized-image {
     opacity: 0;
   }
@@ -194,7 +258,32 @@ const aspectRatio = width / height;
     opacity: 1;
   }
 
-  .optimized-image-placeholder {
+  /* Blur placeholder image (actual low-res image) */
+  .optimized-image-blur-placeholder {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(20px);
+    transform: scale(1.1); /* Prevent blur edge artifacts */
+    transition: opacity var(--duration-500, 500ms) var(--ease-out, ease-out);
+    z-index: 1;
+  }
+
+  .has-blur-placeholder .optimized-image {
+    position: relative;
+    z-index: 2;
+  }
+
+  .has-blur-placeholder .optimized-image.loaded ~ .optimized-image-blur-placeholder,
+  .has-blur-placeholder picture:has(.optimized-image.loaded) ~ .optimized-image-blur-placeholder {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Shimmer placeholder (gradient animation fallback) */
+  .optimized-image-shimmer-placeholder {
     position: absolute;
     inset: 0;
     background: linear-gradient(
@@ -205,9 +294,12 @@ const aspectRatio = width / height;
     );
     background-size: 200% 200%;
     animation: shimmer 1.5s ease-in-out infinite;
+    transition: opacity var(--duration-300, 300ms) var(--ease-out, ease-out);
+    z-index: 1;
   }
 
-  .has-placeholder .optimized-image.loaded + .optimized-image-placeholder {
+  .has-placeholder .optimized-image.loaded + .optimized-image-shimmer-placeholder,
+  .has-placeholder picture:has(.optimized-image.loaded) + .optimized-image-shimmer-placeholder {
     opacity: 0;
     pointer-events: none;
   }
@@ -223,44 +315,100 @@ const aspectRatio = width / height;
 
   /* Respect reduced motion */
   @media (prefers-reduced-motion: reduce) {
-    .optimized-image-placeholder {
+    .optimized-image-shimmer-placeholder {
       animation: none;
+    }
+
+    .optimized-image,
+    .optimized-image-blur-placeholder,
+    .optimized-image-shimmer-placeholder {
+      transition: none;
+    }
+  }
+
+  /* Print styles */
+  @media print {
+    .optimized-image-blur-placeholder,
+    .optimized-image-shimmer-placeholder {
+      display: none;
+    }
+
+    .has-placeholder .optimized-image {
+      opacity: 1;
     }
   }
 </style>
 
 <script>
-  // Add loaded class when image finishes loading
-  document.addEventListener('DOMContentLoaded', () => {
-    const images = document.querySelectorAll('.optimized-image');
+  /**
+   * Optimized Image Loading Handler
+   * Adds 'loaded' class when images finish loading to trigger blur-up transition
+   */
+  function initOptimizedImages(): void {
+    const images = document.querySelectorAll<HTMLImageElement>('[data-optimized-image]');
 
     images.forEach((img) => {
-      const imgElement = img as HTMLImageElement;
+      // Skip if already processed
+      if (img.classList.contains('loaded') || img.dataset.processed === 'true') {
+        return;
+      }
 
-      if (imgElement.complete) {
-        imgElement.classList.add('loaded');
+      img.dataset.processed = 'true';
+
+      if (img.complete && img.naturalHeight !== 0) {
+        // Image already loaded (from cache or eager loading)
+        img.classList.add('loaded');
       } else {
-        imgElement.addEventListener('load', () => {
-          imgElement.classList.add('loaded');
-        });
+        // Wait for image to load
+        img.addEventListener('load', () => {
+          img.classList.add('loaded');
+        }, { once: true });
+
+        // Handle load errors gracefully
+        img.addEventListener('error', () => {
+          // Still add loaded class to hide placeholder on error
+          img.classList.add('loaded');
+        }, { once: true });
       }
     });
-  });
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initOptimizedImages);
+  } else {
+    initOptimizedImages();
+  }
 
   // Re-run on Astro page transitions
   document.addEventListener('astro:page-load', () => {
-    const images = document.querySelectorAll('.optimized-image:not(.loaded)');
-
-    images.forEach((img) => {
-      const imgElement = img as HTMLImageElement;
-
-      if (imgElement.complete) {
-        imgElement.classList.add('loaded');
-      } else {
-        imgElement.addEventListener('load', () => {
-          imgElement.classList.add('loaded');
-        });
+    // Reset processed state for images that need re-initialization
+    document.querySelectorAll<HTMLImageElement>('[data-optimized-image]').forEach((img) => {
+      if (!img.classList.contains('loaded')) {
+        img.dataset.processed = 'false';
       }
     });
+    initOptimizedImages();
   });
+
+  // Also handle images loaded via dynamic content
+  if (typeof MutationObserver !== 'undefined') {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node instanceof HTMLElement) {
+            const images = node.querySelectorAll<HTMLImageElement>('[data-optimized-image]');
+            if (images.length > 0) {
+              initOptimizedImages();
+            }
+          }
+        });
+      });
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+  }
 </script>

@@ -1,0 +1,635 @@
+---
+/**
+ * LicenseInsuranceCard Component
+ * A detailed card component for displaying business licenses, insurance certificates,
+ * and bonding information with verification links. Critical trust-building element
+ * for service businesses.
+ *
+ * Features:
+ * - Clear credential type indicator (license/insurance/bonding)
+ * - Credential number display with optional masking
+ * - Expiration date with visual warning for upcoming expirations
+ * - Coverage amount display for insurance/bonding
+ * - Verification status badge with color coding
+ * - Clickable verification link
+ * - Responsive design with hover effects
+ * - Accessible with proper semantics
+ *
+ * @example License card
+ * ```astro
+ * <LicenseInsuranceCard
+ *   id="contractor-license"
+ *   title="General Contractor License"
+ *   type="license"
+ *   credentialNumber="GC-12345"
+ *   issuer="Texas Department of Licensing"
+ *   jurisdiction="Texas"
+ *   expirationDate="2025-12-31"
+ *   verificationStatus="verified"
+ *   verificationUrl="https://verify.texas.gov/12345"
+ * />
+ * ```
+ *
+ * @example Insurance card
+ * ```astro
+ * <LicenseInsuranceCard
+ *   id="liability-insurance"
+ *   title="General Liability Insurance"
+ *   type="insurance"
+ *   credentialNumber="POL-987654"
+ *   issuer="State Farm Insurance"
+ *   coverageAmount="$2,000,000"
+ *   expirationDate="2025-06-30"
+ *   verificationStatus="verified"
+ *   verificationUrl="https://certificates.example.com/verify"
+ * />
+ * ```
+ */
+
+import type { LicenseInsuranceCardProps, VerificationStatus } from '../types/trust-badge';
+
+interface Props extends LicenseInsuranceCardProps {}
+
+const {
+  id,
+  title,
+  type,
+  description,
+  icon,
+  credentialNumber,
+  issuer,
+  jurisdiction,
+  issueDate,
+  expirationDate,
+  coverageAmount,
+  verificationStatus,
+  verificationUrl,
+  notes,
+  class: className = '',
+} = Astro.props;
+
+// Build CSS classes
+const cardClasses = [
+  'license-insurance-card',
+  `license-insurance-card--${type}`,
+  `license-insurance-card--${verificationStatus}`,
+  className,
+].filter(Boolean).join(' ');
+
+// Determine if we should render as a link
+const isClickable = !!verificationUrl;
+const Tag = isClickable ? 'a' : 'article';
+const linkProps = isClickable ? { href: verificationUrl, target: '_blank', rel: 'noopener noreferrer' } : {};
+
+// Check if expiration is upcoming (within 90 days)
+const isExpiringsoon = (): boolean => {
+  if (!expirationDate) return false;
+  const expDate = new Date(expirationDate);
+  const now = new Date();
+  const daysUntilExpiration = Math.floor((expDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+  return daysUntilExpiration > 0 && daysUntilExpiration <= 90;
+};
+
+const isExpired = (): boolean => {
+  if (!expirationDate) return false;
+  const expDate = new Date(expirationDate);
+  const now = new Date();
+  return expDate < now;
+};
+
+// Format date for display
+const formatDate = (dateStr: string): string => {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+};
+
+// Get status label
+const getStatusLabel = (status: VerificationStatus): string => {
+  switch (status) {
+    case 'verified': return 'Verified';
+    case 'pending': return 'Pending';
+    case 'expired': return 'Expired';
+    case 'not_verified': return 'Not Verified';
+    default: return 'Unknown';
+  }
+};
+
+// Get type label
+const getTypeLabel = (t: string): string => {
+  switch (t) {
+    case 'license': return 'License';
+    case 'insurance': return 'Insurance';
+    case 'bonding': return 'Bond';
+    default: return t;
+  }
+};
+
+// Default icons for each type
+const defaultIcons = {
+  license: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>`,
+  insurance: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>`,
+  bonding: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>`,
+};
+
+const displayIcon = icon || defaultIcons[type];
+const expiringSoon = isExpiringsSoon();
+const expired = isExpired();
+
+function isExpiringsSoon(): boolean {
+  if (!expirationDate) return false;
+  const expDate = new Date(expirationDate);
+  const now = new Date();
+  const daysUntilExpiration = Math.floor((expDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+  return daysUntilExpiration > 0 && daysUntilExpiration <= 90;
+}
+---
+
+<Tag class={cardClasses} id={`credential-${id}`} {...linkProps}>
+  <!-- Type Badge -->
+  <div class="license-insurance-card__type-badge">
+    {getTypeLabel(type)}
+  </div>
+
+  <!-- Header with Icon and Title -->
+  <header class="license-insurance-card__header">
+    <div class="license-insurance-card__icon" aria-hidden="true">
+      <Fragment set:html={displayIcon} />
+    </div>
+    <div class="license-insurance-card__title-group">
+      <h3 class="license-insurance-card__title">{title}</h3>
+      {issuer && (
+        <p class="license-insurance-card__issuer">{issuer}</p>
+      )}
+    </div>
+  </header>
+
+  <!-- Credential Details -->
+  <div class="license-insurance-card__details">
+    {credentialNumber && (
+      <div class="license-insurance-card__detail">
+        <span class="license-insurance-card__detail-label">
+          {type === 'insurance' ? 'Policy #' : type === 'bonding' ? 'Bond #' : 'License #'}
+        </span>
+        <span class="license-insurance-card__detail-value">{credentialNumber}</span>
+      </div>
+    )}
+
+    {jurisdiction && (
+      <div class="license-insurance-card__detail">
+        <span class="license-insurance-card__detail-label">Jurisdiction</span>
+        <span class="license-insurance-card__detail-value">{jurisdiction}</span>
+      </div>
+    )}
+
+    {coverageAmount && (
+      <div class="license-insurance-card__detail license-insurance-card__detail--coverage">
+        <span class="license-insurance-card__detail-label">Coverage</span>
+        <span class="license-insurance-card__detail-value license-insurance-card__coverage-amount">{coverageAmount}</span>
+      </div>
+    )}
+
+    {expirationDate && (
+      <div class={`license-insurance-card__detail ${expiringSoon ? 'license-insurance-card__detail--warning' : ''} ${expired ? 'license-insurance-card__detail--expired' : ''}`}>
+        <span class="license-insurance-card__detail-label">
+          {expired ? 'Expired' : 'Valid Through'}
+        </span>
+        <span class="license-insurance-card__detail-value">
+          {formatDate(expirationDate)}
+          {expiringSoon && !expired && (
+            <span class="license-insurance-card__expiring-badge">Renewing Soon</span>
+          )}
+        </span>
+      </div>
+    )}
+  </div>
+
+  {description && (
+    <p class="license-insurance-card__description">{description}</p>
+  )}
+
+  <!-- Footer with Status and Verify Link -->
+  <footer class="license-insurance-card__footer">
+    <div class={`license-insurance-card__status license-insurance-card__status--${verificationStatus}`}>
+      <svg class="license-insurance-card__status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        {verificationStatus === 'verified' ? (
+          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+        ) : verificationStatus === 'pending' ? (
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+        ) : verificationStatus === 'expired' ? (
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+        ) : (
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-2h2v2h-2zm0-4V7h2v6h-2z"/>
+        )}
+      </svg>
+      <span class="license-insurance-card__status-text">{getStatusLabel(verificationStatus)}</span>
+    </div>
+
+    {isClickable && (
+      <div class="license-insurance-card__verify" aria-label="Click to verify credential">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+          <polyline points="15 3 21 3 21 9"/>
+          <line x1="10" y1="14" x2="21" y2="3"/>
+        </svg>
+        <span class="license-insurance-card__verify-text">Verify</span>
+      </div>
+    )}
+  </footer>
+</Tag>
+
+<style>
+  /* =================================================================
+   * LICENSE INSURANCE CARD COMPONENT STYLES
+   * =================================================================
+   * Detailed credential display for licenses, insurance, and bonding
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention
+   */
+
+  .license-insurance-card {
+    /* Layout */
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+
+    /* Box model */
+    padding: var(--spacing-5);
+
+    /* Positioning */
+    position: relative;
+
+    /* Visual */
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+
+    /* Overflow for effects */
+    overflow: hidden;
+
+    /* Animation */
+    transition:
+      box-shadow var(--duration-300) var(--ease-out),
+      transform var(--duration-300) var(--ease-out),
+      border-color var(--duration-300) var(--ease-out);
+  }
+
+  /* Link-specific styles */
+  a.license-insurance-card {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  a.license-insurance-card:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  .license-insurance-card:hover {
+    box-shadow: var(--shadow-lg), var(--glow-card-hover);
+    transform: translateY(-4px);
+    border-color: var(--color-primary-300);
+  }
+
+  /* Type Badge */
+  .license-insurance-card__type-badge {
+    position: absolute;
+    top: var(--spacing-3);
+    right: var(--spacing-3);
+    padding: var(--spacing-1) var(--spacing-2);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+    border-radius: var(--radius-md);
+    background-color: var(--color-primary-100);
+    color: var(--color-primary-700);
+  }
+
+  /* Type-specific badge colors */
+  .license-insurance-card--license .license-insurance-card__type-badge {
+    background-color: #dbeafe;
+    color: #1d4ed8;
+  }
+
+  .license-insurance-card--insurance .license-insurance-card__type-badge {
+    background-color: #dcfce7;
+    color: #15803d;
+  }
+
+  .license-insurance-card--bonding .license-insurance-card__type-badge {
+    background-color: #fef3c7;
+    color: #b45309;
+  }
+
+  /* Header */
+  .license-insurance-card__header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-3);
+    padding-right: var(--spacing-16); /* Space for type badge */
+  }
+
+  .license-insurance-card__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--spacing-12);
+    height: var(--spacing-12);
+    flex-shrink: 0;
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-50) 0%,
+      var(--color-primary-100) 100%
+    );
+    border-radius: var(--radius-lg);
+    color: var(--color-primary);
+    transition:
+      background var(--duration-300) var(--ease-out),
+      transform var(--duration-300) var(--ease-spring-soft);
+  }
+
+  .license-insurance-card__icon :global(svg) {
+    width: var(--spacing-6);
+    height: var(--spacing-6);
+  }
+
+  .license-insurance-card:hover .license-insurance-card__icon {
+    transform: scale(1.05);
+  }
+
+  /* Type-specific icon backgrounds */
+  .license-insurance-card--license .license-insurance-card__icon {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: #1d4ed8;
+  }
+
+  .license-insurance-card--insurance .license-insurance-card__icon {
+    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+    color: #15803d;
+  }
+
+  .license-insurance-card--bonding .license-insurance-card__icon {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    color: #b45309;
+  }
+
+  .license-insurance-card__title-group {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .license-insurance-card__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .license-insurance-card__issuer {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: var(--spacing-1) 0 0;
+  }
+
+  /* Details Grid */
+  .license-insurance-card__details {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3);
+    background-color: var(--color-background-subtle);
+    border-radius: var(--radius-lg);
+  }
+
+  .license-insurance-card__detail {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-2);
+  }
+
+  .license-insurance-card__detail-label {
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  .license-insurance-card__detail-value {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    text-align: right;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+  }
+
+  .license-insurance-card__coverage-amount {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-success-dark);
+  }
+
+  .license-insurance-card__detail--warning .license-insurance-card__detail-value {
+    color: var(--color-warning-dark);
+  }
+
+  .license-insurance-card__detail--expired .license-insurance-card__detail-value {
+    color: var(--color-error-dark);
+  }
+
+  .license-insurance-card__expiring-badge {
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-0-5) var(--spacing-1-5);
+    background-color: var(--color-warning-light);
+    color: var(--color-warning-text);
+    border-radius: var(--radius-full);
+    white-space: nowrap;
+  }
+
+  /* Description */
+  .license-insurance-card__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0;
+  }
+
+  /* Footer */
+  .license-insurance-card__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--spacing-3);
+    border-top: 1px solid var(--color-border-light);
+    margin-top: auto;
+  }
+
+  /* Status Badge */
+  .license-insurance-card__status {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .license-insurance-card__status-icon {
+    width: var(--spacing-4);
+    height: var(--spacing-4);
+  }
+
+  .license-insurance-card__status--verified {
+    background-color: var(--color-success-light);
+    color: var(--color-success-text);
+  }
+
+  .license-insurance-card__status--pending {
+    background-color: var(--color-warning-light);
+    color: var(--color-warning-text);
+  }
+
+  .license-insurance-card__status--expired {
+    background-color: var(--color-error-light);
+    color: var(--color-error-text);
+  }
+
+  .license-insurance-card__status--not_verified {
+    background-color: var(--color-background-muted);
+    color: var(--color-text-tertiary);
+  }
+
+  /* Verify Link */
+  .license-insurance-card__verify {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    font-size: var(--font-size-sm);
+    color: var(--color-primary);
+    opacity: 0;
+    transform: translateX(-8px);
+    transition:
+      opacity var(--duration-200) var(--ease-out),
+      transform var(--duration-200) var(--ease-out);
+  }
+
+  .license-insurance-card__verify svg {
+    width: var(--spacing-4);
+    height: var(--spacing-4);
+  }
+
+  .license-insurance-card:hover .license-insurance-card__verify {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * =================================================================
+   */
+
+  @media screen and (min-width: 768px) {
+    .license-insurance-card {
+      padding: var(--spacing-6);
+    }
+
+    .license-insurance-card__icon {
+      width: var(--spacing-14);
+      height: var(--spacing-14);
+    }
+
+    .license-insurance-card__icon :global(svg) {
+      width: var(--spacing-7);
+      height: var(--spacing-7);
+    }
+
+    .license-insurance-card__title {
+      font-size: var(--font-size-xl);
+    }
+
+    .license-insurance-card__details {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .license-insurance-card__detail--coverage {
+      grid-column: span 2;
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * =================================================================
+   */
+  @media (prefers-reduced-motion: reduce) {
+    .license-insurance-card,
+    .license-insurance-card__icon,
+    .license-insurance-card__verify {
+      transition: none;
+    }
+
+    .license-insurance-card:hover {
+      transform: none;
+    }
+
+    .license-insurance-card:hover .license-insurance-card__icon {
+      transform: none;
+    }
+
+    .license-insurance-card__verify {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * =================================================================
+   */
+  @media (forced-colors: active) {
+    .license-insurance-card {
+      border: 2px solid CanvasText;
+    }
+
+    .license-insurance-card__type-badge,
+    .license-insurance-card__status {
+      border: 1px solid CanvasText;
+    }
+
+    a.license-insurance-card:focus-visible {
+      outline: 3px solid Highlight;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * =================================================================
+   */
+  @media print {
+    .license-insurance-card {
+      box-shadow: none;
+      border: 1px solid var(--color-border);
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .license-insurance-card:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .license-insurance-card__verify {
+      display: none;
+    }
+  }
+</style>

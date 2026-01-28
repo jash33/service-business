@@ -1,0 +1,1014 @@
+---
+/**
+ * Exit Intent Popup Component
+ * Modal popup offering special discount or free consultation
+ * triggered when user attempts to leave the page.
+ *
+ * Features:
+ * - Exit-intent detection (mouse leaving viewport)
+ * - Dismissal tracking (localStorage)
+ * - Frequency capping (per session and long-term)
+ * - Minimum time on page requirement
+ * - Accessible modal dialog
+ * - Focus trap for keyboard navigation
+ * - Analytics tracking
+ *
+ * @example
+ * ```astro
+ * <ExitIntentPopup />
+ * ```
+ */
+
+import {
+  exitIntentConfig,
+  EXIT_INTENT_STORAGE_KEYS,
+} from '../config/exit-intent.config';
+
+interface Props {
+  /** Override popup enabled state */
+  enabled?: boolean;
+  /** Custom headline */
+  headline?: string;
+  /** Custom description */
+  description?: string;
+  /** Custom discount percentage */
+  discountPercentage?: number;
+  /** Custom discount code */
+  discountCode?: string;
+}
+
+const {
+  enabled = exitIntentConfig.popup.enabled,
+  headline = exitIntentConfig.content.headline,
+  description = exitIntentConfig.content.description,
+  discountPercentage = exitIntentConfig.popup.discountPercentage,
+  discountCode = exitIntentConfig.popup.discountCode,
+} = Astro.props;
+
+const popupConfig = exitIntentConfig.popup;
+const contentConfig = exitIntentConfig.content;
+---
+
+{enabled && (
+  <div
+    id="exit-intent-popup"
+    class="exit-intent-popup"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="exit-intent-popup-title"
+    aria-describedby="exit-intent-popup-description"
+    data-dismissal-days={popupConfig.dismissalDays}
+    data-max-shows={popupConfig.maxShowsPerSession}
+    data-min-time={popupConfig.minimumTimeOnPage}
+    data-exclude-pages={JSON.stringify(popupConfig.excludePages)}
+    data-desktop-only={popupConfig.desktopOnly}
+    data-consultation-url={popupConfig.consultationUrl}
+    data-contact-url={popupConfig.contactUrl}
+    data-offer-type={popupConfig.offerType}
+    hidden
+  >
+    <!-- Backdrop overlay -->
+    <div class="exit-intent-popup__backdrop" aria-hidden="true"></div>
+
+    <!-- Modal content -->
+    <div class="exit-intent-popup__container">
+      <div class="exit-intent-popup__content">
+        <!-- Close button -->
+        <button
+          type="button"
+          class="exit-intent-popup__close"
+          aria-label="Close offer popup"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24" aria-hidden="true">
+            <path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z" clip-rule="evenodd" />
+          </svg>
+        </button>
+
+        <!-- Badge -->
+        <div class="exit-intent-popup__badge" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+            <path fill-rule="evenodd" d="M5.166 2.621v.858c-1.035.148-2.059.33-3.071.543a.75.75 0 00-.584.859 6.753 6.753 0 006.138 5.6 6.73 6.73 0 002.743 1.346A6.707 6.707 0 019.279 15H8.54c-1.036 0-1.875.84-1.875 1.875V19.5h-.75a2.25 2.25 0 00-2.25 2.25c0 .414.336.75.75.75h15a.75.75 0 00.75-.75 2.25 2.25 0 00-2.25-2.25h-.75v-2.625c0-1.036-.84-1.875-1.875-1.875h-.739a6.707 6.707 0 01-1.112-3.173 6.73 6.73 0 002.743-1.347 6.753 6.753 0 006.139-5.6.75.75 0 00-.585-.858 47.077 47.077 0 00-3.07-.543V2.62a.75.75 0 00-.658-.744 49.22 49.22 0 00-6.093-.377c-2.063 0-4.096.128-6.093.377a.75.75 0 00-.657.744zm0 2.629c0 1.196.312 2.32.857 3.294A5.266 5.266 0 013.16 5.337a45.6 45.6 0 012.006-.343v.256zm13.5 0v-.256c.674.1 1.343.214 2.006.343a5.265 5.265 0 01-2.863 3.207 6.72 6.72 0 00.857-3.294z" clip-rule="evenodd" />
+          </svg>
+          {contentConfig.badgeText}
+        </div>
+
+        <!-- Header -->
+        <div class="exit-intent-popup__header">
+          <h2 id="exit-intent-popup-title" class="exit-intent-popup__title">
+            {headline}
+          </h2>
+          <p id="exit-intent-popup-description" class="exit-intent-popup__description">
+            {description}
+          </p>
+        </div>
+
+        <!-- Offers Section -->
+        <div class="exit-intent-popup__offers">
+          <!-- Discount Offer -->
+          {(popupConfig.offerType === 'discount' || popupConfig.offerType === 'both') && (
+            <div class="exit-intent-popup__offer exit-intent-popup__offer--discount">
+              <div class="exit-intent-popup__offer-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+                  <path fill-rule="evenodd" d="M5.25 2.25a3 3 0 00-3 3v4.318a3 3 0 00.879 2.121l9.58 9.581c.92.92 2.39 1.186 3.548.428a18.849 18.849 0 005.441-5.44c.758-1.16.492-2.629-.428-3.548l-9.58-9.581a3 3 0 00-2.122-.879H5.25zM6.375 7.5a1.125 1.125 0 100-2.25 1.125 1.125 0 000 2.25z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="exit-intent-popup__offer-content">
+                <span class="exit-intent-popup__offer-highlight">{discountPercentage}% OFF</span>
+                <span class="exit-intent-popup__offer-text">your first project</span>
+              </div>
+              <div class="exit-intent-popup__discount-code">
+                <span class="exit-intent-popup__code-label">Use code:</span>
+                <code class="exit-intent-popup__code" id="discount-code">{discountCode}</code>
+                <button
+                  type="button"
+                  class="exit-intent-popup__copy-btn"
+                  aria-label="Copy discount code"
+                  data-code={discountCode}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                    <path fill-rule="evenodd" d="M7.502 6h7.128A3.375 3.375 0 0118 9.375v9.375a3 3 0 003-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 00-.673-.05A3 3 0 0015 1.5h-1.5a3 3 0 00-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6zM13.5 3A1.5 1.5 0 0012 4.5h4.5A1.5 1.5 0 0015 3h-1.5z" clip-rule="evenodd" />
+                    <path fill-rule="evenodd" d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 013 20.625V9.375zM6 12a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V12zm2.25 0a.75.75 0 01.75-.75h3.75a.75.75 0 010 1.5H9a.75.75 0 01-.75-.75zM6 15a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V15zm2.25 0a.75.75 0 01.75-.75h3.75a.75.75 0 010 1.5H9a.75.75 0 01-.75-.75zM6 18a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V18zm2.25 0a.75.75 0 01.75-.75h3.75a.75.75 0 010 1.5H9a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          )}
+
+          <!-- Divider for 'both' offer type -->
+          {popupConfig.offerType === 'both' && (
+            <div class="exit-intent-popup__divider">
+              <span>OR</span>
+            </div>
+          )}
+
+          <!-- Consultation Offer -->
+          {(popupConfig.offerType === 'consultation' || popupConfig.offerType === 'both') && (
+            <div class="exit-intent-popup__offer exit-intent-popup__offer--consultation">
+              <div class="exit-intent-popup__offer-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+                  <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="exit-intent-popup__offer-content">
+                <span class="exit-intent-popup__offer-highlight">FREE</span>
+                <span class="exit-intent-popup__offer-text">30-minute consultation</span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <!-- CTA Buttons -->
+        <div class="exit-intent-popup__actions">
+          {(popupConfig.offerType === 'discount' || popupConfig.offerType === 'both') && (
+            <a
+              href={popupConfig.contactUrl}
+              class="exit-intent-popup__cta exit-intent-popup__cta--primary"
+              data-action="claim-discount"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.25 2.25a3 3 0 00-3 3v4.318a3 3 0 00.879 2.121l9.58 9.581c.92.92 2.39 1.186 3.548.428a18.849 18.849 0 005.441-5.44c.758-1.16.492-2.629-.428-3.548l-9.58-9.581a3 3 0 00-2.122-.879H5.25zM6.375 7.5a1.125 1.125 0 100-2.25 1.125 1.125 0 000 2.25z" clip-rule="evenodd" />
+              </svg>
+              {contentConfig.primaryButtonText}
+            </a>
+          )}
+          {(popupConfig.offerType === 'consultation' || popupConfig.offerType === 'both') && (
+            <a
+              href={popupConfig.consultationUrl}
+              class={`exit-intent-popup__cta ${popupConfig.offerType === 'both' ? 'exit-intent-popup__cta--secondary' : 'exit-intent-popup__cta--primary'}`}
+              data-action="book-consultation"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20" aria-hidden="true">
+                <path d="M12.75 12.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM7.5 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM8.25 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM9.75 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM10.5 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM12.75 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM14.25 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM15 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM16.5 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM15 12.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM16.5 13.5a.75.75 0 100-1.5.75.75 0 000 1.5z" />
+                <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 017.5 3v1.5h9V3A.75.75 0 0118 3v1.5h.75a3 3 0 013 3v11.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V7.5a3 3 0 013-3H6V3a.75.75 0 01.75-.75zm13.5 9a1.5 1.5 0 00-1.5-1.5H5.25a1.5 1.5 0 00-1.5 1.5v7.5a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-7.5z" clip-rule="evenodd" />
+              </svg>
+              {contentConfig.secondaryButtonText}
+            </a>
+          )}
+        </div>
+
+        <!-- Dismiss link -->
+        <button type="button" class="exit-intent-popup__dismiss">
+          {contentConfig.dismissText}
+        </button>
+
+        <!-- Copy success message (hidden by default) -->
+        <div class="exit-intent-popup__copy-success" aria-live="polite" hidden>
+          Code copied to clipboard!
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
+<style>
+  /* =================================================================
+   * EXIT INTENT POPUP STYLES
+   * ================================================================= */
+
+  .exit-intent-popup {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal, 500);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-4);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--duration-300) var(--ease-out),
+      visibility var(--duration-300) var(--ease-out);
+  }
+
+  .exit-intent-popup[data-visible="true"] {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* -----------------------------------------------------------------
+   * Backdrop
+   * ----------------------------------------------------------------- */
+  .exit-intent-popup__backdrop {
+    position: absolute;
+    inset: 0;
+    background-color: var(--color-background-overlay);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  /* -----------------------------------------------------------------
+   * Container
+   * ----------------------------------------------------------------- */
+  .exit-intent-popup__container {
+    position: relative;
+    width: 100%;
+    max-width: 32rem;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: scale(0.9) translateY(20px);
+    transition: transform var(--duration-300) var(--ease-spring-soft);
+  }
+
+  .exit-intent-popup[data-visible="true"] .exit-intent-popup__container {
+    transform: scale(1) translateY(0);
+  }
+
+  /* -----------------------------------------------------------------
+   * Content
+   * ----------------------------------------------------------------- */
+  .exit-intent-popup__content {
+    position: relative;
+    background: linear-gradient(135deg, var(--color-background) 0%, var(--color-background-subtle) 100%);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-2xl);
+    padding: var(--spacing-8);
+    border: 1px solid var(--color-border-light);
+  }
+
+  /* -----------------------------------------------------------------
+   * Close Button
+   * ----------------------------------------------------------------- */
+  .exit-intent-popup__close {
+    position: absolute;
+    top: var(--spacing-4);
+    right: var(--spacing-4);
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    color: var(--color-text-tertiary);
+    cursor: pointer;
+    transition:
+      color var(--duration-150) var(--ease-in-out),
+      background-color var(--duration-150) var(--ease-in-out),
+      border-color var(--duration-150) var(--ease-in-out);
+  }
+
+  .exit-intent-popup__close:hover {
+    color: var(--color-text-primary);
+    background-color: var(--color-background-muted);
+    border-color: var(--color-border-dark);
+  }
+
+  .exit-intent-popup__close:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  /* -----------------------------------------------------------------
+   * Badge
+   * ----------------------------------------------------------------- */
+  .exit-intent-popup__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-1-5);
+    padding: var(--spacing-1-5) var(--spacing-3);
+    background: linear-gradient(135deg, var(--color-accent-subtle) 0%, var(--color-primary-100) 100%);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .exit-intent-popup__badge svg {
+    color: var(--color-accent);
+  }
+
+  /* -----------------------------------------------------------------
+   * Header
+   * ----------------------------------------------------------------- */
+  .exit-intent-popup__header {
+    text-align: center;
+    margin-bottom: var(--spacing-6);
+  }
+
+  .exit-intent-popup__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-2);
+    line-height: var(--line-height-tight);
+  }
+
+  .exit-intent-popup__description {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* -----------------------------------------------------------------
+   * Offers Section
+   * ----------------------------------------------------------------- */
+  .exit-intent-popup__offers {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+    margin-bottom: var(--spacing-6);
+  }
+
+  .exit-intent-popup__offer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-3);
+    padding: var(--spacing-5);
+    background: var(--color-background);
+    border-radius: var(--radius-xl);
+    border: 2px solid var(--color-border);
+    transition: border-color var(--duration-150) var(--ease-in-out);
+  }
+
+  .exit-intent-popup__offer:hover {
+    border-color: var(--color-primary-300);
+  }
+
+  .exit-intent-popup__offer--discount {
+    border-color: var(--color-accent-subtle);
+    background: linear-gradient(135deg, var(--color-background) 0%, var(--color-accent-subtle) 100%);
+  }
+
+  .exit-intent-popup__offer--consultation {
+    border-color: var(--color-primary-100);
+    background: linear-gradient(135deg, var(--color-background) 0%, var(--color-primary-50) 100%);
+  }
+
+  .exit-intent-popup__offer-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    background: var(--color-primary);
+    border-radius: var(--radius-full);
+    color: var(--color-text-inverse);
+  }
+
+  .exit-intent-popup__offer--discount .exit-intent-popup__offer-icon {
+    background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
+  }
+
+  .exit-intent-popup__offer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-1);
+  }
+
+  .exit-intent-popup__offer-highlight {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+  }
+
+  .exit-intent-popup__offer--discount .exit-intent-popup__offer-highlight {
+    color: var(--color-accent-dark);
+  }
+
+  .exit-intent-popup__offer-text {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  /* Discount Code Section */
+  .exit-intent-popup__discount-code {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-3);
+    background: var(--color-background);
+    border: 1px dashed var(--color-accent);
+    border-radius: var(--radius-md);
+  }
+
+  .exit-intent-popup__code-label {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  .exit-intent-popup__code {
+    font-family: var(--font-mono);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-accent-dark);
+    background: transparent;
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  .exit-intent-popup__copy-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-1);
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--color-text-tertiary);
+    cursor: pointer;
+    transition: color var(--duration-150) var(--ease-in-out);
+  }
+
+  .exit-intent-popup__copy-btn:hover {
+    color: var(--color-accent);
+  }
+
+  .exit-intent-popup__copy-btn:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  .exit-intent-popup__copy-btn[data-copied="true"] {
+    color: var(--color-success);
+  }
+
+  /* Divider */
+  .exit-intent-popup__divider {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+  }
+
+  .exit-intent-popup__divider::before,
+  .exit-intent-popup__divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--color-border);
+  }
+
+  .exit-intent-popup__divider span {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-tertiary);
+  }
+
+  /* -----------------------------------------------------------------
+   * CTA Buttons
+   * ----------------------------------------------------------------- */
+  .exit-intent-popup__actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+  }
+
+  .exit-intent-popup__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-4) var(--spacing-6);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      transform var(--duration-150) var(--ease-in-out),
+      box-shadow var(--duration-150) var(--ease-in-out);
+  }
+
+  .exit-intent-popup__cta--primary {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-600) 100%);
+    color: var(--color-text-inverse);
+    box-shadow: var(--shadow-primary);
+  }
+
+  .exit-intent-popup__cta--primary:hover {
+    background: linear-gradient(135deg, var(--color-primary-600) 0%, var(--color-primary-700) 100%);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-primary-lg);
+  }
+
+  .exit-intent-popup__cta--primary:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  .exit-intent-popup__cta--secondary {
+    background: var(--color-background);
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+  }
+
+  .exit-intent-popup__cta--secondary:hover {
+    background: var(--color-primary-50);
+    transform: translateY(-2px);
+  }
+
+  .exit-intent-popup__cta--secondary:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  /* -----------------------------------------------------------------
+   * Dismiss Link
+   * ----------------------------------------------------------------- */
+  .exit-intent-popup__dismiss {
+    display: block;
+    width: 100%;
+    margin-top: var(--spacing-4);
+    padding: var(--spacing-2);
+    background: transparent;
+    border: none;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+    text-align: center;
+    cursor: pointer;
+    transition: color var(--duration-150) var(--ease-in-out);
+  }
+
+  .exit-intent-popup__dismiss:hover {
+    color: var(--color-text-secondary);
+  }
+
+  .exit-intent-popup__dismiss:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  /* -----------------------------------------------------------------
+   * Copy Success Message
+   * ----------------------------------------------------------------- */
+  .exit-intent-popup__copy-success {
+    position: absolute;
+    bottom: var(--spacing-4);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: var(--spacing-2) var(--spacing-4);
+    background: var(--color-success);
+    color: var(--color-text-inverse);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    box-shadow: var(--shadow-lg);
+    animation: fadeInOut 2s ease-in-out;
+  }
+
+  .exit-intent-popup__copy-success[hidden] {
+    display: none;
+  }
+
+  @keyframes fadeInOut {
+    0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    85% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+  }
+
+  /* -----------------------------------------------------------------
+   * Responsive
+   * ----------------------------------------------------------------- */
+  @media (max-width: 480px) {
+    .exit-intent-popup {
+      padding: var(--spacing-2);
+      align-items: flex-end;
+    }
+
+    .exit-intent-popup__container {
+      max-width: 100%;
+    }
+
+    .exit-intent-popup__content {
+      padding: var(--spacing-6);
+      border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+    }
+
+    .exit-intent-popup__title {
+      font-size: var(--font-size-xl);
+    }
+
+    .exit-intent-popup__offer {
+      padding: var(--spacing-4);
+    }
+
+    .exit-intent-popup__cta {
+      padding: var(--spacing-3) var(--spacing-4);
+    }
+  }
+
+  /* -----------------------------------------------------------------
+   * Reduced Motion
+   * ----------------------------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .exit-intent-popup {
+      transition: none;
+    }
+
+    .exit-intent-popup__container {
+      transition: none;
+    }
+
+    .exit-intent-popup__close,
+    .exit-intent-popup__cta,
+    .exit-intent-popup__dismiss,
+    .exit-intent-popup__offer {
+      transition: none;
+    }
+
+    .exit-intent-popup__copy-success {
+      animation: none;
+    }
+  }
+
+  /* -----------------------------------------------------------------
+   * Hidden State
+   * ----------------------------------------------------------------- */
+  .exit-intent-popup[hidden] {
+    display: none;
+  }
+
+  /* -----------------------------------------------------------------
+   * Dark Mode
+   * ----------------------------------------------------------------- */
+  html[data-theme="dark"] .exit-intent-popup__content {
+    background: linear-gradient(135deg, var(--color-background) 0%, var(--color-background-subtle) 100%);
+    border-color: var(--color-border);
+  }
+
+  html[data-theme="dark"] .exit-intent-popup__offer {
+    background: var(--color-background-subtle);
+    border-color: var(--color-border);
+  }
+
+  html[data-theme="dark"] .exit-intent-popup__offer--discount {
+    background: linear-gradient(135deg, var(--color-background-subtle) 0%, rgba(139, 92, 246, 0.1) 100%);
+  }
+
+  html[data-theme="dark"] .exit-intent-popup__offer--consultation {
+    background: linear-gradient(135deg, var(--color-background-subtle) 0%, rgba(54, 83, 149, 0.1) 100%);
+  }
+
+  html[data-theme="dark"] .exit-intent-popup__discount-code {
+    background: var(--color-background);
+    border-color: var(--color-accent);
+  }
+
+  html[data-theme="dark"] .exit-intent-popup__cta--secondary {
+    background: var(--color-background-subtle);
+  }
+
+  html[data-theme="dark"] .exit-intent-popup__cta--secondary:hover {
+    background: var(--color-background-muted);
+  }
+</style>
+
+<script>
+  /**
+   * Exit Intent Popup Client-Side Logic
+   * Handles popup display on exit-intent detection,
+   * dismissal persistence, and frequency capping.
+   */
+
+  const STORAGE_KEYS = {
+    DISMISSED: 'exit_intent_popup_dismissed',
+    DISMISSED_AT: 'exit_intent_popup_dismissed_at',
+    CONVERTED: 'exit_intent_popup_converted',
+    SESSION_SHOWS: 'exit_intent_popup_session_shows',
+  };
+
+  let popup: HTMLElement | null = null;
+  let isInitialized = false;
+  let pageEnterTime: number = Date.now();
+  let hasTriggeredExitIntent = false;
+
+  function initExitIntentPopup(): void {
+    popup = document.getElementById('exit-intent-popup');
+    if (!popup || isInitialized) return;
+
+    isInitialized = true;
+    pageEnterTime = Date.now();
+
+    const dismissalDays = parseInt(popup.dataset.dismissalDays || '7', 10);
+    const maxShows = parseInt(popup.dataset.maxShows || '1', 10);
+    const minimumTime = parseInt(popup.dataset.minTime || '10000', 10);
+    const excludePages = JSON.parse(popup.dataset.excludePages || '[]') as string[];
+    const desktopOnly = popup.dataset.desktopOnly === 'true';
+
+    // Check if we should show the popup
+    if (!shouldShowPopup(dismissalDays, maxShows, excludePages, desktopOnly)) {
+      return;
+    }
+
+    // Setup event listeners
+    setupCloseButtons();
+    setupBackdropClick();
+    setupKeyboardNavigation();
+    setupCopyButton();
+    setupCTATracking();
+
+    // Setup exit intent detection (with minimum time check)
+    setupExitIntent(minimumTime);
+  }
+
+  function shouldShowPopup(
+    dismissalDays: number,
+    maxShows: number,
+    excludePages: string[],
+    desktopOnly: boolean
+  ): boolean {
+    // Check if user has already converted
+    if (localStorage.getItem(STORAGE_KEYS.CONVERTED) === 'true') {
+      return false;
+    }
+
+    // Check if popup was dismissed recently
+    const dismissedAt = localStorage.getItem(STORAGE_KEYS.DISMISSED_AT);
+    if (dismissedAt) {
+      const dismissedTime = parseInt(dismissedAt, 10);
+      const daysSinceDismissal = (Date.now() - dismissedTime) / (1000 * 60 * 60 * 24);
+      if (daysSinceDismissal < dismissalDays) {
+        return false;
+      }
+    }
+
+    // Check session shows limit
+    const sessionShows = parseInt(sessionStorage.getItem(STORAGE_KEYS.SESSION_SHOWS) || '0', 10);
+    if (sessionShows >= maxShows) {
+      return false;
+    }
+
+    // Check excluded pages
+    const currentPath = window.location.pathname;
+    if (excludePages.some(page => currentPath.startsWith(page))) {
+      return false;
+    }
+
+    // Check desktop-only setting
+    if (desktopOnly && !window.matchMedia('(min-width: 768px)').matches) {
+      return false;
+    }
+
+    // Check if newsletter popup has already been shown
+    const newsletterShown = sessionStorage.getItem('newsletter_popup_session_shows');
+    if (newsletterShown && parseInt(newsletterShown, 10) > 0) {
+      // If newsletter popup was shown, delay exit intent popup
+      return false;
+    }
+
+    return true;
+  }
+
+  function showPopup(): void {
+    if (!popup || hasTriggeredExitIntent) return;
+
+    hasTriggeredExitIntent = true;
+
+    // Increment session show count
+    const sessionShows = parseInt(sessionStorage.getItem(STORAGE_KEYS.SESSION_SHOWS) || '0', 10);
+    sessionStorage.setItem(STORAGE_KEYS.SESSION_SHOWS, (sessionShows + 1).toString());
+
+    // Show popup
+    popup.hidden = false;
+    popup.setAttribute('data-visible', 'true');
+
+    // Prevent body scroll
+    document.body.style.overflow = 'hidden';
+
+    // Focus the close button for accessibility
+    setTimeout(() => {
+      const closeBtn = popup?.querySelector('.exit-intent-popup__close') as HTMLButtonElement;
+      closeBtn?.focus();
+    }, 100);
+
+    // Track popup shown event
+    trackPopupEvent('exit_intent_popup_shown', {
+      trigger: 'exit_intent',
+      page_path: window.location.pathname,
+    });
+  }
+
+  function hidePopup(remember: boolean = true): void {
+    if (!popup) return;
+
+    // Hide popup
+    popup.setAttribute('data-visible', 'false');
+
+    // Restore body scroll
+    document.body.style.overflow = '';
+
+    // Wait for animation then hide
+    setTimeout(() => {
+      if (popup) popup.hidden = true;
+    }, 300);
+
+    // Remember dismissal
+    if (remember) {
+      localStorage.setItem(STORAGE_KEYS.DISMISSED, 'true');
+      localStorage.setItem(STORAGE_KEYS.DISMISSED_AT, Date.now().toString());
+
+      // Track dismissal event
+      trackPopupEvent('exit_intent_popup_dismissed', {
+        page_path: window.location.pathname,
+      });
+    }
+  }
+
+  function setupCloseButtons(): void {
+    if (!popup) return;
+
+    const closeBtn = popup.querySelector('.exit-intent-popup__close');
+    const dismissBtn = popup.querySelector('.exit-intent-popup__dismiss');
+
+    closeBtn?.addEventListener('click', () => hidePopup());
+    dismissBtn?.addEventListener('click', () => hidePopup());
+  }
+
+  function setupBackdropClick(): void {
+    if (!popup) return;
+
+    const backdrop = popup.querySelector('.exit-intent-popup__backdrop');
+    backdrop?.addEventListener('click', () => hidePopup());
+  }
+
+  function setupKeyboardNavigation(): void {
+    if (!popup) return;
+
+    // Close on Escape key
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && popup?.getAttribute('data-visible') === 'true') {
+        hidePopup();
+      }
+    });
+
+    // Focus trap
+    popup.addEventListener('keydown', (event) => {
+      if (event.key !== 'Tab') return;
+
+      const focusableElements = popup?.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+
+      if (!focusableElements || focusableElements.length === 0) return;
+
+      const firstElement = focusableElements[0] as HTMLElement;
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+      if (event.shiftKey) {
+        if (document.activeElement === firstElement) {
+          event.preventDefault();
+          lastElement.focus();
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          event.preventDefault();
+          firstElement.focus();
+        }
+      }
+    });
+  }
+
+  function setupCopyButton(): void {
+    if (!popup) return;
+
+    const copyBtn = popup.querySelector('.exit-intent-popup__copy-btn');
+    const successMsg = popup.querySelector('.exit-intent-popup__copy-success');
+
+    copyBtn?.addEventListener('click', async () => {
+      const code = (copyBtn as HTMLElement).dataset.code;
+      if (!code) return;
+
+      try {
+        await navigator.clipboard.writeText(code);
+
+        // Show success indicator
+        copyBtn.setAttribute('data-copied', 'true');
+        if (successMsg) {
+          successMsg.removeAttribute('hidden');
+          setTimeout(() => {
+            successMsg.setAttribute('hidden', '');
+            copyBtn.removeAttribute('data-copied');
+          }, 2000);
+        }
+
+        // Track copy event
+        trackPopupEvent('exit_intent_code_copied', {
+          code: code,
+          page_path: window.location.pathname,
+        });
+      } catch (err) {
+        console.error('Failed to copy code:', err);
+      }
+    });
+  }
+
+  function setupCTATracking(): void {
+    if (!popup) return;
+
+    const ctaButtons = popup.querySelectorAll('.exit-intent-popup__cta');
+
+    ctaButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const action = (btn as HTMLElement).dataset.action;
+
+        // Mark as converted
+        localStorage.setItem(STORAGE_KEYS.CONVERTED, 'true');
+
+        // Track conversion event
+        trackPopupEvent('exit_intent_popup_converted', {
+          action: action,
+          page_path: window.location.pathname,
+        });
+
+        // Hide popup without remembering (since they converted)
+        hidePopup(false);
+      });
+    });
+  }
+
+  function setupExitIntent(minimumTime: number): void {
+    const handleMouseLeave = (event: MouseEvent) => {
+      if (hasTriggeredExitIntent) return;
+
+      // Check if minimum time on page has elapsed
+      const timeOnPage = Date.now() - pageEnterTime;
+      if (timeOnPage < minimumTime) return;
+
+      // Check if mouse is leaving through the top of the viewport
+      if (event.clientY <= 0) {
+        showPopup();
+        document.removeEventListener('mouseout', handleMouseLeave);
+      }
+    };
+
+    // Only add exit intent on desktop (pointer device)
+    if (window.matchMedia('(min-width: 768px)').matches) {
+      document.addEventListener('mouseout', handleMouseLeave);
+    }
+  }
+
+  function trackPopupEvent(eventName: string, params: Record<string, unknown>): void {
+    // Track using gtag if available
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', eventName, params);
+    }
+
+    // Also dispatch custom event for other tracking integrations
+    window.dispatchEvent(new CustomEvent(eventName, { detail: params }));
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initExitIntentPopup);
+  } else {
+    initExitIntentPopup();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', () => {
+    isInitialized = false;
+    hasTriggeredExitIntent = false;
+    pageEnterTime = Date.now();
+    initExitIntentPopup();
+  });
+</script>

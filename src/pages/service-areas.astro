@@ -1,0 +1,1491 @@
+---
+/**
+ * Service Areas Page - Houston Web Services
+ * A dedicated page listing all Houston neighborhoods and districts served.
+ * Optimized for local SEO with location-specific keywords and schema markup.
+ *
+ * Sections:
+ * 1. Hero Section - Value proposition and service area overview
+ * 2. Interactive Map Section - Google Maps showing service coverage
+ * 3. Primary Areas - Featured neighborhoods with prominent display
+ * 4. All Areas by Region - Complete listing organized by region
+ * 5. Why Local Section - Benefits of choosing a local provider
+ * 6. CTA Section - Contact for consultation
+ */
+
+import Layout from '../layouts/Layout.astro';
+import InteractiveServiceMap from '../components/InteractiveServiceMap.astro';
+import Button from '../components/Button.astro';
+import {
+  serviceAreas,
+  getPrimaryServiceAreas,
+  getServiceAreasByRegion,
+  formatRegionName,
+  serviceAreaStats,
+} from '../config/service-areas.config';
+import type { ServiceArea } from '../types/seo';
+
+// Get organized data
+const primaryAreas = getPrimaryServiceAreas();
+const areasByRegion = getServiceAreasByRegion();
+
+// Region order for display
+const regionOrder = ['central', 'west', 'northwest', 'north', 'northeast', 'southwest', 'southeast', 'east', 'south'];
+
+// Build schema.org LocalBusiness with areaServed for local SEO
+const serviceAreaSchema: ServiceArea[] = serviceAreas.map(area => ({
+  type: 'City',
+  name: area.name,
+  addressLocality: area.name,
+  addressRegion: 'TX',
+  addressCountry: 'US',
+}));
+---
+
+<Layout
+  title="Service Areas | Houston Web Design"
+  description="Houston Web Services provides professional web design, development, and SEO services throughout the Greater Houston area. Serving Downtown, The Heights, Katy, Sugar Land, The Woodlands, and 40+ neighborhoods."
+  keywords="Houston web design, web developer Houston TX, web design Katy TX, web design Sugar Land, web design The Woodlands, Houston website services, local web designer Houston"
+  openGraph={{
+    type: 'website',
+  }}
+  jsonLd={{
+    type: 'LocalBusiness',
+    name: 'Houston Web Services',
+    description: 'Professional web design and development services for small businesses throughout the Greater Houston area.',
+    areaServed: serviceAreaSchema,
+  }}
+>
+  <main>
+    <!-- Service Areas Hero Section -->
+    <section class="areas-hero" aria-labelledby="areas-hero-heading">
+      <div class="areas-hero__container">
+        <div class="areas-hero__content">
+          <div class="areas-hero__badge">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+            </svg>
+            <span>Serving the Greater Houston Area</span>
+          </div>
+          <h1 id="areas-hero-heading" class="areas-hero__title">
+            Web Design Services<br/>
+            <span class="areas-hero__title-highlight">For Houston Businesses</span>
+          </h1>
+          <p class="areas-hero__description">
+            We proudly serve small businesses throughout the Greater Houston metropolitan area.
+            Whether you're in Downtown Houston, the suburbs, or anywhere in between,
+            we bring professional web design and development services to your doorstep.
+          </p>
+          <div class="areas-hero__cta-group">
+            <Button
+              text="Get a Free Quote"
+              href="/contact"
+              variant="primary"
+              size="large"
+            />
+            <Button
+              text="View Our Services"
+              href="/services"
+              variant="secondary"
+              size="large"
+            />
+          </div>
+          <div class="areas-hero__stats">
+            <div class="areas-hero__stat">
+              <span class="areas-hero__stat-value">{serviceAreaStats.totalAreas}+</span>
+              <span class="areas-hero__stat-label">Neighborhoods</span>
+            </div>
+            <div class="areas-hero__stat-divider"></div>
+            <div class="areas-hero__stat">
+              <span class="areas-hero__stat-value">{serviceAreaStats.totalZipCodes}+</span>
+              <span class="areas-hero__stat-label">ZIP Codes</span>
+            </div>
+            <div class="areas-hero__stat-divider"></div>
+            <div class="areas-hero__stat">
+              <span class="areas-hero__stat-value">{serviceAreaStats.regions}</span>
+              <span class="areas-hero__stat-label">Regions</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="areas-hero__decoration" aria-hidden="true"></div>
+    </section>
+
+    <!-- Static Map Section -->
+    <section class="map-section" aria-labelledby="map-heading">
+      <div class="map-section__container">
+        <header class="map-section__header">
+          <div class="map-section__header-wrapper">
+            <h2 id="map-heading" class="map-section__heading">
+              Our Service Coverage
+            </h2>
+          </div>
+          <p class="map-section__description">
+            From the Texas Medical Center to The Woodlands, from Katy to Pearland, we serve businesses
+            across the entire Greater Houston metropolitan area.
+          </p>
+        </header>
+
+        <div class="map-section__map-wrapper">
+          <!-- Interactive Google Maps embed -->
+          <InteractiveServiceMap
+            height="450px"
+            zoom={10}
+            centerLat={29.7604}
+            centerLng={-95.5}
+            showServiceArea={true}
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Primary Service Areas Section -->
+    <section class="primary-areas" aria-labelledby="primary-areas-heading">
+      <div class="primary-areas__container">
+        <header class="primary-areas__header">
+          <div class="primary-areas__header-wrapper">
+            <h2 id="primary-areas-heading" class="primary-areas__heading">
+              Featured Service Areas
+            </h2>
+          </div>
+          <p class="primary-areas__description">
+            We have extensive experience serving businesses in these key Houston neighborhoods and suburbs.
+          </p>
+        </header>
+
+        <div class="primary-areas__grid">
+          {primaryAreas.map((area) => (
+            <article class="area-card area-card--primary">
+              <div class="area-card__icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                </svg>
+              </div>
+              <h3 class="area-card__title">{area.name}</h3>
+              <p class="area-card__description">{area.shortDescription}</p>
+              <span class="area-card__type">{area.type === 'suburb' ? 'Suburb' : area.type === 'district' ? 'District' : area.type === 'city' ? 'City' : 'Neighborhood'}</span>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- All Areas by Region Section -->
+    <section class="all-areas" aria-labelledby="all-areas-heading">
+      <div class="all-areas__container">
+        <header class="all-areas__header">
+          <div class="all-areas__header-wrapper">
+            <h2 id="all-areas-heading" class="all-areas__heading">
+              All Service Areas
+            </h2>
+          </div>
+          <p class="all-areas__description">
+            Browse all {serviceAreaStats.totalAreas}+ neighborhoods and communities we serve throughout the Greater Houston area.
+          </p>
+        </header>
+
+        <div class="all-areas__regions">
+          {regionOrder.map((regionKey) => {
+            const areas = areasByRegion[regionKey];
+            if (!areas || areas.length === 0) return null;
+
+            return (
+              <div class="region-group">
+                <h3 class="region-group__title">{formatRegionName(regionKey)}</h3>
+                <ul class="region-group__list" role="list">
+                  {areas.map((area) => (
+                    <li class="region-group__item">
+                      <span class="region-group__name">{area.name}</span>
+                      {area.isPrimary && (
+                        <span class="region-group__badge">Featured</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+
+    <!-- Why Choose Local Section -->
+    <section class="why-local" aria-labelledby="why-local-heading">
+      <div class="why-local__container">
+        <header class="why-local__header">
+          <div class="why-local__header-wrapper">
+            <h2 id="why-local-heading" class="why-local__heading">
+              Why Choose a Local Web Designer?
+            </h2>
+          </div>
+          <p class="why-local__description">
+            Working with a Houston-based web designer offers unique advantages for your business.
+          </p>
+        </header>
+
+        <div class="why-local__grid">
+          <article class="benefit-card">
+            <div class="benefit-card__icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+            </div>
+            <h3 class="benefit-card__title">Local Market Knowledge</h3>
+            <p class="benefit-card__description">
+              We understand Houston businesses and what local customers are looking for.
+              Our designs resonate with your target audience.
+            </p>
+          </article>
+
+          <article class="benefit-card">
+            <div class="benefit-card__icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+              </svg>
+            </div>
+            <h3 class="benefit-card__title">Face-to-Face Meetings</h3>
+            <p class="benefit-card__description">
+              We're available for in-person consultations at your office or a local coffee shop.
+              Nothing beats direct communication.
+            </p>
+          </article>
+
+          <article class="benefit-card">
+            <div class="benefit-card__icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+              </svg>
+            </div>
+            <h3 class="benefit-card__title">Same Time Zone</h3>
+            <p class="benefit-card__description">
+              No waiting for overseas responses. We're here during your business hours,
+              ready to help when you need us.
+            </p>
+          </article>
+
+          <article class="benefit-card">
+            <div class="benefit-card__icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+              </svg>
+            </div>
+            <h3 class="benefit-card__title">Local SEO Expertise</h3>
+            <p class="benefit-card__description">
+              We know how to optimize your site for Houston-area searches,
+              helping you rank higher in local search results.
+            </p>
+          </article>
+
+          <article class="benefit-card">
+            <div class="benefit-card__icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+              </svg>
+            </div>
+            <h3 class="benefit-card__title">Community Connection</h3>
+            <p class="benefit-card__description">
+              We're part of the Houston business community too. Your success is our success,
+              and we're invested in helping local businesses thrive.
+            </p>
+          </article>
+
+          <article class="benefit-card">
+            <div class="benefit-card__icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+              </svg>
+            </div>
+            <h3 class="benefit-card__title">Trusted & Accountable</h3>
+            <p class="benefit-card__description">
+              As a local business, our reputation matters. We stand behind our work
+              and are always here to support you.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section" aria-labelledby="cta-heading">
+      <div class="cta-section__container">
+        <div class="cta-section__content">
+          <h2 id="cta-heading" class="cta-section__heading">
+            Ready to Work with a Local Expert?
+          </h2>
+          <p class="cta-section__description">
+            Whether you're in Downtown Houston, Katy, The Woodlands, or anywhere in between,
+            we're ready to help your business succeed online.
+          </p>
+          <div class="cta-section__buttons">
+            <Button
+              text="Get Your Free Consultation"
+              href="/contact"
+              variant="primary"
+              size="large"
+            />
+            <Button
+              text="View Our Work"
+              href="/portfolio"
+              variant="secondary"
+              size="large"
+            />
+          </div>
+          <p class="cta-section__reassurance">
+            Free consultation for all Houston-area businesses. No obligation.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  /* =================================================================
+   * SERVICE AREAS PAGE STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention
+   */
+
+  /* =================================================================
+   * AREAS HERO SECTION
+   * ================================================================= */
+
+  .areas-hero {
+    position: relative;
+    padding: var(--spacing-16) var(--spacing-4) var(--spacing-20);
+    background: linear-gradient(
+      135deg,
+      var(--color-background) 0%,
+      var(--color-primary-50) 50%,
+      var(--color-background) 100%
+    );
+    background-size: 200% 200%;
+    animation: gradientShift 15s ease infinite;
+    overflow: hidden;
+  }
+
+  .areas-hero__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  .areas-hero__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--spacing-5);
+  }
+
+  .areas-hero__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-4);
+    background-color: var(--color-primary-50);
+    border: 1px solid var(--color-primary-200);
+    border-radius: var(--radius-full);
+    color: var(--color-primary-700);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .areas-hero__badge svg {
+    color: var(--color-primary-600);
+  }
+
+  .areas-hero__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-tight);
+    margin: 0;
+  }
+
+  .areas-hero__title-highlight {
+    color: var(--color-primary);
+    display: block;
+  }
+
+  .areas-hero__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    max-width: 55ch;
+    margin: 0;
+  }
+
+  .areas-hero__cta-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    width: 100%;
+    max-width: 20rem;
+  }
+
+  .areas-hero__stats {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-4);
+    padding: var(--spacing-4) var(--spacing-6);
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    margin-top: var(--spacing-2);
+  }
+
+  .areas-hero__stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-1);
+  }
+
+  .areas-hero__stat-value {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+  }
+
+  .areas-hero__stat-label {
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .areas-hero__stat-divider {
+    width: 1px;
+    height: var(--spacing-8);
+    background-color: var(--color-border);
+  }
+
+  .areas-hero__decoration {
+    position: absolute;
+    bottom: -50%;
+    right: -20%;
+    width: 60%;
+    height: 100%;
+    background: radial-gradient(
+      ellipse at center,
+      var(--color-primary-100) 0%,
+      transparent 70%
+    );
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  /* =================================================================
+   * MAP SECTION
+   * ================================================================= */
+
+  .map-section {
+    position: relative;
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+    overflow: hidden;
+  }
+
+  .map-section__container {
+    position: relative;
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+    z-index: 1;
+  }
+
+  .map-section__header {
+    text-align: center;
+    margin-bottom: var(--spacing-10);
+  }
+
+  .map-section__header-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .map-section__header-wrapper::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    margin-bottom: var(--spacing-3);
+    background: var(--color-accent);
+    border-radius: var(--radius-full);
+    box-shadow:
+      -12px 0 0 var(--color-primary),
+      12px 0 0 var(--color-accent-alt);
+    opacity: 0.8;
+  }
+
+  .map-section__header-wrapper::after {
+    content: '';
+    display: block;
+    width: 4rem;
+    height: 3px;
+    margin-top: var(--spacing-4);
+    background: linear-gradient(
+      90deg,
+      var(--color-primary) 0%,
+      var(--color-accent) 50%,
+      var(--color-accent-alt) 100%
+    );
+    background-size: 200% 100%;
+    border-radius: var(--radius-full);
+    animation: accentShimmer 4s ease-in-out infinite;
+  }
+
+  .map-section__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4) 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .map-section__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-md);
+    color: var(--color-text-secondary);
+    max-width: 60ch;
+    margin: 0 auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .map-section__map-wrapper {
+    position: relative;
+    max-width: 56rem;
+    margin: 0 auto;
+  }
+
+  .map-section__map {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-100) 0%,
+      var(--color-primary-50) 50%,
+      var(--color-background) 100%
+    );
+    border-radius: var(--radius-2xl);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+
+  .map-section__map-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-3);
+  }
+
+  .map-section__map-icon {
+    width: var(--spacing-16);
+    height: var(--spacing-16);
+    color: var(--color-primary);
+    opacity: 0.6;
+  }
+
+  .map-section__map-label {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+  }
+
+  .map-section__map-sublabel {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    text-align: center;
+    padding: 0 var(--spacing-4);
+  }
+
+  /* Decorative location pins on map */
+  .map-section__pins {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .map-section__pin {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-1);
+  }
+
+  .map-section__pin::before {
+    content: '';
+    width: 12px;
+    height: 12px;
+    background-color: var(--color-primary);
+    border: 2px solid var(--color-background);
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow-md);
+    animation: pinPulse 2s ease-in-out infinite;
+  }
+
+  .map-section__pin span {
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    background-color: var(--color-background);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    white-space: nowrap;
+  }
+
+  /* Pin positions (approximate Houston area layout) */
+  .map-section__pin--1 { top: 45%; left: 48%; } /* Downtown */
+  .map-section__pin--2 { top: 12%; left: 52%; animation-delay: 0.3s; } /* The Woodlands */
+  .map-section__pin--3 { top: 42%; left: 18%; animation-delay: 0.6s; } /* Katy */
+  .map-section__pin--4 { top: 68%; left: 38%; animation-delay: 0.9s; } /* Sugar Land */
+  .map-section__pin--5 { top: 75%; left: 55%; animation-delay: 1.2s; } /* Pearland */
+  .map-section__pin--6 { top: 22%; left: 28%; animation-delay: 1.5s; } /* Cypress */
+
+  @keyframes pinPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.8; }
+  }
+
+  /* Hide pin labels on very small screens */
+  @media screen and (max-width: 480px) {
+    .map-section__pin span {
+      display: none;
+    }
+  }
+
+  /* =================================================================
+   * PRIMARY AREAS SECTION
+   * ================================================================= */
+
+  .primary-areas {
+    position: relative;
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background);
+    overflow: hidden;
+  }
+
+  .primary-areas__container {
+    position: relative;
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+    z-index: 1;
+  }
+
+  .primary-areas__header {
+    text-align: center;
+    margin-bottom: var(--spacing-12);
+  }
+
+  .primary-areas__header-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .primary-areas__header-wrapper::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    margin-bottom: var(--spacing-3);
+    background: var(--color-accent);
+    border-radius: var(--radius-full);
+    box-shadow:
+      -12px 0 0 var(--color-primary),
+      12px 0 0 var(--color-accent-alt);
+    opacity: 0.8;
+  }
+
+  .primary-areas__header-wrapper::after {
+    content: '';
+    display: block;
+    width: 4rem;
+    height: 3px;
+    margin-top: var(--spacing-4);
+    background: linear-gradient(
+      90deg,
+      var(--color-primary) 0%,
+      var(--color-accent) 50%,
+      var(--color-accent-alt) 100%
+    );
+    background-size: 200% 100%;
+    border-radius: var(--radius-full);
+    animation: accentShimmer 4s ease-in-out infinite;
+  }
+
+  .primary-areas__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4) 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .primary-areas__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-md);
+    color: var(--color-text-secondary);
+    max-width: 55ch;
+    margin: 0 auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .primary-areas__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+  }
+
+  /* =================================================================
+   * AREA CARD COMPONENT
+   * ================================================================= */
+
+  .area-card {
+    position: relative;
+    padding: var(--spacing-6);
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    transition:
+      transform var(--duration-200) var(--ease-out),
+      box-shadow var(--duration-200) var(--ease-out),
+      border-color var(--duration-200) var(--ease-out);
+  }
+
+  .area-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-primary-200);
+  }
+
+  .area-card__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--spacing-12);
+    height: var(--spacing-12);
+    margin-bottom: var(--spacing-4);
+    background-color: var(--color-primary-50);
+    border-radius: var(--radius-lg);
+    color: var(--color-primary);
+    transition: background-color var(--duration-200) var(--ease-in-out);
+  }
+
+  .area-card:hover .area-card__icon {
+    background-color: var(--color-primary-100);
+  }
+
+  .area-card__icon svg {
+    width: var(--spacing-6);
+    height: var(--spacing-6);
+  }
+
+  .area-card__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-2) 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .area-card__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--spacing-3) 0;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .area-card__type {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary);
+    background-color: var(--color-primary-50);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-md);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* =================================================================
+   * ALL AREAS SECTION
+   * ================================================================= */
+
+  .all-areas {
+    position: relative;
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+    overflow: hidden;
+  }
+
+  .all-areas__container {
+    position: relative;
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+    z-index: 1;
+  }
+
+  .all-areas__header {
+    text-align: center;
+    margin-bottom: var(--spacing-12);
+  }
+
+  .all-areas__header-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .all-areas__header-wrapper::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    margin-bottom: var(--spacing-3);
+    background: var(--color-accent);
+    border-radius: var(--radius-full);
+    box-shadow:
+      -12px 0 0 var(--color-primary),
+      12px 0 0 var(--color-accent-alt);
+    opacity: 0.8;
+  }
+
+  .all-areas__header-wrapper::after {
+    content: '';
+    display: block;
+    width: 4rem;
+    height: 3px;
+    margin-top: var(--spacing-4);
+    background: linear-gradient(
+      90deg,
+      var(--color-primary) 0%,
+      var(--color-accent) 50%,
+      var(--color-accent-alt) 100%
+    );
+    background-size: 200% 100%;
+    border-radius: var(--radius-full);
+    animation: accentShimmer 4s ease-in-out infinite;
+  }
+
+  .all-areas__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4) 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .all-areas__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-md);
+    color: var(--color-text-secondary);
+    max-width: 55ch;
+    margin: 0 auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .all-areas__regions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-8);
+  }
+
+  /* =================================================================
+   * REGION GROUP COMPONENT
+   * ================================================================= */
+
+  .region-group {
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-6);
+  }
+
+  .region-group__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4) 0;
+    padding-bottom: var(--spacing-3);
+    border-bottom: 2px solid var(--color-primary-100);
+  }
+
+  .region-group__list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .region-group__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-2) var(--spacing-3);
+    border-radius: var(--radius-md);
+    transition: background-color var(--duration-150) var(--ease-in-out);
+  }
+
+  .region-group__item:hover {
+    background-color: var(--color-background-subtle);
+  }
+
+  .region-group__name {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+  }
+
+  .region-group__badge {
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary);
+    background-color: var(--color-primary-50);
+    padding: var(--spacing-0-5) var(--spacing-2);
+    border-radius: var(--radius-full);
+  }
+
+  /* =================================================================
+   * WHY LOCAL SECTION
+   * ================================================================= */
+
+  .why-local {
+    position: relative;
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background);
+    overflow: hidden;
+  }
+
+  .why-local__container {
+    position: relative;
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+    z-index: 1;
+  }
+
+  .why-local__header {
+    text-align: center;
+    margin-bottom: var(--spacing-12);
+  }
+
+  .why-local__header-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .why-local__header-wrapper::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    margin-bottom: var(--spacing-3);
+    background: var(--color-accent);
+    border-radius: var(--radius-full);
+    box-shadow:
+      -12px 0 0 var(--color-primary),
+      12px 0 0 var(--color-accent-alt);
+    opacity: 0.8;
+  }
+
+  .why-local__header-wrapper::after {
+    content: '';
+    display: block;
+    width: 4rem;
+    height: 3px;
+    margin-top: var(--spacing-4);
+    background: linear-gradient(
+      90deg,
+      var(--color-primary) 0%,
+      var(--color-accent) 50%,
+      var(--color-accent-alt) 100%
+    );
+    background-size: 200% 100%;
+    border-radius: var(--radius-full);
+    animation: accentShimmer 4s ease-in-out infinite;
+  }
+
+  .why-local__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4) 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .why-local__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-md);
+    color: var(--color-text-secondary);
+    max-width: 55ch;
+    margin: 0 auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .why-local__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+  }
+
+  /* =================================================================
+   * BENEFIT CARD COMPONENT
+   * ================================================================= */
+
+  .benefit-card {
+    position: relative;
+    padding: var(--spacing-6);
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    transition:
+      transform var(--duration-200) var(--ease-out),
+      box-shadow var(--duration-200) var(--ease-out),
+      border-color var(--duration-200) var(--ease-out);
+  }
+
+  .benefit-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-primary-200);
+  }
+
+  .benefit-card__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--spacing-12);
+    height: var(--spacing-12);
+    margin-bottom: var(--spacing-4);
+    background-color: var(--color-success-50);
+    border-radius: var(--radius-lg);
+    color: var(--color-success);
+    transition: background-color var(--duration-200) var(--ease-in-out);
+  }
+
+  .benefit-card:hover .benefit-card__icon {
+    background-color: var(--color-success-100);
+  }
+
+  .benefit-card__icon svg {
+    width: var(--spacing-6);
+    height: var(--spacing-6);
+  }
+
+  .benefit-card__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-2) 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .benefit-card__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* =================================================================
+   * CTA SECTION
+   * ================================================================= */
+
+  .cta-section {
+    padding: var(--spacing-20) var(--spacing-4);
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-900) 0%,
+      var(--color-primary-700) 50%,
+      var(--color-primary-800) 100%
+    );
+  }
+
+  .cta-section__container {
+    max-width: var(--container-4xl);
+    margin: 0 auto;
+  }
+
+  .cta-section__content {
+    text-align: center;
+  }
+
+  .cta-section__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-inverse);
+    margin: 0 0 var(--spacing-4) 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .cta-section__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-primary-100);
+    max-width: 55ch;
+    margin: 0 auto var(--spacing-8);
+    line-height: var(--line-height-relaxed);
+  }
+
+  .cta-section__buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-4);
+    margin-bottom: var(--spacing-6);
+  }
+
+  .cta-section :global(.btn--primary) {
+    background-color: var(--color-background);
+    color: var(--color-primary-700);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .cta-section :global(.btn--primary:hover:not(.btn--disabled)) {
+    background-color: var(--color-primary-50);
+    color: var(--color-primary-800);
+    transform: translateY(-2px);
+  }
+
+  .cta-section :global(.btn--secondary) {
+    background-color: transparent;
+    color: var(--color-text-inverse);
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+
+  .cta-section :global(.btn--secondary:hover:not(.btn--disabled)) {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.8);
+  }
+
+  .cta-section__reassurance {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-primary-200);
+    margin: 0;
+    font-style: italic;
+  }
+
+  /* =================================================================
+   * ANIMATIONS
+   * ================================================================= */
+
+  @keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  @keyframes accentShimmer {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  @keyframes heroFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Hero section staggered animations */
+  .areas-hero__badge {
+    animation: heroFadeIn 0.6s ease-out 0.1s backwards;
+  }
+
+  .areas-hero__title {
+    animation: heroFadeIn 0.6s ease-out 0.2s backwards;
+  }
+
+  .areas-hero__description {
+    animation: heroFadeIn 0.6s ease-out 0.3s backwards;
+  }
+
+  .areas-hero__cta-group {
+    animation: heroFadeIn 0.6s ease-out 0.4s backwards;
+  }
+
+  .areas-hero__stats {
+    animation: heroFadeIn 0.6s ease-out 0.5s backwards;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES - Tablet (640px+)
+   * ================================================================= */
+
+  @media screen and (min-width: 640px) {
+    .areas-hero {
+      padding: var(--spacing-20) var(--spacing-6) var(--spacing-24);
+    }
+
+    .areas-hero__title {
+      font-size: var(--font-size-4xl);
+    }
+
+    .areas-hero__cta-group {
+      flex-direction: row;
+      max-width: none;
+      width: auto;
+    }
+
+    .areas-hero__stats {
+      gap: var(--spacing-6);
+    }
+
+    .areas-hero__stat-value {
+      font-size: var(--font-size-2xl);
+    }
+
+    .primary-areas__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .all-areas__regions {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .region-group__list {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .why-local__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .cta-section__buttons {
+      flex-direction: row;
+      justify-content: center;
+    }
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES - Tablet (768px+)
+   * ================================================================= */
+
+  @media screen and (min-width: 768px) {
+    .areas-hero__title {
+      font-size: var(--font-size-5xl);
+    }
+
+    .areas-hero__description {
+      font-size: var(--font-size-xl);
+    }
+
+    .map-section {
+      padding: var(--spacing-20) var(--spacing-6);
+    }
+
+    .map-section__heading {
+      font-size: var(--font-size-3xl);
+    }
+
+    .primary-areas {
+      padding: var(--spacing-20) var(--spacing-6);
+    }
+
+    .primary-areas__heading {
+      font-size: var(--font-size-3xl);
+    }
+
+    .primary-areas__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .all-areas {
+      padding: var(--spacing-20) var(--spacing-6);
+    }
+
+    .all-areas__heading {
+      font-size: var(--font-size-3xl);
+    }
+
+    .all-areas__regions {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .why-local {
+      padding: var(--spacing-20) var(--spacing-6);
+    }
+
+    .why-local__heading {
+      font-size: var(--font-size-3xl);
+    }
+
+    .why-local__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .cta-section {
+      padding: var(--spacing-24) var(--spacing-6);
+    }
+
+    .cta-section__heading {
+      font-size: var(--font-size-4xl);
+    }
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES - Desktop (1024px+)
+   * ================================================================= */
+
+  @media screen and (min-width: 1024px) {
+    .areas-hero {
+      padding: var(--spacing-24) var(--spacing-8) var(--spacing-28);
+    }
+
+    .primary-areas__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .all-areas__regions {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+
+  @media (prefers-reduced-motion: reduce) {
+    .areas-hero {
+      animation: none;
+    }
+
+    .areas-hero__badge,
+    .areas-hero__title,
+    .areas-hero__description,
+    .areas-hero__cta-group,
+    .areas-hero__stats {
+      animation: none;
+    }
+
+    .map-section__header-wrapper::after,
+    .primary-areas__header-wrapper::after,
+    .all-areas__header-wrapper::after,
+    .why-local__header-wrapper::after {
+      animation: none;
+    }
+
+    .map-section__pin::before {
+      animation: none;
+    }
+
+    .area-card,
+    .benefit-card {
+      transition: none;
+    }
+
+    .area-card:hover,
+    .benefit-card:hover {
+      transform: none;
+    }
+
+    .cta-section :global(.btn:hover) {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE ADJUSTMENTS
+   * ================================================================= */
+
+  :global(html[data-theme="dark"]) .map-section__map {
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-900) 0%,
+      var(--color-primary-800) 50%,
+      var(--color-background) 100%
+    );
+  }
+
+  :global(html[data-theme="dark"]) .map-section__pin span {
+    background-color: var(--color-background-elevated);
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+
+  @media print {
+    .areas-hero {
+      background: none;
+      padding: var(--spacing-8) 0;
+    }
+
+    .areas-hero__decoration {
+      display: none;
+    }
+
+    .areas-hero__cta-group {
+      display: none;
+    }
+
+    .map-section,
+    .primary-areas,
+    .all-areas,
+    .why-local {
+      padding: var(--spacing-8) 0;
+    }
+
+    .map-section__header-wrapper::before,
+    .map-section__header-wrapper::after,
+    .primary-areas__header-wrapper::before,
+    .primary-areas__header-wrapper::after,
+    .all-areas__header-wrapper::before,
+    .all-areas__header-wrapper::after,
+    .why-local__header-wrapper::before,
+    .why-local__header-wrapper::after {
+      display: none;
+    }
+
+    .area-card,
+    .benefit-card {
+      break-inside: avoid;
+    }
+
+    .area-card:hover,
+    .benefit-card:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .cta-section {
+      display: none;
+    }
+  }
+</style>

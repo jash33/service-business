@@ -1,0 +1,28 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e293b"/>
+      <stop offset="100%" style="stop-color:#334155"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="100" y="80" width="1000" height="470" rx="8" fill="#0f172a" stroke="#475569" stroke-width="2"/>
+  <rect x="100" y="80" width="1000" height="80" fill="#0f172a" stroke-bottom="#475569"/>
+  <text x="600" y="135" font-family="Georgia, serif" font-size="36" fill="#f8fafc" text-anchor="middle" font-weight="bold">HOUSTON LAW GROUP</text>
+  <line x1="300" y1="155" x2="900" y2="155" stroke="#ca8a04" stroke-width="3"/>
+  <text x="600" y="230" font-family="Arial, sans-serif" font-size="18" fill="#94a3b8" text-anchor="middle">Experienced Legal Representation in Houston</text>
+  <rect x="150" y="280" width="280" height="200" rx="8" fill="#1e293b" stroke="#475569"/>
+  <text x="290" y="330" font-family="Georgia, serif" font-size="18" fill="#f8fafc" text-anchor="middle" font-weight="bold">Personal Injury</text>
+  <text x="290" y="360" font-family="Arial, sans-serif" font-size="12" fill="#94a3b8" text-anchor="middle">Fighting for your rights</text>
+  <text x="290" y="380" font-family="Arial, sans-serif" font-size="12" fill="#94a3b8" text-anchor="middle">after accidents</text>
+  <rect x="460" y="280" width="280" height="200" rx="8" fill="#1e293b" stroke="#475569"/>
+  <text x="600" y="330" font-family="Georgia, serif" font-size="18" fill="#f8fafc" text-anchor="middle" font-weight="bold">Business Law</text>
+  <text x="600" y="360" font-family="Arial, sans-serif" font-size="12" fill="#94a3b8" text-anchor="middle">Protecting your business</text>
+  <text x="600" y="380" font-family="Arial, sans-serif" font-size="12" fill="#94a3b8" text-anchor="middle">interests</text>
+  <rect x="770" y="280" width="280" height="200" rx="8" fill="#1e293b" stroke="#475569"/>
+  <text x="910" y="330" font-family="Georgia, serif" font-size="18" fill="#f8fafc" text-anchor="middle" font-weight="bold">Family Law</text>
+  <text x="910" y="360" font-family="Arial, sans-serif" font-size="12" fill="#94a3b8" text-anchor="middle">Compassionate guidance</text>
+  <text x="910" y="380" font-family="Arial, sans-serif" font-size="12" fill="#94a3b8" text-anchor="middle">for families</text>
+  <rect x="450" y="510" width="300" height="50" rx="4" fill="#ca8a04"/>
+  <text x="600" y="542" font-family="Arial, sans-serif" font-size="16" fill="#0f172a" text-anchor="middle" font-weight="bold">Free Consultation</text>
+</svg>

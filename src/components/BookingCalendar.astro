@@ -1,0 +1,703 @@
+---
+/**
+ * Booking Calendar Component
+ *
+ * Embeds a third-party scheduling widget (Calendly, Acuity, or custom)
+ * for appointment booking. Allows customers to view available time slots
+ * and book consultations directly from the website.
+ *
+ * @example
+ * ```astro
+ * ---
+ * import BookingCalendar from '../components/BookingCalendar.astro';
+ * ---
+ * <BookingCalendar
+ *   title="Schedule Your Free Consultation"
+ *   subtitle="Choose a time that works for you"
+ * />
+ * ```
+ */
+
+import type { BookingCalendarProps } from '../types/booking-calendar';
+import {
+  BOOKING_PROVIDER,
+  BOOKING_URL,
+  isBookingConfigured,
+  bookingCalendarConfig,
+  getCalendlyEmbedUrl,
+  bookingPageContent,
+} from '../config/booking-calendar.config';
+
+interface Props extends BookingCalendarProps {}
+
+const {
+  bookingUrl = BOOKING_URL,
+  displayMode = bookingCalendarConfig.displayMode,
+  height = bookingCalendarConfig.height,
+  title,
+  subtitle,
+  showLoading = true,
+  prefill,
+  className = '',
+  trackAnalytics = true,
+} = Astro.props;
+
+// Check if booking is configured
+const isConfigured = isBookingConfigured() || Boolean(bookingUrl);
+
+// Get the embed URL based on provider
+let embedUrl = bookingUrl;
+if (BOOKING_PROVIDER === 'calendly' && bookingUrl) {
+  embedUrl = getCalendlyEmbedUrl({
+    hideEventTypeDetails: bookingCalendarConfig.hideEventTypeDetails,
+    hideCookieBanner: bookingCalendarConfig.hideCookieBanner,
+    backgroundColor: bookingCalendarConfig.backgroundColor,
+    primaryColor: bookingCalendarConfig.primaryColor,
+    textColor: bookingCalendarConfig.textColor,
+  });
+}
+
+// Build prefill parameters for Calendly
+const prefillParams = prefill
+  ? new URLSearchParams({
+      ...(prefill.name && { name: prefill.name }),
+      ...(prefill.email && { email: prefill.email }),
+      ...(prefill.guests && { guests: prefill.guests.join(',') }),
+    }).toString()
+  : '';
+
+if (prefillParams && embedUrl) {
+  embedUrl += (embedUrl.includes('?') ? '&' : '?') + prefillParams;
+}
+
+// Fallback content
+const fallback = bookingPageContent.fallback;
+---
+
+<section
+  class:list={['booking-calendar', className]}
+  aria-labelledby={title ? 'booking-calendar-heading' : undefined}
+  data-provider={BOOKING_PROVIDER}
+  data-track-analytics={trackAnalytics}
+>
+  {/* Section Header */}
+  {(title || subtitle) && (
+    <div class="booking-calendar__header">
+      {title && (
+        <h2 id="booking-calendar-heading" class="booking-calendar__title">
+          {title}
+        </h2>
+      )}
+      {subtitle && (
+        <p class="booking-calendar__subtitle">
+          {subtitle}
+        </p>
+      )}
+    </div>
+  )}
+
+  {/* Widget Container */}
+  <div class="booking-calendar__container">
+    {isConfigured ? (
+      <>
+        {/* Loading State */}
+        {showLoading && (
+          <div class="booking-calendar__loading" aria-live="polite">
+            <div class="booking-calendar__spinner" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" stroke-opacity="0.25" />
+                <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round" />
+              </svg>
+            </div>
+            <span class="booking-calendar__loading-text">Loading booking calendar...</span>
+          </div>
+        )}
+
+        {/* Calendly Embed */}
+        {BOOKING_PROVIDER === 'calendly' && (
+          <div
+            class="calendly-inline-widget"
+            data-url={embedUrl}
+            style={`min-width: 320px; height: ${height}; min-height: ${bookingCalendarConfig.minHeight};`}
+            role="application"
+            aria-label="Calendly scheduling widget"
+          />
+        )}
+
+        {/* Acuity Scheduling Embed */}
+        {BOOKING_PROVIDER === 'acuity' && (
+          <iframe
+            src={embedUrl}
+            title="Schedule Appointment"
+            width="100%"
+            height={height}
+            style={`min-height: ${bookingCalendarConfig.minHeight}; border: 0;`}
+            loading="lazy"
+            class="booking-calendar__iframe"
+          />
+        )}
+
+        {/* Custom Widget (iframe fallback) */}
+        {BOOKING_PROVIDER === 'custom' && (
+          <iframe
+            src={embedUrl}
+            title="Schedule Appointment"
+            width="100%"
+            height={height}
+            style={`min-height: ${bookingCalendarConfig.minHeight}; border: 0;`}
+            loading="lazy"
+            class="booking-calendar__iframe"
+          />
+        )}
+
+        {/* Error State (hidden by default, shown via JS) */}
+        <div class="booking-calendar__error" role="alert" hidden>
+          <div class="booking-calendar__error-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+          </div>
+          <p class="booking-calendar__error-text">
+            Unable to load the booking calendar. Please try refreshing the page or
+            <a href="/contact" class="booking-calendar__error-link">contact us directly</a>.
+          </p>
+          <button type="button" class="booking-calendar__retry-btn">
+            Try Again
+          </button>
+        </div>
+      </>
+    ) : (
+      /* Fallback when not configured */
+      <div class="booking-calendar__fallback">
+        <div class="booking-calendar__fallback-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg>
+        </div>
+        <h3 class="booking-calendar__fallback-title">{fallback.title}</h3>
+        <p class="booking-calendar__fallback-text">{fallback.message}</p>
+        <a href={fallback.contactUrl} class="booking-calendar__fallback-btn">
+          {fallback.contactText}
+        </a>
+      </div>
+    )}
+  </div>
+</section>
+
+{/* Load Calendly Script */}
+{isConfigured && BOOKING_PROVIDER === 'calendly' && (
+  <script is:inline define:vars={{ trackAnalytics }}>
+    (function() {
+      // Load Calendly widget script
+      function loadCalendlyScript() {
+        if (document.getElementById('calendly-widget-script')) {
+          initCalendly();
+          return;
+        }
+
+        const script = document.createElement('script');
+        script.id = 'calendly-widget-script';
+        script.src = 'https://assets.calendly.com/assets/external/widget.js';
+        script.async = true;
+        script.onload = initCalendly;
+        script.onerror = handleError;
+        document.head.appendChild(script);
+      }
+
+      // Initialize Calendly after script loads
+      function initCalendly() {
+        const container = document.querySelector('.booking-calendar__container');
+        const loading = document.querySelector('.booking-calendar__loading');
+
+        if (loading) {
+          // Hide loading state after a short delay to ensure widget renders
+          setTimeout(() => {
+            loading.style.display = 'none';
+          }, 1000);
+        }
+
+        // Track widget load event
+        if (trackAnalytics && window.gtag) {
+          window.gtag('event', 'booking_widget_loaded', {
+            event_category: 'Booking',
+            event_label: 'calendly',
+          });
+        }
+
+        // Listen for Calendly events
+        window.addEventListener('message', handleCalendlyMessage);
+      }
+
+      // Handle Calendly postMessage events
+      function handleCalendlyMessage(e) {
+        if (!e.origin.includes('calendly.com')) return;
+
+        if (e.data.event) {
+          const eventType = e.data.event;
+
+          // Track booking events
+          if (trackAnalytics && window.gtag) {
+            switch (eventType) {
+              case 'calendly.event_type_viewed':
+                window.gtag('event', 'view_item', {
+                  event_category: 'Booking',
+                  event_label: 'Event Type Viewed',
+                });
+                break;
+
+              case 'calendly.date_and_time_selected':
+                window.gtag('event', 'add_to_cart', {
+                  event_category: 'Booking',
+                  event_label: 'Date and Time Selected',
+                });
+                break;
+
+              case 'calendly.event_scheduled':
+                window.gtag('event', 'purchase', {
+                  event_category: 'Booking',
+                  event_label: 'Appointment Scheduled',
+                  value: 1,
+                });
+
+                // Also fire a lead event
+                window.gtag('event', 'generate_lead', {
+                  event_category: 'Booking',
+                  event_label: 'Consultation Booked',
+                });
+                break;
+            }
+          }
+
+          // Dispatch custom event for other scripts to listen
+          window.dispatchEvent(new CustomEvent('booking:event', {
+            detail: { type: eventType, data: e.data }
+          }));
+        }
+      }
+
+      // Handle script load error
+      function handleError() {
+        const loading = document.querySelector('.booking-calendar__loading');
+        const error = document.querySelector('.booking-calendar__error');
+
+        if (loading) loading.hidden = true;
+        if (error) error.hidden = false;
+
+        // Track error
+        if (trackAnalytics && window.gtag) {
+          window.gtag('event', 'booking_error', {
+            event_category: 'Booking',
+            event_label: 'Script Load Failed',
+          });
+        }
+      }
+
+      // Retry button handler
+      document.addEventListener('click', function(e) {
+        if (e.target.matches('.booking-calendar__retry-btn')) {
+          const error = document.querySelector('.booking-calendar__error');
+          const loading = document.querySelector('.booking-calendar__loading');
+
+          if (error) error.hidden = true;
+          if (loading) {
+            loading.style.display = '';
+            loading.hidden = false;
+          }
+
+          // Remove old script and reload
+          const oldScript = document.getElementById('calendly-widget-script');
+          if (oldScript) oldScript.remove();
+
+          loadCalendlyScript();
+        }
+      });
+
+      // Initialize on DOM ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadCalendlyScript);
+      } else {
+        loadCalendlyScript();
+      }
+
+      // Re-initialize on Astro page transitions
+      document.addEventListener('astro:page-load', loadCalendlyScript);
+    })();
+  </script>
+)}
+
+{/* Acuity/Custom iframe initialization */}
+{isConfigured && (BOOKING_PROVIDER === 'acuity' || BOOKING_PROVIDER === 'custom') && (
+  <script is:inline define:vars={{ trackAnalytics, provider: BOOKING_PROVIDER }}>
+    (function() {
+      const iframe = document.querySelector('.booking-calendar__iframe');
+      const loading = document.querySelector('.booking-calendar__loading');
+
+      if (iframe) {
+        iframe.addEventListener('load', function() {
+          if (loading) {
+            loading.style.display = 'none';
+          }
+
+          // Track widget load event
+          if (trackAnalytics && window.gtag) {
+            window.gtag('event', 'booking_widget_loaded', {
+              event_category: 'Booking',
+              event_label: provider,
+            });
+          }
+        });
+
+        iframe.addEventListener('error', function() {
+          const error = document.querySelector('.booking-calendar__error');
+          if (loading) loading.hidden = true;
+          if (error) error.hidden = false;
+
+          if (trackAnalytics && window.gtag) {
+            window.gtag('event', 'booking_error', {
+              event_category: 'Booking',
+              event_label: 'Iframe Load Failed',
+            });
+          }
+        });
+      }
+    })();
+  </script>
+)}
+
+<style>
+  /* =================================================================
+   * BOOKING CALENDAR COMPONENT
+   * ================================================================= */
+
+  .booking-calendar {
+    padding: var(--spacing-12) var(--spacing-4);
+    background-color: var(--color-background);
+  }
+
+  /* -----------------------------------------------------------------
+   * Header
+   * ----------------------------------------------------------------- */
+  .booking-calendar__header {
+    max-width: var(--container-4xl);
+    margin: 0 auto var(--spacing-8);
+    text-align: center;
+  }
+
+  .booking-calendar__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-3);
+    letter-spacing: var(--letter-spacing-tight);
+  }
+
+  .booking-calendar__subtitle {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: var(--line-height-relaxed);
+    max-width: 40rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* -----------------------------------------------------------------
+   * Container
+   * ----------------------------------------------------------------- */
+  .booking-calendar__container {
+    max-width: var(--container-5xl);
+    margin: 0 auto;
+    position: relative;
+    min-height: 600px;
+    background-color: var(--color-background-elevated);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+  }
+
+  /* -----------------------------------------------------------------
+   * Loading State
+   * ----------------------------------------------------------------- */
+  .booking-calendar__loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-background-elevated);
+    z-index: var(--z-10);
+    gap: var(--spacing-4);
+  }
+
+  .booking-calendar__spinner {
+    width: 3rem;
+    height: 3rem;
+    color: var(--color-primary);
+    animation: spin 1s linear infinite;
+  }
+
+  .booking-calendar__spinner svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .booking-calendar__loading-text {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+  }
+
+  /* -----------------------------------------------------------------
+   * Widget Styles
+   * ----------------------------------------------------------------- */
+  .calendly-inline-widget {
+    width: 100%;
+    position: relative;
+  }
+
+  .booking-calendar__iframe {
+    width: 100%;
+    display: block;
+  }
+
+  /* -----------------------------------------------------------------
+   * Error State
+   * ----------------------------------------------------------------- */
+  .booking-calendar__error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--spacing-12) var(--spacing-6);
+    min-height: 400px;
+  }
+
+  .booking-calendar__error[hidden] {
+    display: none;
+  }
+
+  .booking-calendar__error-icon {
+    width: 4rem;
+    height: 4rem;
+    color: var(--color-warning);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .booking-calendar__error-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .booking-calendar__error-text {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--spacing-6);
+    max-width: 30rem;
+  }
+
+  .booking-calendar__error-link {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .booking-calendar__error-link:hover {
+    color: var(--color-primary-hover);
+  }
+
+  .booking-calendar__retry-btn {
+    padding: var(--spacing-3) var(--spacing-6);
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    border: none;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: var(--transition-hover);
+  }
+
+  .booking-calendar__retry-btn:hover {
+    background-color: var(--color-primary-hover);
+  }
+
+  .booking-calendar__retry-btn:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  /* -----------------------------------------------------------------
+   * Fallback State
+   * ----------------------------------------------------------------- */
+  .booking-calendar__fallback {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--spacing-16) var(--spacing-6);
+    min-height: 400px;
+  }
+
+  .booking-calendar__fallback-icon {
+    width: 5rem;
+    height: 5rem;
+    color: var(--color-primary-300);
+    margin-bottom: var(--spacing-6);
+  }
+
+  .booking-calendar__fallback-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .booking-calendar__fallback-title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-3);
+  }
+
+  .booking-calendar__fallback-text {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--spacing-8);
+    max-width: 30rem;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .booking-calendar__fallback-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-3) var(--spacing-8);
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    border-radius: var(--radius-lg);
+    transition: var(--transition-hover);
+  }
+
+  .booking-calendar__fallback-btn:hover {
+    background-color: var(--color-primary-hover);
+    transform: var(--transform-hover-lift-sm);
+  }
+
+  .booking-calendar__fallback-btn:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  @media (max-width: 767px) {
+    .booking-calendar {
+      padding: var(--spacing-8) var(--spacing-3);
+    }
+
+    .booking-calendar__header {
+      margin-bottom: var(--spacing-6);
+    }
+
+    .booking-calendar__title {
+      font-size: var(--font-size-2xl);
+    }
+
+    .booking-calendar__subtitle {
+      font-size: var(--font-size-base);
+    }
+
+    .booking-calendar__container {
+      border-radius: var(--radius-lg);
+      min-height: 500px;
+    }
+
+    .booking-calendar__fallback {
+      padding: var(--spacing-8) var(--spacing-4);
+    }
+
+    .booking-calendar__fallback-icon {
+      width: 4rem;
+      height: 4rem;
+    }
+
+    .booking-calendar__fallback-title {
+      font-size: var(--font-size-xl);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+
+  @media (prefers-reduced-motion: reduce) {
+    .booking-calendar__spinner {
+      animation: none;
+    }
+
+    .booking-calendar__retry-btn,
+    .booking-calendar__fallback-btn {
+      transition: none;
+    }
+
+    .booking-calendar__fallback-btn:hover {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+
+  @media (prefers-contrast: high) {
+    .booking-calendar__container {
+      border: 2px solid var(--color-border-dark);
+    }
+
+    .booking-calendar__retry-btn,
+    .booking-calendar__fallback-btn {
+      border: 2px solid currentColor;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE ADJUSTMENTS
+   * ================================================================= */
+
+  :global(html[data-theme="dark"]) .booking-calendar__container {
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--color-border);
+  }
+
+  :global(html[data-theme="dark"]) .booking-calendar__loading {
+    background-color: var(--color-background-elevated);
+  }
+
+  :global(html[data-theme="dark"]) .booking-calendar__fallback-icon {
+    color: var(--color-primary-400);
+  }
+</style>

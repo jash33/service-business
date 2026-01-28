@@ -1,0 +1,12 @@
+{
+  "id": "video-testimonials",
+  "category": "Content",
+  "title": "Video Testimonials Section",
+  "description": "Add support for embedded video testimonials with YouTube/Vimeo integration. Includes lazy loading, accessibility controls, and thumbnail previews with play buttons.",
+  "status": "in_progress",
+  "priority": 2,
+  "complexity": "moderate",
+  "createdAt": "2026-01-26T01:51:05.717Z",
+  "updatedAt": "2026-01-27T01:55:34.795Z",
+  "descriptionHistory": []
+}

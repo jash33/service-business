@@ -1,0 +1,394 @@
+---
+/**
+ * Instagram Feed Card Component
+ *
+ * A card component for displaying a single Instagram post with image,
+ * hover effects, and link to the original post.
+ *
+ * Features:
+ * - Square aspect ratio image container
+ * - Hover overlay with Instagram icon and view prompt
+ * - Video indicator for video posts
+ * - Carousel indicator for multi-image posts
+ * - Lazy loading for images
+ * - Smooth hover animations
+ * - Accessibility support
+ * - Reduced motion support
+ *
+ * @example
+ * ```astro
+ * ---
+ * import InstagramFeedCard from '../components/InstagramFeedCard.astro';
+ * ---
+ * <InstagramFeedCard
+ *   post={{
+ *     id: '123',
+ *     mediaType: 'IMAGE',
+ *     mediaUrl: 'https://example.com/image.jpg',
+ *     permalink: 'https://instagram.com/p/123',
+ *     caption: 'My awesome post',
+ *   }}
+ * />
+ * ```
+ */
+
+import type { InstagramFeedCardProps, InstagramPost } from '../types/instagram-feed';
+import { formatCaption } from '../config/instagram-feed.config';
+
+interface Props extends InstagramFeedCardProps {}
+
+const {
+  post,
+  lazyLoad = true,
+  trackAnalytics = true,
+  index = 0,
+} = Astro.props;
+
+// Get the image URL (use thumbnail for videos)
+const imageUrl = post.mediaType === 'VIDEO' && post.thumbnailUrl
+  ? post.thumbnailUrl
+  : post.mediaUrl;
+
+// Format caption for alt text and accessibility
+const altText = post.caption
+  ? formatCaption(post.caption, 150)
+  : `Instagram post by ${post.username || 'user'}`;
+
+// Calculate staggered animation delay
+const animationDelay = index * 100;
+---
+
+<article
+  class="instagram-card"
+  style={`--animation-delay: ${animationDelay}ms`}
+  data-track-analytics={trackAnalytics}
+>
+  <a
+    href={post.permalink}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="instagram-card__link"
+    aria-label={`View Instagram post: ${altText}`}
+    data-post-id={post.id}
+  >
+    <!-- Image Container -->
+    <div class="instagram-card__image-container">
+      <img
+        src={imageUrl}
+        alt={altText}
+        class="instagram-card__image"
+        loading={lazyLoad ? 'lazy' : 'eager'}
+        decoding="async"
+        width="300"
+        height="300"
+      />
+
+      <!-- Media Type Indicator -->
+      {post.mediaType === 'VIDEO' && (
+        <span class="instagram-card__indicator instagram-card__indicator--video" aria-label="Video post">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </span>
+      )}
+
+      {post.mediaType === 'CAROUSEL_ALBUM' && (
+        <span class="instagram-card__indicator instagram-card__indicator--carousel" aria-label="Multiple images">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z" />
+          </svg>
+        </span>
+      )}
+
+      <!-- Hover Overlay -->
+      <div class="instagram-card__overlay" aria-hidden="true">
+        <span class="instagram-card__overlay-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+          </svg>
+        </span>
+        <span class="instagram-card__overlay-text">View Post</span>
+      </div>
+    </div>
+  </a>
+</article>
+
+<style>
+  /* =================================================================
+   * INSTAGRAM FEED CARD COMPONENT
+   * ================================================================= */
+
+  .instagram-card {
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background-color: var(--color-background-muted);
+
+    /* Animation on load */
+    opacity: 0;
+    transform: translateY(20px);
+    animation: instagram-card-appear var(--duration-500) var(--ease-out) forwards;
+    animation-delay: var(--animation-delay, 0ms);
+  }
+
+  @keyframes instagram-card-appear {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .instagram-card__link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .instagram-card__link:focus-visible {
+    outline: none;
+  }
+
+  .instagram-card__link:focus-visible .instagram-card__image-container {
+    box-shadow: var(--focus-ring);
+  }
+
+  /* -----------------------------------------------------------------
+   * Image Container
+   * ----------------------------------------------------------------- */
+  .instagram-card__image-container {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-lg);
+    transition: transform var(--duration-300) var(--ease-out);
+  }
+
+  .instagram-card:hover .instagram-card__image-container {
+    transform: scale(1.02);
+  }
+
+  .instagram-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--duration-500) var(--ease-out);
+  }
+
+  .instagram-card:hover .instagram-card__image {
+    transform: scale(1.1);
+  }
+
+  /* -----------------------------------------------------------------
+   * Media Type Indicators
+   * ----------------------------------------------------------------- */
+  .instagram-card__indicator {
+    position: absolute;
+    top: var(--spacing-2);
+    right: var(--spacing-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: var(--radius-md);
+    color: #ffffff;
+    z-index: 2;
+  }
+
+  .instagram-card__indicator svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  /* -----------------------------------------------------------------
+   * Hover Overlay
+   * ----------------------------------------------------------------- */
+  .instagram-card__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    z-index: 3;
+
+    /* Instagram gradient overlay */
+    background: linear-gradient(
+      45deg,
+      rgba(253, 29, 29, 0.8) 0%,
+      rgba(252, 176, 69, 0.8) 50%,
+      rgba(131, 58, 180, 0.8) 100%
+    );
+
+    opacity: 0;
+    transition: opacity var(--duration-300) var(--ease-out);
+  }
+
+  .instagram-card:hover .instagram-card__overlay {
+    opacity: 1;
+  }
+
+  .instagram-card__overlay-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    color: #ffffff;
+    transform: scale(0.8);
+    transition: transform var(--duration-300) var(--ease-spring-soft);
+  }
+
+  .instagram-card:hover .instagram-card__overlay-icon {
+    transform: scale(1);
+  }
+
+  .instagram-card__overlay-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .instagram-card__overlay-text {
+    color: #ffffff;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+    transform: translateY(10px);
+    opacity: 0;
+    transition:
+      transform var(--duration-300) var(--ease-out),
+      opacity var(--duration-300) var(--ease-out);
+    transition-delay: var(--duration-75);
+  }
+
+  .instagram-card:hover .instagram-card__overlay-text {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  @media (max-width: 767px) {
+    .instagram-card__indicator {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+
+    .instagram-card__indicator svg {
+      width: 0.875rem;
+      height: 0.875rem;
+    }
+
+    .instagram-card__overlay-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+
+    .instagram-card__overlay-text {
+      font-size: var(--font-size-xs);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+
+  @media (prefers-reduced-motion: reduce) {
+    .instagram-card {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+
+    .instagram-card__image-container,
+    .instagram-card__image,
+    .instagram-card__overlay,
+    .instagram-card__overlay-icon,
+    .instagram-card__overlay-text {
+      transition: none;
+    }
+
+    .instagram-card:hover .instagram-card__image-container,
+    .instagram-card:hover .instagram-card__image {
+      transform: none;
+    }
+
+    .instagram-card:hover .instagram-card__overlay-icon {
+      transform: scale(1);
+    }
+
+    .instagram-card:hover .instagram-card__overlay-text {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+
+  :global(html[data-theme="dark"]) .instagram-card {
+    background-color: var(--color-background-subtle);
+  }
+
+  :global(html[data-theme="dark"]) .instagram-card__image-container {
+    background-color: var(--color-background-subtle);
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+
+  @media (forced-colors: active) {
+    .instagram-card__image-container {
+      border: 2px solid currentColor;
+    }
+
+    .instagram-card__overlay {
+      background: rgba(0, 0, 0, 0.8);
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Track Instagram post clicks for analytics
+   */
+  function initInstagramCardTracking() {
+    const cards = document.querySelectorAll('.instagram-card[data-track-analytics="true"]');
+
+    cards.forEach((card) => {
+      const link = card.querySelector('.instagram-card__link') as HTMLAnchorElement;
+      if (!link) return;
+
+      link.addEventListener('click', () => {
+        const postId = link.dataset.postId;
+
+        // Track with Google Analytics if available
+        if (window.gtag) {
+          window.gtag('event', 'instagram_post_clicked', {
+            event_category: 'Social',
+            event_label: 'Instagram Post',
+            post_id: postId,
+          });
+        }
+      });
+    });
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initInstagramCardTracking);
+  } else {
+    initInstagramCardTracking();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initInstagramCardTracking);
+</script>

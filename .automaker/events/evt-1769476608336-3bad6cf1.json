@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769476608336-3bad6cf1",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-27T01:16:48.336Z",
+  "projectPath": "C:\\Users\\James\\Repos\\service-business",
+  "projectName": "service-business",
+  "featureId": "schema-markup-faq",
+  "featureName": "FAQ Schema Markup Enhancement",
+  "error": "Feature completed in 474s - auto-verified",
+  "passes": true
+}

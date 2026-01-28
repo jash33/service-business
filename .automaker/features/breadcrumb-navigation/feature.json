@@ -1,0 +1,12 @@
+{
+  "id": "breadcrumb-navigation",
+  "category": "UI",
+  "title": "Breadcrumb Navigation Component",
+  "description": "Implement breadcrumb navigation with BreadcrumbList schema markup for all pages. Improves user navigation and SEO with clear page hierarchy visualization.",
+  "status": "verified",
+  "priority": 2,
+  "complexity": "simple",
+  "createdAt": "2026-01-26T01:51:05.734Z",
+  "updatedAt": "2026-01-26T06:19:49.533Z",
+  "descriptionHistory": []
+}

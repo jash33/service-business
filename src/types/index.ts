@@ -119,3 +119,93 @@ export type {
   WebVitals,
   PerformanceEntry,
 } from './analytics';
+
+export type {
+  Testimonial,
+  TestimonialCardProps,
+  TestimonialsSectionProps,
+} from './testimonial';
+
+export type {
+  TrustBadgeCategory,
+  TrustBadge,
+  TrustBadgeCardProps,
+  TrustBadgesSectionProps,
+  VerificationStatus,
+  LicenseInsuranceCredential,
+  LicenseInsuranceCardProps,
+  LicenseInsuranceSectionProps,
+} from './trust-badge';
+
+export type {
+  BlogCategory,
+  BlogTag,
+  BlogAuthor,
+  BlogImage,
+  BlogArticle,
+  BlogArticleCardProps,
+  BlogFilterOption,
+  BlogFilterProps,
+  BlogSearchProps,
+  BlogPaginationProps,
+  BlogListingProps,
+  RSSFeedConfig,
+} from "./blog";
+
+export {
+  BLOG_CATEGORIES,
+  DEFAULT_AUTHOR,
+} from "./blog";
+
+export type {
+  BookingCalendarProvider,
+  BookingCalendarDisplayMode,
+  BookingEventType,
+  BookingCalendarConfig,
+  BookingPrefillData,
+  BookingCalendarProps,
+  BookingAnalyticsEvent,
+  CalendlyEventData,
+  BookingWidgetState,
+} from './booking-calendar';
+
+export {
+  DEFAULT_BOOKING_CONFIG,
+  MAX_LOAD_ATTEMPTS,
+  WIDGET_LOAD_TIMEOUT,
+} from './booking-calendar';
+
+export type {
+  VideoProvider,
+  VideoTestimonial,
+  VideoPlayerProps,
+  VideoTestimonialCardProps,
+  VideoTestimonialsSectionProps,
+} from './video-testimonial';
+
+export {
+  getYouTubeThumbnail,
+  getVimeoThumbnailPlaceholder,
+  getVideoEmbedUrl,
+  formatVideoDuration,
+} from './video-testimonial';
+
+export type {
+  InstagramMediaType,
+  InstagramFeedEventType,
+  InstagramPost,
+  InstagramFeedConfig,
+  InstagramFeedSectionProps,
+  InstagramFeedCardProps,
+  InstagramFeedAnalyticsEvent,
+  InstagramFeedWidgetState,
+} from './instagram-feed';
+
+export {
+  DEFAULT_INSTAGRAM_FEED_CONFIG,
+  MAX_INSTAGRAM_LOAD_ATTEMPTS,
+  INSTAGRAM_FEED_LOAD_TIMEOUT,
+  INSTAGRAM_API_BASE_URL,
+  INSTAGRAM_FEED_LIMITS,
+  INSTAGRAM_GRID_COLUMNS,
+} from './instagram-feed';

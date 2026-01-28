@@ -1,0 +1,446 @@
+---
+/**
+ * ResourceFilter Component
+ * A filter component for resources with category, format, and tag filtering.
+ *
+ * Features:
+ * - Category filter buttons with counts
+ * - Format filter dropdown
+ * - Tag filter chips
+ * - Active state highlighting
+ * - Accessible keyboard navigation
+ * - Reduced motion support
+ *
+ * @example Basic usage
+ * ```astro
+ * <ResourceFilter
+ *   categories={[
+ *     { label: 'All', value: 'all', count: 12 },
+ *     { label: 'Guides', value: 'guides', count: 5 },
+ *   ]}
+ *   formats={[
+ *     { label: 'PDF', value: 'pdf', count: 8 },
+ *     { label: 'Video', value: 'video', count: 3 },
+ *   ]}
+ *   tags={[
+ *     { label: 'SEO', value: 'seo', count: 3 },
+ *     { label: 'Security', value: 'security', count: 4 },
+ *   ]}
+ *   selectedCategory="all"
+ * />
+ * ```
+ */
+
+import type { ResourceFilterOption } from '../types/resources';
+
+interface Props {
+  /** Available categories to filter by */
+  categories: ResourceFilterOption[];
+  /** Available formats to filter by */
+  formats?: ResourceFilterOption[];
+  /** Available tags to filter by */
+  tags?: ResourceFilterOption[];
+  /** Currently selected category */
+  selectedCategory?: string;
+  /** Currently selected format */
+  selectedFormat?: string;
+  /** Currently selected tags */
+  selectedTags?: string[];
+  /** Additional CSS class names */
+  class?: string;
+}
+
+const {
+  categories = [],
+  formats = [],
+  tags = [],
+  selectedCategory = 'all',
+  selectedFormat = 'all',
+  selectedTags = [],
+  class: className = '',
+} = Astro.props;
+
+const filterClasses = [
+  'resource-filter',
+  className,
+].filter(Boolean).join(' ');
+
+/**
+ * Build URL with current filters
+ */
+function buildFilterUrl(params: { category?: string; format?: string; tag?: string }): string {
+  const url = new URL('/resources', 'http://localhost');
+
+  const category = params.category !== undefined ? params.category : selectedCategory;
+  const format = params.format !== undefined ? params.format : selectedFormat;
+  const tag = params.tag !== undefined ? params.tag : (selectedTags[0] || '');
+
+  if (category && category !== 'all') url.searchParams.set('category', category);
+  if (format && format !== 'all') url.searchParams.set('format', format);
+  if (tag) url.searchParams.set('tag', tag);
+
+  const queryString = url.searchParams.toString();
+  return queryString ? `/resources?${queryString}` : '/resources';
+}
+---
+
+<div class={filterClasses} data-resource-filter>
+  <!-- Category Filter -->
+  <div class="resource-filter__section">
+    <h3 class="resource-filter__label" id="category-filter-label">Filter by Category</h3>
+    <div class="resource-filter__categories" role="group" aria-labelledby="category-filter-label">
+      {categories.map((category) => {
+        const isActive = selectedCategory === category.value;
+        const url = buildFilterUrl({ category: category.value });
+        return (
+          <a
+            href={url}
+            class={`resource-filter__category ${isActive ? 'resource-filter__category--active' : ''}`}
+            aria-current={isActive ? 'true' : undefined}
+            data-category={category.value}
+          >
+            {category.label}
+            {category.count !== undefined && (
+              <span class="resource-filter__count" aria-label={`${category.count} resources`}>
+                {category.count}
+              </span>
+            )}
+          </a>
+        );
+      })}
+    </div>
+  </div>
+
+  <!-- Format Filter -->
+  {formats.length > 0 && (
+    <div class="resource-filter__section">
+      <h3 class="resource-filter__label" id="format-filter-label">Filter by Format</h3>
+      <div class="resource-filter__formats" role="group" aria-labelledby="format-filter-label">
+        {formats.map((format) => {
+          const isActive = selectedFormat === format.value;
+          const url = buildFilterUrl({ format: format.value });
+          return (
+            <a
+              href={url}
+              class={`resource-filter__format ${isActive ? 'resource-filter__format--active' : ''}`}
+              aria-current={isActive ? 'true' : undefined}
+              data-format={format.value}
+            >
+              {format.label}
+              {format.count !== undefined && (
+                <span class="resource-filter__count" aria-label={`${format.count} resources`}>
+                  {format.count}
+                </span>
+              )}
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  )}
+
+  <!-- Tag Filter -->
+  {tags.length > 0 && (
+    <div class="resource-filter__section">
+      <h3 class="resource-filter__label" id="tag-filter-label">Filter by Tag</h3>
+      <div class="resource-filter__tags" role="group" aria-labelledby="tag-filter-label">
+        {tags.map((tag) => {
+          const isActive = selectedTags.includes(tag.value);
+          const url = buildFilterUrl({ tag: isActive ? '' : tag.value });
+          return (
+            <a
+              href={url}
+              class={`resource-filter__tag ${isActive ? 'resource-filter__tag--active' : ''}`}
+              aria-pressed={isActive ? 'true' : 'false'}
+              data-tag={tag.value}
+            >
+              {tag.label}
+              {tag.count !== undefined && (
+                <span class="resource-filter__count" aria-label={`${tag.count} resources`}>
+                  {tag.count}
+                </span>
+              )}
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  )}
+</div>
+
+<style>
+  /* =================================================================
+   * RESOURCE FILTER COMPONENT STYLES
+   * ================================================================= */
+
+  .resource-filter {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-6);
+  }
+
+  .resource-filter__section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+  }
+
+  .resource-filter__label {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+    margin: 0;
+  }
+
+  /* =================================================================
+   * CATEGORY BUTTONS
+   * ================================================================= */
+  .resource-filter__categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+  }
+
+  .resource-filter__category {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+    color: var(--color-text-secondary);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      border-color var(--duration-150) var(--ease-in-out),
+      color var(--duration-150) var(--ease-in-out),
+      box-shadow var(--duration-150) var(--ease-in-out);
+  }
+
+  .resource-filter__category:hover {
+    background-color: var(--color-primary-50);
+    border-color: var(--color-primary-200);
+    color: var(--color-primary-700);
+  }
+
+  .resource-filter__category:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .resource-filter__category--active {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  .resource-filter__category--active:hover {
+    background-color: var(--color-primary-600);
+    border-color: var(--color-primary-600);
+    color: var(--color-text-inverse);
+  }
+
+  .resource-filter__category--active .resource-filter__count {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: var(--color-text-inverse);
+  }
+
+  /* =================================================================
+   * FORMAT BUTTONS
+   * ================================================================= */
+  .resource-filter__formats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+  }
+
+  .resource-filter__format {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-3);
+    background-color: var(--color-background-subtle);
+    color: var(--color-text-secondary);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      border-color var(--duration-150) var(--ease-in-out),
+      color var(--duration-150) var(--ease-in-out),
+      box-shadow var(--duration-150) var(--ease-in-out);
+  }
+
+  .resource-filter__format:hover {
+    background-color: var(--color-accent-subtle);
+    border-color: var(--color-accent);
+    color: var(--color-accent-dark);
+  }
+
+  .resource-filter__format:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .resource-filter__format--active {
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-text-inverse);
+  }
+
+  .resource-filter__format--active:hover {
+    background-color: var(--color-accent-dark);
+    border-color: var(--color-accent-dark);
+    color: var(--color-text-inverse);
+  }
+
+  .resource-filter__format--active .resource-filter__count {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: var(--color-text-inverse);
+  }
+
+  /* =================================================================
+   * TAG CHIPS
+   * ================================================================= */
+  .resource-filter__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+  }
+
+  .resource-filter__tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    padding: var(--spacing-1) var(--spacing-3);
+    background-color: var(--color-primary-50);
+    color: var(--color-primary-700);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    border: 1px solid var(--color-primary-100);
+    border-radius: var(--radius-full);
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      border-color var(--duration-150) var(--ease-in-out),
+      color var(--duration-150) var(--ease-in-out),
+      box-shadow var(--duration-150) var(--ease-in-out);
+  }
+
+  .resource-filter__tag:hover {
+    background-color: var(--color-primary-100);
+    border-color: var(--color-primary-200);
+    color: var(--color-primary-800);
+  }
+
+  .resource-filter__tag:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .resource-filter__tag--active {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  .resource-filter__tag--active:hover {
+    background-color: var(--color-primary-600);
+    border-color: var(--color-primary-600);
+    color: var(--color-text-inverse);
+  }
+
+  .resource-filter__tag--active .resource-filter__count {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: var(--color-text-inverse);
+  }
+
+  /* =================================================================
+   * COUNT BADGES
+   * ================================================================= */
+  .resource-filter__count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--spacing-5);
+    height: var(--spacing-5);
+    padding: 0 var(--spacing-1);
+    background-color: var(--color-background-muted);
+    color: var(--color-text-tertiary);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    border-radius: var(--radius-full);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+  @media screen and (max-width: 767px) {
+    .resource-filter__categories,
+    .resource-filter__formats {
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      padding-bottom: var(--spacing-2);
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .resource-filter__categories::-webkit-scrollbar,
+    .resource-filter__formats::-webkit-scrollbar {
+      display: none;
+    }
+
+    .resource-filter__category,
+    .resource-filter__format {
+      white-space: nowrap;
+      min-width: 44px;
+      min-height: 44px;
+    }
+
+    .resource-filter__tag {
+      min-width: 44px;
+      min-height: 44px;
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .resource-filter__category,
+    .resource-filter__format,
+    .resource-filter__tag {
+      transition: none;
+    }
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+  @media (forced-colors: active) {
+    .resource-filter__category,
+    .resource-filter__format,
+    .resource-filter__tag {
+      border: 2px solid currentColor;
+    }
+
+    .resource-filter__category--active,
+    .resource-filter__format--active,
+    .resource-filter__tag--active {
+      background-color: Highlight;
+      color: HighlightText;
+    }
+  }
+</style>

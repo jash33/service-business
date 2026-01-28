@@ -1,0 +1,12 @@
+{
+  "id": "service-comparison-table",
+  "category": "UI",
+  "title": "Service Package Comparison Table",
+  "description": "Build an interactive comparison table for service packages and pricing tiers. Includes sticky headers, mobile-responsive card view, and highlighted differences.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "createdAt": "2026-01-26T01:51:05.740Z",
+  "updatedAt": "2026-01-26T01:51:05.740Z",
+  "descriptionHistory": []
+}

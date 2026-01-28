@@ -1,0 +1,598 @@
+---
+/**
+ * VideoPlayer Component
+ * A performant, accessible video player with lazy loading and thumbnail preview.
+ * Supports YouTube and Vimeo with privacy-enhanced embedding.
+ *
+ * Features:
+ * - Lazy loading: Video iframe only loads on user interaction
+ * - Thumbnail preview with play button overlay
+ * - Keyboard accessible (Enter/Space to play)
+ * - Screen reader friendly with ARIA labels
+ * - Respects reduced motion preferences
+ * - Responsive with maintained aspect ratio
+ * - Privacy-enhanced embeds (no cookies mode)
+ *
+ * @example YouTube video
+ * ```astro
+ * <VideoPlayer
+ *   videoProvider="youtube"
+ *   videoId="dQw4w9WgXcQ"
+ *   title="Customer Testimonial"
+ *   thumbnailAlt="Customer giving testimonial"
+ * />
+ * ```
+ *
+ * @example Vimeo video with custom thumbnail
+ * ```astro
+ * <VideoPlayer
+ *   videoProvider="vimeo"
+ *   videoId="123456789"
+ *   title="Project Showcase"
+ *   thumbnailAlt="Project showcase video"
+ *   thumbnailUrl="/images/custom-thumbnail.jpg"
+ * />
+ * ```
+ */
+
+import type { VideoPlayerProps } from '../types/video-testimonial';
+import {
+  getYouTubeThumbnail,
+  getVimeoThumbnailPlaceholder,
+  getVideoEmbedUrl,
+} from '../types/video-testimonial';
+
+interface Props extends VideoPlayerProps {}
+
+const {
+  videoProvider,
+  videoId,
+  thumbnailAlt,
+  thumbnailUrl,
+  title,
+  lazyLoad = true,
+  aspectRatio = 16 / 9,
+  class: className = '',
+} = Astro.props;
+
+// Generate thumbnail URL if not provided
+const computedThumbnailUrl = thumbnailUrl || (
+  videoProvider === 'youtube'
+    ? getYouTubeThumbnail(videoId, 'hqdefault')
+    : getVimeoThumbnailPlaceholder(videoId)
+);
+
+// Generate embed URL
+const embedUrl = getVideoEmbedUrl(videoProvider, videoId);
+
+// Generate unique ID for this video instance
+const playerId = `video-player-${Math.random().toString(36).substring(2, 9)}`;
+
+// Build CSS classes
+const playerClasses = [
+  'video-player',
+  className,
+].filter(Boolean).join(' ');
+
+// Compute padding for aspect ratio
+const aspectRatioPadding = (1 / aspectRatio) * 100;
+---
+
+<div
+  class={playerClasses}
+  data-video-player
+  data-video-id={videoId}
+  data-video-provider={videoProvider}
+  data-embed-url={embedUrl}
+  id={playerId}
+>
+  <!-- Thumbnail Container (visible before play) -->
+  <div
+    class="video-player__thumbnail"
+    data-video-thumbnail
+    role="button"
+    tabindex="0"
+    aria-label={`Play video: ${title}`}
+    style={`padding-bottom: ${aspectRatioPadding}%;`}
+  >
+    <!-- Thumbnail Image -->
+    <img
+      src={computedThumbnailUrl}
+      alt={thumbnailAlt}
+      class="video-player__thumbnail-image"
+      loading={lazyLoad ? 'lazy' : 'eager'}
+      decoding="async"
+    />
+
+    <!-- Dark Overlay -->
+    <div class="video-player__overlay" aria-hidden="true"></div>
+
+    <!-- Play Button -->
+    <button
+      class="video-player__play-button"
+      type="button"
+      aria-label={`Play video: ${title}`}
+      data-play-button
+    >
+      <svg
+        class="video-player__play-icon"
+        viewBox="0 0 68 48"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <!-- Play button background -->
+        <path
+          class="video-player__play-bg"
+          d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z"
+          fill="currentColor"
+        />
+        <!-- Play triangle -->
+        <path
+          class="video-player__play-triangle"
+          d="M45 24L27 14v20"
+          fill="#fff"
+        />
+      </svg>
+      <span class="sr-only">Play video: {title}</span>
+    </button>
+
+    <!-- Provider Badge -->
+    <div class="video-player__provider-badge" aria-hidden="true">
+      {videoProvider === 'youtube' ? (
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+        </svg>
+      ) : (
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.94z"/>
+        </svg>
+      )}
+    </div>
+  </div>
+
+  <!-- Video Container (hidden initially, shown after play) -->
+  <div
+    class="video-player__video-container"
+    data-video-container
+    style={`padding-bottom: ${aspectRatioPadding}%;`}
+    hidden
+  >
+    <!-- Iframe will be injected here on play -->
+  </div>
+</div>
+
+<style>
+  /* =================================================================
+   * VIDEO PLAYER COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .video-player {
+    position: relative;
+    width: 100%;
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    transition:
+      box-shadow var(--duration-300) var(--ease-out),
+      transform var(--duration-300) var(--ease-out);
+  }
+
+  .video-player:hover {
+    box-shadow: var(--shadow-lg);
+  }
+
+  .video-player:focus-within {
+    outline: none;
+    box-shadow: var(--shadow-lg), var(--focus-ring);
+  }
+
+  /* Thumbnail Container */
+  .video-player__thumbnail {
+    position: relative;
+    width: 100%;
+    height: 0;
+    cursor: pointer;
+    overflow: hidden;
+  }
+
+  .video-player__thumbnail:focus {
+    outline: none;
+  }
+
+  .video-player__thumbnail:focus-visible .video-player__play-button {
+    transform: translate(-50%, -50%) scale(1.15);
+    box-shadow: var(--glow-primary-lg);
+  }
+
+  /* Thumbnail Image */
+  .video-player__thumbnail-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--duration-500) var(--ease-out);
+  }
+
+  .video-player__thumbnail:hover .video-player__thumbnail-image {
+    transform: scale(1.05);
+  }
+
+  /* Dark Overlay */
+  .video-player__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.1) 0%,
+      rgba(0, 0, 0, 0.3) 100%
+    );
+    transition: background var(--duration-300) var(--ease-out);
+    pointer-events: none;
+  }
+
+  .video-player__thumbnail:hover .video-player__overlay {
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.2) 0%,
+      rgba(0, 0, 0, 0.4) 100%
+    );
+  }
+
+  /* Play Button */
+  .video-player__play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 68px;
+    height: 48px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    z-index: 2;
+    transition:
+      transform var(--duration-300) var(--ease-spring-soft),
+      filter var(--duration-300) var(--ease-out);
+  }
+
+  .video-player__play-button:hover {
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+
+  .video-player__play-button:focus {
+    outline: none;
+  }
+
+  .video-player__play-button:focus-visible {
+    transform: translate(-50%, -50%) scale(1.15);
+  }
+
+  /* Play Icon */
+  .video-player__play-icon {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+    transition: filter var(--duration-300) var(--ease-out);
+  }
+
+  .video-player__play-button:hover .video-player__play-icon {
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+  }
+
+  .video-player__play-bg {
+    color: var(--color-primary);
+    transition: color var(--duration-200) var(--ease-out);
+  }
+
+  .video-player__play-button:hover .video-player__play-bg {
+    color: var(--color-primary-hover);
+  }
+
+  /* Pulse animation for play button */
+  @keyframes playButtonPulse {
+    0%, 100% {
+      transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+      transform: translate(-50%, -50%) scale(1.05);
+    }
+  }
+
+  .video-player__thumbnail:not(:hover) .video-player__play-button {
+    animation: playButtonPulse 2s var(--ease-in-out) infinite;
+  }
+
+  /* Provider Badge */
+  .video-player__provider-badge {
+    position: absolute;
+    bottom: var(--spacing-3);
+    right: var(--spacing-3);
+    width: var(--spacing-6);
+    height: var(--spacing-6);
+    color: rgba(255, 255, 255, 0.8);
+    z-index: 2;
+    transition: color var(--duration-200) var(--ease-out);
+  }
+
+  .video-player__provider-badge svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  }
+
+  .video-player__thumbnail:hover .video-player__provider-badge {
+    color: rgba(255, 255, 255, 1);
+  }
+
+  /* Video Container */
+  .video-player__video-container {
+    position: relative;
+    width: 100%;
+    height: 0;
+  }
+
+  .video-player__video-container:not([hidden]) {
+    display: block;
+  }
+
+  .video-player__video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  /* Loading State */
+  .video-player--loading .video-player__thumbnail {
+    pointer-events: none;
+  }
+
+  .video-player--loading .video-player__play-button {
+    animation: none;
+  }
+
+  .video-player--loading .video-player__play-icon {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Screen Reader Only */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * =================================================================
+   */
+
+  /* Larger play button on tablet and up */
+  @media screen and (min-width: 768px) {
+    .video-player__play-button {
+      width: 80px;
+      height: 56px;
+    }
+
+    .video-player__provider-badge {
+      width: var(--spacing-8);
+      height: var(--spacing-8);
+      bottom: var(--spacing-4);
+      right: var(--spacing-4);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * =================================================================
+   */
+  @media (prefers-reduced-motion: reduce) {
+    .video-player,
+    .video-player__thumbnail-image,
+    .video-player__overlay,
+    .video-player__play-button,
+    .video-player__play-icon,
+    .video-player__play-bg,
+    .video-player__provider-badge {
+      transition: none;
+    }
+
+    .video-player__thumbnail:not(:hover) .video-player__play-button {
+      animation: none;
+    }
+
+    .video-player__thumbnail:hover .video-player__thumbnail-image {
+      transform: none;
+    }
+
+    .video-player--loading .video-player__play-icon {
+      animation: none;
+    }
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * Windows High Contrast support
+   * =================================================================
+   */
+  @media (forced-colors: active) {
+    .video-player {
+      border: 2px solid CanvasText;
+    }
+
+    .video-player__play-button {
+      forced-color-adjust: none;
+      background: Canvas;
+      border: 2px solid CanvasText;
+      border-radius: var(--radius-md);
+    }
+
+    .video-player__play-bg {
+      color: CanvasText;
+    }
+
+    .video-player__play-triangle {
+      fill: Canvas;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * =================================================================
+   */
+  @media print {
+    .video-player {
+      box-shadow: none;
+      border: 1px solid var(--color-border);
+    }
+
+    .video-player__overlay {
+      display: none;
+    }
+
+    .video-player__play-button {
+      opacity: 0.5;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Video Player Interaction Handler
+   * Handles lazy loading of video iframes on user interaction
+   */
+  function initVideoPlayers(): void {
+    const players = document.querySelectorAll<HTMLElement>('[data-video-player]');
+
+    players.forEach((player) => {
+      // Skip if already initialized
+      if (player.dataset.initialized === 'true') return;
+      player.dataset.initialized = 'true';
+
+      const thumbnail = player.querySelector<HTMLElement>('[data-video-thumbnail]');
+      const videoContainer = player.querySelector<HTMLElement>('[data-video-container]');
+      const playButton = player.querySelector<HTMLElement>('[data-play-button]');
+      const embedUrl = player.dataset.embedUrl;
+
+      if (!thumbnail || !videoContainer || !embedUrl) return;
+
+      const loadVideo = (): void => {
+        // Add loading state
+        player.classList.add('video-player--loading');
+
+        // Create iframe
+        const iframe = document.createElement('iframe');
+        iframe.src = `${embedUrl}&autoplay=1`;
+        iframe.title = playButton?.getAttribute('aria-label') || 'Video player';
+        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+        iframe.allowFullscreen = true;
+
+        // Handle iframe load
+        iframe.addEventListener('load', () => {
+          player.classList.remove('video-player--loading');
+          // Hide thumbnail, show video
+          thumbnail.hidden = true;
+          videoContainer.hidden = false;
+        });
+
+        // Append iframe to video container
+        videoContainer.appendChild(iframe);
+
+        // Announce to screen readers
+        const announcement = document.createElement('div');
+        announcement.setAttribute('role', 'status');
+        announcement.setAttribute('aria-live', 'polite');
+        announcement.className = 'sr-only';
+        announcement.textContent = 'Video is now playing';
+        player.appendChild(announcement);
+
+        // Remove announcement after a moment
+        setTimeout(() => announcement.remove(), 1000);
+      };
+
+      // Click handler on thumbnail
+      thumbnail.addEventListener('click', loadVideo);
+
+      // Keyboard handler
+      thumbnail.addEventListener('keydown', (event: KeyboardEvent) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          loadVideo();
+        }
+      });
+
+      // Also handle play button click directly
+      playButton?.addEventListener('click', (event: Event) => {
+        event.stopPropagation();
+        loadVideo();
+      });
+    });
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initVideoPlayers);
+  } else {
+    initVideoPlayers();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', () => {
+    // Reset initialized state for fresh initialization
+    document.querySelectorAll<HTMLElement>('[data-video-player]').forEach((player) => {
+      if (!player.querySelector('iframe')) {
+        player.dataset.initialized = 'false';
+      }
+    });
+    initVideoPlayers();
+  });
+
+  // Handle dynamically added video players
+  if (typeof MutationObserver !== 'undefined') {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node instanceof HTMLElement) {
+            const players = node.querySelectorAll<HTMLElement>('[data-video-player]');
+            if (players.length > 0 || node.matches('[data-video-player]')) {
+              initVideoPlayers();
+            }
+          }
+        });
+      });
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+  }
+</script>

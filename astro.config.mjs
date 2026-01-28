@@ -75,6 +75,8 @@ export default defineConfig({
 
   // Server configuration
   server: {
+    // Custom dev port
+    port: 3002,
     // Enable compression in dev
     headers: {
       // Security headers

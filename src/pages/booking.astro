@@ -1,0 +1,630 @@
+---
+/**
+ * Booking Page
+ * A dedicated page for scheduling consultations and appointments.
+ *
+ * Features:
+ * - Third-party scheduling widget integration (Calendly/Acuity)
+ * - Information about consultation types
+ * - Trust signals and benefits
+ * - SEO optimized with structured data
+ * - Full accessibility support
+ */
+
+import Layout from '../layouts/Layout.astro';
+import BookingCalendar from '../components/BookingCalendar.astro';
+import {
+  bookingPageContent,
+  consultationTypes,
+  isBookingConfigured,
+} from '../config/booking-calendar.config';
+---
+
+<Layout
+  title="Book a Consultation | Houston Web Services"
+  description="Schedule a free consultation with Houston Web Services. Discuss your web project needs, get expert recommendations, and learn how we can help your business succeed online."
+  openGraph={{
+    type: 'website',
+  }}
+  jsonLd={{
+    type: 'WebPage',
+    name: 'Book a Consultation - Houston Web Services',
+    description: 'Schedule a free consultation to discuss your web design and development needs with Houston Web Services.',
+  }}
+>
+  <main>
+    <!-- Hero Section -->
+    <section class="booking-hero" aria-labelledby="booking-hero-heading">
+      <div class="booking-hero__container">
+        <h1 id="booking-hero-heading" class="booking-hero__title">
+          {bookingPageContent.hero.title}
+        </h1>
+        <p class="booking-hero__subtitle">
+          {bookingPageContent.hero.subtitle}
+        </p>
+      </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="booking-benefits" aria-labelledby="benefits-heading">
+      <h2 id="benefits-heading" class="sr-only">Why Book With Us</h2>
+      <div class="booking-benefits__container">
+        <div class="booking-benefits__grid">
+          {bookingPageContent.benefits.map((benefit) => (
+            <div class="booking-benefit">
+              <div class="booking-benefit__icon" aria-hidden="true">
+                {benefit.icon === 'clock' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                  </svg>
+                )}
+                {benefit.icon === 'video' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="23 7 16 12 23 17 23 7" />
+                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+                  </svg>
+                )}
+                {benefit.icon === 'check' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                    <polyline points="22 4 12 14.01 9 11.01" />
+                  </svg>
+                )}
+              </div>
+              <h3 class="booking-benefit__title">{benefit.title}</h3>
+              <p class="booking-benefit__text">{benefit.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Booking Calendar Widget -->
+    <BookingCalendar
+      title="Select a Time"
+      subtitle="Choose a date and time that works best for you. All times shown in your local timezone."
+    />
+
+    <!-- Consultation Types Section -->
+    <section class="consultation-types" aria-labelledby="consultation-types-heading">
+      <div class="consultation-types__container">
+        <h2 id="consultation-types-heading" class="consultation-types__title">
+          Our Consultation Options
+        </h2>
+        <p class="consultation-types__subtitle">
+          Choose the consultation type that best fits your needs
+        </p>
+
+        <div class="consultation-types__grid">
+          {consultationTypes.map((type) => (
+            <div class="consultation-type-card">
+              <div class="consultation-type-card__header">
+                <h3 class="consultation-type-card__name">{type.name}</h3>
+                <span class="consultation-type-card__duration">{type.duration} min</span>
+              </div>
+              <p class="consultation-type-card__description">{type.description}</p>
+              {type.price && (
+                <div class="consultation-type-card__price">
+                  <span class="consultation-type-card__price-label">Price:</span>
+                  <span class="consultation-type-card__price-value">{type.price}</span>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- What to Expect Section -->
+    <section class="booking-expect" aria-labelledby="expect-heading">
+      <div class="booking-expect__container">
+        <h2 id="expect-heading" class="booking-expect__title">What to Expect</h2>
+
+        <div class="booking-expect__content">
+          <div class="booking-expect__step">
+            <div class="booking-expect__step-number" aria-hidden="true">1</div>
+            <div class="booking-expect__step-content">
+              <h3 class="booking-expect__step-title">Book Your Time</h3>
+              <p class="booking-expect__step-text">
+                Select a convenient date and time from our calendar. You'll receive a confirmation email with meeting details.
+              </p>
+            </div>
+          </div>
+
+          <div class="booking-expect__step">
+            <div class="booking-expect__step-number" aria-hidden="true">2</div>
+            <div class="booking-expect__step-content">
+              <h3 class="booking-expect__step-title">Prepare for Your Call</h3>
+              <p class="booking-expect__step-text">
+                Think about your goals, challenges, and any questions you have. The more we know, the better we can help.
+              </p>
+            </div>
+          </div>
+
+          <div class="booking-expect__step">
+            <div class="booking-expect__step-number" aria-hidden="true">3</div>
+            <div class="booking-expect__step-content">
+              <h3 class="booking-expect__step-title">Connect & Discuss</h3>
+              <p class="booking-expect__step-text">
+                We'll meet via video or phone to discuss your project, answer questions, and explore how we can help.
+              </p>
+            </div>
+          </div>
+
+          <div class="booking-expect__step">
+            <div class="booking-expect__step-number" aria-hidden="true">4</div>
+            <div class="booking-expect__step-content">
+              <h3 class="booking-expect__step-title">Receive Your Recommendations</h3>
+              <p class="booking-expect__step-text">
+                After our call, you'll receive a summary with tailored recommendations and next steps for your project.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Alternative Contact CTA -->
+    <section class="booking-alternative" aria-labelledby="alternative-heading">
+      <div class="booking-alternative__container">
+        <h2 id="alternative-heading" class="booking-alternative__title">
+          Prefer a Different Way to Connect?
+        </h2>
+        <p class="booking-alternative__text">
+          No problem! You can also reach us through our contact form or send us an email directly.
+        </p>
+        <div class="booking-alternative__actions">
+          <a href="/contact" class="booking-alternative__btn booking-alternative__btn--primary">
+            Contact Form
+          </a>
+          <a href="mailto:hello@houstonwebservices.com" class="booking-alternative__btn booking-alternative__btn--secondary">
+            Email Us
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  /* =================================================================
+   * HERO SECTION
+   * ================================================================= */
+  .booking-hero {
+    padding: var(--spacing-20) var(--spacing-4) var(--spacing-12);
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-50) 0%,
+      var(--color-background) 100%
+    );
+    text-align: center;
+  }
+
+  .booking-hero__container {
+    max-width: var(--container-4xl);
+    margin: 0 auto;
+  }
+
+  .booking-hero__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4);
+    letter-spacing: var(--letter-spacing-tight);
+  }
+
+  .booking-hero__subtitle {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    max-width: 40rem;
+    margin: 0 auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* =================================================================
+   * BENEFITS SECTION
+   * ================================================================= */
+  .booking-benefits {
+    padding: var(--spacing-8) var(--spacing-4);
+    background-color: var(--color-background);
+  }
+
+  .booking-benefits__container {
+    max-width: var(--container-6xl);
+    margin: 0 auto;
+  }
+
+  .booking-benefits__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+  }
+
+  @media (min-width: 640px) {
+    .booking-benefits__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .booking-benefit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: var(--spacing-6);
+  }
+
+  .booking-benefit__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: var(--spacing-3);
+    color: var(--color-primary);
+  }
+
+  .booking-benefit__icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .booking-benefit__title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-2);
+  }
+
+  .booking-benefit__text {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* =================================================================
+   * CONSULTATION TYPES SECTION
+   * ================================================================= */
+  .consultation-types {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+  }
+
+  .consultation-types__container {
+    max-width: var(--container-6xl);
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .consultation-types__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-3);
+  }
+
+  .consultation-types__subtitle {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--spacing-10);
+  }
+
+  .consultation-types__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+    text-align: left;
+  }
+
+  @media (min-width: 768px) {
+    .consultation-types__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .consultation-type-card {
+    background-color: var(--color-background-elevated);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-6);
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-hover-lift);
+  }
+
+  .consultation-type-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: var(--transform-hover-lift-sm);
+  }
+
+  .consultation-type-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-3);
+    gap: var(--spacing-3);
+  }
+
+  .consultation-type-card__name {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .consultation-type-card__duration {
+    flex-shrink: 0;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary);
+    background-color: var(--color-primary-50);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-md);
+  }
+
+  .consultation-type-card__description {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--spacing-4);
+    line-height: var(--line-height-relaxed);
+  }
+
+  .consultation-type-card__price {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding-top: var(--spacing-3);
+    border-top: 1px solid var(--color-border-light);
+  }
+
+  .consultation-type-card__price-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+  }
+
+  .consultation-type-card__price-value {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-success);
+  }
+
+  /* =================================================================
+   * WHAT TO EXPECT SECTION
+   * ================================================================= */
+  .booking-expect {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background);
+  }
+
+  .booking-expect__container {
+    max-width: var(--container-4xl);
+    margin: 0 auto;
+  }
+
+  .booking-expect__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-10);
+    text-align: center;
+  }
+
+  .booking-expect__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-8);
+  }
+
+  .booking-expect__step {
+    display: flex;
+    gap: var(--spacing-5);
+    align-items: flex-start;
+  }
+
+  .booking-expect__step-number {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background: var(--gradient-primary);
+    color: var(--color-text-inverse);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-lg);
+    border-radius: var(--radius-full);
+  }
+
+  .booking-expect__step-content {
+    flex: 1;
+  }
+
+  .booking-expect__step-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-2);
+  }
+
+  .booking-expect__step-text {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* =================================================================
+   * ALTERNATIVE CONTACT SECTION
+   * ================================================================= */
+  .booking-alternative {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-primary-50);
+    text-align: center;
+  }
+
+  .booking-alternative__container {
+    max-width: var(--container-3xl);
+    margin: 0 auto;
+  }
+
+  .booking-alternative__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-3);
+  }
+
+  .booking-alternative__text {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--spacing-8);
+    line-height: var(--line-height-relaxed);
+  }
+
+  .booking-alternative__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-4);
+  }
+
+  .booking-alternative__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-3) var(--spacing-6);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    border-radius: var(--radius-lg);
+    transition: var(--transition-hover);
+  }
+
+  .booking-alternative__btn--primary {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  .booking-alternative__btn--primary:hover {
+    background-color: var(--color-primary-hover);
+  }
+
+  .booking-alternative__btn--secondary {
+    background-color: var(--color-background-elevated);
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary-200);
+  }
+
+  .booking-alternative__btn--secondary:hover {
+    background-color: var(--color-primary-100);
+    border-color: var(--color-primary-300);
+  }
+
+  .booking-alternative__btn:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  /* =================================================================
+   * SCREEN READER ONLY
+   * ================================================================= */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* =================================================================
+   * RESPONSIVE ADJUSTMENTS
+   * ================================================================= */
+  @media (max-width: 767px) {
+    .booking-hero {
+      padding: var(--spacing-12) var(--spacing-4) var(--spacing-8);
+    }
+
+    .booking-hero__title {
+      font-size: var(--font-size-3xl);
+    }
+
+    .booking-hero__subtitle {
+      font-size: var(--font-size-base);
+    }
+
+    .consultation-types {
+      padding: var(--spacing-12) var(--spacing-4);
+    }
+
+    .consultation-types__title {
+      font-size: var(--font-size-2xl);
+    }
+
+    .booking-expect {
+      padding: var(--spacing-12) var(--spacing-4);
+    }
+
+    .booking-expect__title {
+      font-size: var(--font-size-2xl);
+    }
+
+    .booking-alternative {
+      padding: var(--spacing-12) var(--spacing-4);
+    }
+
+    .booking-alternative__title {
+      font-size: var(--font-size-xl);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .consultation-type-card,
+    .booking-alternative__btn {
+      transition: none;
+    }
+
+    .consultation-type-card:hover {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE ADJUSTMENTS
+   * ================================================================= */
+  :global(html[data-theme="dark"]) .booking-hero {
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-950) 0%,
+      var(--color-background) 100%
+    );
+  }
+
+  :global(html[data-theme="dark"]) .consultation-type-card__duration {
+    background-color: var(--color-primary-900);
+  }
+
+  :global(html[data-theme="dark"]) .booking-alternative {
+    background-color: var(--color-background-subtle);
+  }
+
+  :global(html[data-theme="dark"]) .booking-alternative__btn--secondary {
+    background-color: var(--color-background-elevated);
+    border-color: var(--color-border);
+  }
+
+  :global(html[data-theme="dark"]) .booking-alternative__btn--secondary:hover {
+    background-color: var(--color-background-muted);
+    border-color: var(--color-border-dark);
+  }
+</style>

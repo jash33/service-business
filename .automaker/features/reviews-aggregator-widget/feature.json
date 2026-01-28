@@ -1,0 +1,12 @@
+{
+  "id": "reviews-aggregator-widget",
+  "category": "Integration",
+  "title": "Google Reviews Aggregator Widget",
+  "description": "Display recent Google Business reviews on the website with star ratings, excerpts, and link to full review page. Updates via Google Places API.",
+  "status": "verified",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [],
+  "createdAt": "2026-01-26T01:51:05.742Z",
+  "updatedAt": "2026-01-26T21:16:17.369Z"
+}

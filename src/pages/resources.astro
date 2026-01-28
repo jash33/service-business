@@ -1,0 +1,580 @@
+---
+/**
+ * Resource Download Center Page
+ * Displays all downloadable resources with filtering, search, and pagination.
+ *
+ * Features:
+ * - Featured resource highlighting
+ * - Category and format filtering
+ * - Tag-based filtering
+ * - Search functionality
+ * - Pagination
+ * - SEO optimized
+ */
+
+import Layout from '../layouts/Layout.astro';
+import ResourceCard from '../components/ResourceCard.astro';
+import ResourceFilter from '../components/ResourceFilter.astro';
+import ResourceSearch from '../components/ResourceSearch.astro';
+import ResourcePagination from '../components/ResourcePagination.astro';
+import ContactCTA from '../components/ContactCTA.astro';
+import {
+  RESOURCES,
+  RESOURCES_PAGE_CONFIG,
+  sortResourcesByDate,
+  paginateResources,
+  getAllResourceTags,
+} from '../config/resources.config';
+import {
+  RESOURCE_CATEGORIES,
+  RESOURCE_FORMATS,
+  type ResourceFilterOption,
+} from '../types/resources';
+
+// Get URL parameters for filtering and pagination
+const url = Astro.url;
+const searchParams = url.searchParams;
+const categoryParam = searchParams.get('category') || 'all';
+const formatParam = searchParams.get('format') || 'all';
+const tagParam = searchParams.get('tag') || '';
+const pageParam = parseInt(searchParams.get('page') || '1', 10);
+
+// Filter resources by category
+let filteredResources = categoryParam === 'all'
+  ? RESOURCES
+  : RESOURCES.filter(resource => resource.category === categoryParam);
+
+// Filter by format if specified
+if (formatParam !== 'all') {
+  filteredResources = filteredResources.filter(resource => resource.format === formatParam);
+}
+
+// Filter by tag if specified
+if (tagParam) {
+  filteredResources = filteredResources.filter(resource =>
+    resource.tags.some(tag => tag.slug === tagParam)
+  );
+}
+
+// Sort resources by date (newest first)
+const sortedResources = sortResourcesByDate(filteredResources);
+
+// Separate featured resource if showing all and on first page
+const showFeaturedHero = categoryParam === 'all' && formatParam === 'all' && !tagParam && pageParam === 1;
+const featuredResource = showFeaturedHero
+  ? sortedResources.find(resource => resource.featured)
+  : null;
+const remainingResources = featuredResource
+  ? sortedResources.filter(resource => resource.id !== featuredResource.id)
+  : sortedResources;
+
+// Paginate resources
+const { resources: paginatedResources, totalPages, currentPage } = paginateResources(
+  remainingResources,
+  pageParam,
+  RESOURCES_PAGE_CONFIG.resourcesPerPage
+);
+
+// Build category filter options with counts
+const categoriesWithCounts: ResourceFilterOption[] = RESOURCE_CATEGORIES.map(cat => ({
+  ...cat,
+  count: cat.value === 'all'
+    ? RESOURCES.length
+    : RESOURCES.filter(r => r.category === cat.value).length,
+})).filter(cat => cat.count > 0 || cat.value === 'all');
+
+// Build format filter options with counts
+const formatsWithCounts: ResourceFilterOption[] = RESOURCE_FORMATS.map(fmt => ({
+  ...fmt,
+  count: fmt.value === 'all'
+    ? RESOURCES.length
+    : RESOURCES.filter(r => r.format === fmt.value).length,
+})).filter(fmt => fmt.count > 0 || fmt.value === 'all');
+
+// Build tag filter options with counts
+const allTags = getAllResourceTags();
+const tagsWithCounts: ResourceFilterOption[] = allTags.map(tag => ({
+  label: tag.name,
+  value: tag.slug,
+  count: RESOURCES.filter(r => r.tags.some(t => t.slug === tag.slug)).length,
+})).sort((a, b) => (b.count || 0) - (a.count || 0)).slice(0, 10);
+
+// SEO
+const pageTitle = categoryParam !== 'all'
+  ? `${RESOURCE_CATEGORIES.find(c => c.value === categoryParam)?.label || 'Resources'} | Houston Web Services Resource Library`
+  : tagParam
+    ? `Resources tagged "${allTags.find(t => t.slug === tagParam)?.name || tagParam}" | Houston Web Services`
+    : 'Resource Library | Free Guides, Templates & Tools | Houston Web Services';
+const pageDescription = 'Download free guides, templates, spec sheets, and educational resources to help your business succeed online. SEO guides, website checklists, brand templates, and more.';
+
+// Build base URL for pagination
+const buildBaseUrl = (): string => {
+  const params = new URLSearchParams();
+  if (categoryParam !== 'all') params.set('category', categoryParam);
+  if (formatParam !== 'all') params.set('format', formatParam);
+  if (tagParam) params.set('tag', tagParam);
+  const queryString = params.toString();
+  return queryString ? `/resources?${queryString}` : '/resources';
+};
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+>
+  <section class="resources-hero">
+    <div class="resources-hero__container">
+      <div class="resources-hero__content">
+        <h1 class="resources-hero__title">{RESOURCES_PAGE_CONFIG.heading}</h1>
+        <p class="resources-hero__subtitle">{RESOURCES_PAGE_CONFIG.subheading}</p>
+      </div>
+
+      <div class="resources-hero__actions">
+        <ResourceSearch placeholder="Search resources..." />
+      </div>
+    </div>
+  </section>
+
+  <section class="resources-listing" id={RESOURCES_PAGE_CONFIG.id}>
+    <div class="resources-listing__container">
+      <!-- Sidebar with filters -->
+      <aside class="resources-listing__sidebar">
+        <ResourceFilter
+          categories={categoriesWithCounts}
+          formats={formatsWithCounts}
+          tags={tagsWithCounts}
+          selectedCategory={categoryParam}
+          selectedFormat={formatParam}
+          selectedTags={tagParam ? [tagParam] : []}
+        />
+      </aside>
+
+      <!-- Main content area -->
+      <main class="resources-listing__main">
+        <!-- Active filters indicator -->
+        {(categoryParam !== 'all' || formatParam !== 'all' || tagParam) && (
+          <div class="resources-listing__active-filters">
+            <span class="resources-listing__filter-label">Showing:</span>
+            {categoryParam !== 'all' && (
+              <span class="resources-listing__filter-badge">
+                {RESOURCE_CATEGORIES.find(c => c.value === categoryParam)?.label}
+                <a href={buildBaseUrl().replace(`category=${categoryParam}`, '').replace('?&', '?').replace(/[?&]$/, '') || '/resources'} class="resources-listing__filter-remove" aria-label="Remove category filter">
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                </a>
+              </span>
+            )}
+            {formatParam !== 'all' && (
+              <span class="resources-listing__filter-badge resources-listing__filter-badge--format">
+                {RESOURCE_FORMATS.find(f => f.value === formatParam)?.label}
+                <a href={buildBaseUrl().replace(`format=${formatParam}`, '').replace('?&', '?').replace(/[?&]$/, '') || '/resources'} class="resources-listing__filter-remove" aria-label="Remove format filter">
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                </a>
+              </span>
+            )}
+            {tagParam && (
+              <span class="resources-listing__filter-badge resources-listing__filter-badge--tag">
+                {allTags.find(t => t.slug === tagParam)?.name || tagParam}
+                <a href={buildBaseUrl().replace(`tag=${tagParam}`, '').replace('?&', '?').replace(/[?&]$/, '') || '/resources'} class="resources-listing__filter-remove" aria-label="Remove tag filter">
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                </a>
+              </span>
+            )}
+            <a href="/resources" class="resources-listing__clear-filters">Clear all</a>
+          </div>
+        )}
+
+        <!-- Results count -->
+        <p class="resources-listing__results-count">
+          {filteredResources.length} resource{filteredResources.length !== 1 ? 's' : ''} available
+          {currentPage > 1 && ` (Page ${currentPage} of ${totalPages})`}
+        </p>
+
+        <!-- Featured resource (hero style) -->
+        {featuredResource && (
+          <div class="resources-listing__featured">
+            <div class="resources-listing__featured-badge">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="currentColor"/>
+              </svg>
+              Featured Resource
+            </div>
+            <ResourceCard
+              {...featuredResource}
+              data-resource-card
+              data-title={featuredResource.title}
+              data-description={featuredResource.description}
+              data-tags={featuredResource.tags.map(t => t.name).join(',')}
+              data-category={featuredResource.category}
+              data-format={featuredResource.format}
+            />
+          </div>
+        )}
+
+        <!-- Resource grid -->
+        {paginatedResources.length > 0 ? (
+          <div class="resources-listing__grid">
+            {paginatedResources.map((resource) => (
+              <ResourceCard
+                {...resource}
+                data-resource-card
+                data-title={resource.title}
+                data-description={resource.description}
+                data-tags={resource.tags.map(t => t.name).join(',')}
+                data-category={resource.category}
+                data-format={resource.format}
+              />
+            ))}
+          </div>
+        ) : (
+          <div class="resources-listing__no-results" data-no-results>
+            <svg class="resources-listing__no-results-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="9" y1="15" x2="15" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <h2 class="resources-listing__no-results-title">No resources found</h2>
+            <p class="resources-listing__no-results-text">
+              Try adjusting your filters or search terms to find what you're looking for.
+            </p>
+            <a href="/resources" class="resources-listing__no-results-link">View all resources</a>
+          </div>
+        )}
+
+        <!-- Pagination -->
+        <ResourcePagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          baseUrl={buildBaseUrl()}
+        />
+      </main>
+    </div>
+  </section>
+
+  <!-- Contact CTA -->
+  <ContactCTA
+    heading="Need Custom Resources?"
+    subheading="Contact us for personalized guides and consultation tailored to your business needs."
+    primaryCTA={{
+      text: "Get in Touch",
+      href: "/contact",
+    }}
+    secondaryCTA={{
+      text: "View Our Services",
+      href: "/services",
+    }}
+  />
+</Layout>
+
+<style>
+  /* =================================================================
+   * RESOURCES PAGE STYLES
+   * ================================================================= */
+
+  /* =================================================================
+   * HERO SECTION
+   * ================================================================= */
+  .resources-hero {
+    padding: var(--spacing-16) var(--spacing-4);
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-50) 0%,
+      var(--color-background) 50%,
+      var(--color-accent-subtle) 100%
+    );
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .resources-hero__container {
+    max-width: var(--container-lg);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-8);
+  }
+
+  .resources-hero__content {
+    text-align: center;
+  }
+
+  .resources-hero__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4) 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .resources-hero__subtitle {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin: 0;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .resources-hero__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-4);
+  }
+
+  /* =================================================================
+   * LISTING SECTION
+   * ================================================================= */
+  .resources-listing {
+    padding: var(--spacing-12) var(--spacing-4);
+    background-color: var(--color-background);
+  }
+
+  .resources-listing__container {
+    max-width: var(--container-xl);
+    margin: 0 auto;
+    display: grid;
+    gap: var(--spacing-8);
+  }
+
+  .resources-listing__sidebar {
+    display: none;
+  }
+
+  .resources-listing__main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-6);
+  }
+
+  /* =================================================================
+   * ACTIVE FILTERS
+   * ================================================================= */
+  .resources-listing__active-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+    border-radius: var(--radius-lg);
+  }
+
+  .resources-listing__filter-label {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .resources-listing__filter-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-1) var(--spacing-2) var(--spacing-1) var(--spacing-3);
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    border-radius: var(--radius-full);
+  }
+
+  .resources-listing__filter-badge--format {
+    background-color: var(--color-accent);
+  }
+
+  .resources-listing__filter-badge--tag {
+    background-color: var(--color-primary-600);
+  }
+
+  .resources-listing__filter-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--spacing-5);
+    height: var(--spacing-5);
+    padding: 0;
+    color: inherit;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-full);
+    transition: background-color var(--duration-150) var(--ease-in-out);
+  }
+
+  .resources-listing__filter-remove:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .resources-listing__filter-remove svg {
+    width: var(--spacing-3);
+    height: var(--spacing-3);
+  }
+
+  .resources-listing__clear-filters {
+    margin-left: auto;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+
+  .resources-listing__clear-filters:hover {
+    text-decoration: underline;
+  }
+
+  /* =================================================================
+   * RESULTS COUNT
+   * ================================================================= */
+  .resources-listing__results-count {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+    margin: 0;
+  }
+
+  /* =================================================================
+   * FEATURED RESOURCE
+   * ================================================================= */
+  .resources-listing__featured {
+    margin-bottom: var(--spacing-4);
+    position: relative;
+  }
+
+  .resources-listing__featured-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-3);
+    padding: var(--spacing-2) var(--spacing-4);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+    color: var(--color-text-inverse);
+    font-family: var(--font-heading);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+    border-radius: var(--radius-full);
+  }
+
+  .resources-listing__featured-badge svg {
+    width: var(--spacing-4);
+    height: var(--spacing-4);
+  }
+
+  /* =================================================================
+   * RESOURCE GRID
+   * ================================================================= */
+  .resources-listing__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+  }
+
+  /* =================================================================
+   * NO RESULTS
+   * ================================================================= */
+  .resources-listing__no-results {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-16) var(--spacing-4);
+    text-align: center;
+  }
+
+  .resources-listing__no-results-icon {
+    width: var(--spacing-16);
+    height: var(--spacing-16);
+    color: var(--color-text-tertiary);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .resources-listing__no-results-title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-2) 0;
+  }
+
+  .resources-listing__no-results-text {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--spacing-4) 0;
+    max-width: 400px;
+  }
+
+  .resources-listing__no-results-link {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+
+  .resources-listing__no-results-link:hover {
+    text-decoration: underline;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+  @media screen and (min-width: 640px) {
+    .resources-listing__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .resources-hero__actions {
+      flex-direction: row;
+      justify-content: center;
+    }
+  }
+
+  @media screen and (min-width: 768px) {
+    .resources-hero {
+      padding: var(--spacing-20) var(--spacing-6);
+    }
+
+    .resources-hero__title {
+      font-size: var(--font-size-5xl);
+    }
+
+    .resources-listing {
+      padding: var(--spacing-16) var(--spacing-6);
+    }
+  }
+
+  @media screen and (min-width: 1024px) {
+    .resources-listing__container {
+      grid-template-columns: 280px 1fr;
+    }
+
+    .resources-listing__sidebar {
+      display: block;
+      position: sticky;
+      top: var(--spacing-24);
+      align-self: start;
+    }
+
+    .resources-listing__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .resources-listing__filter-remove,
+    .resources-listing__clear-filters {
+      transition: none;
+    }
+  }
+</style>

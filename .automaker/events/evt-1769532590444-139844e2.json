@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769532590444-139844e2",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-27T16:49:50.444Z",
+  "projectPath": "C:\\Users\\James\\Repos\\service-business",
+  "projectName": "service-business",
+  "featureId": "service-checklist-pdf",
+  "featureName": "Downloadable Service Checklists",
+  "error": "Claude Code process exited with code 1",
+  "errorType": "execution"
+}

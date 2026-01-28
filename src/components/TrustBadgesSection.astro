@@ -1,0 +1,369 @@
+---
+/**
+ * TrustBadgesSection Component
+ * A responsive section displaying trust badges, certifications, licenses,
+ * insurance badges, and awards in a grid or inline layout.
+ * Designed for establishing credibility and professionalism with potential customers.
+ *
+ * Features:
+ * - Responsive grid: 2 columns (mobile) -> 3-4 columns (tablet) -> 4-6 columns (desktop)
+ * - Section heading and subheading
+ * - Configurable column count
+ * - Grid or inline (horizontal scroll) layout options
+ * - Consistent card sizing and spacing
+ * - Accessible with proper semantic structure
+ * - Loading/empty state handling
+ * - Smooth animations with reduced motion support
+ *
+ * @example Basic usage
+ * ```astro
+ * <TrustBadgesSection
+ *   heading="Credentials & Certifications"
+ *   badges={[
+ *     { id: 'bbb', title: 'BBB Accredited', issuer: 'Better Business Bureau' },
+ *     { id: 'licensed', title: 'Licensed & Insured', category: 'license' },
+ *   ]}
+ * />
+ * ```
+ *
+ * @example With subheading and custom columns
+ * ```astro
+ * <TrustBadgesSection
+ *   heading="Our Credentials"
+ *   subheading="Industry certifications and awards that demonstrate our commitment to quality"
+ *   badges={badges}
+ *   columns={5}
+ * />
+ * ```
+ *
+ * @example Inline/horizontal scroll layout
+ * ```astro
+ * <TrustBadgesSection
+ *   heading="Trusted By"
+ *   badges={badges}
+ *   layout="inline"
+ * />
+ * ```
+ */
+
+import type { TrustBadgesSectionProps, TrustBadge } from '../types/trust-badge';
+import TrustBadgeCard from './TrustBadgeCard.astro';
+
+interface Props extends TrustBadgesSectionProps {}
+
+const {
+  heading = 'Credentials & Certifications',
+  subheading,
+  badges = [],
+  id = 'trust-badges',
+  columns = 4,
+  layout = 'grid',
+  class: className = '',
+} = Astro.props;
+
+// Build CSS classes
+const sectionClasses = [
+  'trust-badges-section',
+  `trust-badges-section--${layout}`,
+  `trust-badges-section--cols-${columns}`,
+  className,
+].filter(Boolean).join(' ');
+
+// Check if we have badges to display
+const hasBadges = badges && badges.length > 0;
+---
+
+<section class={sectionClasses} id={id} aria-labelledby={`${id}-heading`}>
+  <div class="trust-badges-section__container">
+    <!-- Section Header -->
+    <header class="trust-badges-section__header section-heading--decorated">
+      <h2 id={`${id}-heading`} class="trust-badges-section__heading">{heading}</h2>
+      {subheading && (
+        <p class="trust-badges-section__subheading">{subheading}</p>
+      )}
+    </header>
+
+    <!-- Badges Grid/Container -->
+    {hasBadges ? (
+      <div class="trust-badges-section__badges" role="list">
+        {badges.map((badge) => (
+          <div class="trust-badges-section__badge-wrapper" role="listitem">
+            <TrustBadgeCard
+              id={badge.id}
+              title={badge.title}
+              description={badge.description}
+              icon={badge.icon}
+              imageUrl={badge.imageUrl}
+              imageAlt={badge.imageAlt}
+              issuer={badge.issuer}
+              year={badge.year}
+              verificationUrl={badge.verificationUrl}
+              category={badge.category}
+            />
+          </div>
+        ))}
+      </div>
+    ) : (
+      <!-- Empty State -->
+      <div class="trust-badges-section__empty" role="status" aria-live="polite">
+        <p class="trust-badges-section__empty-text">Credentials and certifications coming soon.</p>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  /* =================================================================
+   * TRUST BADGES SECTION COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .trust-badges-section {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+  }
+
+  .trust-badges-section__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  /* Section Header */
+  .trust-badges-section__header {
+    text-align: center;
+    margin-bottom: var(--spacing-10);
+  }
+
+  .trust-badges-section__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-3);
+    line-height: var(--line-height-tight);
+  }
+
+  .trust-badges-section__subheading {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin: 0;
+    max-width: 40rem;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* Badges Grid Layout */
+  .trust-badges-section--grid .trust-badges-section__badges {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-4);
+  }
+
+  /* Inline/Horizontal Scroll Layout */
+  .trust-badges-section--inline .trust-badges-section__badges {
+    display: flex;
+    gap: var(--spacing-4);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-primary-300) var(--color-background-muted);
+    padding-bottom: var(--spacing-2);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .trust-badges-section--inline .trust-badges-section__badge-wrapper {
+    flex: 0 0 auto;
+    width: 200px;
+    scroll-snap-align: start;
+  }
+
+  /* Badge wrapper for grid/list semantics */
+  .trust-badges-section__badge-wrapper {
+    display: contents;
+  }
+
+  .trust-badges-section--inline .trust-badges-section__badge-wrapper {
+    display: block;
+  }
+
+  /* Custom scrollbar for inline layout */
+  .trust-badges-section--inline .trust-badges-section__badges::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .trust-badges-section--inline .trust-badges-section__badges::-webkit-scrollbar-track {
+    background: var(--color-background-muted);
+    border-radius: var(--radius-full);
+  }
+
+  .trust-badges-section--inline .trust-badges-section__badges::-webkit-scrollbar-thumb {
+    background: var(--color-primary-300);
+    border-radius: var(--radius-full);
+  }
+
+  .trust-badges-section--inline .trust-badges-section__badges::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary-400);
+  }
+
+  /* Empty State */
+  .trust-badges-section__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-12) var(--spacing-8);
+    background-color: var(--color-background-elevated);
+    border-radius: var(--radius-xl);
+    border: 2px dashed var(--color-border);
+  }
+
+  .trust-badges-section__empty-text {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-tertiary);
+    margin: 0;
+    text-align: center;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * =================================================================
+   */
+
+  /* Small phones (480px) - Grid: 2 columns */
+  @media screen and (min-width: 480px) {
+    .trust-badges-section--inline .trust-badges-section__badge-wrapper {
+      width: 220px;
+    }
+  }
+
+  /* Tablet (768px) */
+  @media screen and (min-width: 768px) {
+    .trust-badges-section {
+      padding: var(--spacing-20) var(--spacing-8);
+    }
+
+    .trust-badges-section__header {
+      margin-bottom: var(--spacing-12);
+    }
+
+    .trust-badges-section__heading {
+      font-size: var(--font-size-4xl);
+    }
+
+    /* Grid columns based on props */
+    .trust-badges-section--grid.trust-badges-section--cols-3 .trust-badges-section__badges {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .trust-badges-section--grid.trust-badges-section--cols-4 .trust-badges-section__badges,
+    .trust-badges-section--grid.trust-badges-section--cols-5 .trust-badges-section__badges,
+    .trust-badges-section--grid.trust-badges-section--cols-6 .trust-badges-section__badges {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .trust-badges-section--grid .trust-badges-section__badges {
+      gap: var(--spacing-6);
+    }
+
+    .trust-badges-section--inline .trust-badges-section__badge-wrapper {
+      width: 240px;
+    }
+  }
+
+  /* Desktop (1024px) */
+  @media screen and (min-width: 1024px) {
+    .trust-badges-section--grid.trust-badges-section--cols-3 .trust-badges-section__badges {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .trust-badges-section--grid.trust-badges-section--cols-4 .trust-badges-section__badges {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .trust-badges-section--grid.trust-badges-section--cols-5 .trust-badges-section__badges {
+      grid-template-columns: repeat(5, 1fr);
+    }
+
+    .trust-badges-section--grid.trust-badges-section--cols-6 .trust-badges-section__badges {
+      grid-template-columns: repeat(6, 1fr);
+    }
+  }
+
+  /* Large Desktop (1280px) */
+  @media screen and (min-width: 1280px) {
+    .trust-badges-section {
+      padding: var(--spacing-24) var(--spacing-8);
+    }
+  }
+
+  /* =================================================================
+   * ANIMATION - Staggered card appearance
+   * =================================================================
+   */
+  .trust-badges-section__badges > :global(*) {
+    animation: fadeSlideUp 0.4s ease-out backwards;
+  }
+
+  .trust-badges-section__badges > :global(*:nth-child(1)) { animation-delay: 0.05s; }
+  .trust-badges-section__badges > :global(*:nth-child(2)) { animation-delay: 0.1s; }
+  .trust-badges-section__badges > :global(*:nth-child(3)) { animation-delay: 0.15s; }
+  .trust-badges-section__badges > :global(*:nth-child(4)) { animation-delay: 0.2s; }
+  .trust-badges-section__badges > :global(*:nth-child(5)) { animation-delay: 0.25s; }
+  .trust-badges-section__badges > :global(*:nth-child(6)) { animation-delay: 0.3s; }
+  .trust-badges-section__badges > :global(*:nth-child(7)) { animation-delay: 0.35s; }
+  .trust-badges-section__badges > :global(*:nth-child(8)) { animation-delay: 0.4s; }
+
+  @keyframes fadeSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * =================================================================
+   */
+  @media (prefers-reduced-motion: reduce) {
+    .trust-badges-section__badges > :global(*) {
+      animation: none;
+    }
+
+    .trust-badges-section--inline .trust-badges-section__badges {
+      scroll-behavior: auto;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * =================================================================
+   */
+  @media print {
+    .trust-badges-section {
+      padding: var(--spacing-8) 0;
+      background-color: transparent;
+    }
+
+    .trust-badges-section__badges {
+      gap: var(--spacing-4);
+    }
+
+    .trust-badges-section__badges > :global(*) {
+      animation: none;
+    }
+
+    .trust-badges-section--inline .trust-badges-section__badges {
+      flex-wrap: wrap;
+      overflow: visible;
+    }
+  }
+</style>

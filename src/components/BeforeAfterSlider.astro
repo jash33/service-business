@@ -1,0 +1,708 @@
+---
+/**
+ * BeforeAfterSlider Component
+ *
+ * An interactive image comparison slider for showcasing before/after transformations.
+ *
+ * Features:
+ * - Smooth drag interaction with mouse and touch support
+ * - Keyboard navigation (Arrow keys, Home, End)
+ * - Optimized image loading with WebP support
+ * - Accessible with ARIA attributes and screen reader support
+ * - Respects prefers-reduced-motion preference
+ * - Works with Astro View Transitions
+ *
+ * @example Basic usage:
+ * ```astro
+ * <BeforeAfterSlider
+ *   id="project-comparison"
+ *   beforeImage={{ src: '/images/before.jpg', alt: 'Before redesign' }}
+ *   afterImage={{ src: '/images/after.jpg', alt: 'After redesign' }}
+ * />
+ * ```
+ *
+ * @example With custom labels:
+ * ```astro
+ * <BeforeAfterSlider
+ *   id="project-comparison"
+ *   beforeImage={{ src: '/images/before.jpg', alt: 'Original design' }}
+ *   afterImage={{ src: '/images/after.jpg', alt: 'New design' }}
+ *   showLabels={true}
+ *   labelBefore="Original"
+ *   labelAfter="Redesigned"
+ *   initialPosition={30}
+ * />
+ * ```
+ */
+
+import type { BeforeAfterSliderProps } from '../types/before-after';
+
+interface Props extends BeforeAfterSliderProps {}
+
+const {
+  id,
+  beforeImage,
+  afterImage,
+  initialPosition = 50,
+  showLabels = true,
+  labelBefore = 'Before',
+  labelAfter = 'After',
+  handleWidth = 4,
+  enableKeyboard = true,
+  enableTouch = true,
+  class: className = '',
+} = Astro.props;
+
+// Build CSS classes
+const sliderClasses = ['before-after-slider', className].filter(Boolean).join(' ');
+
+// Use larger dimensions for aspect ratio calculation
+const imageWidth = beforeImage.width || afterImage.width || 800;
+const imageHeight = beforeImage.height || afterImage.height || 600;
+const aspectRatio = imageWidth / imageHeight;
+
+// Function to get WebP version of an image
+function getWebPSrc(imageSrc: string): string {
+  if (imageSrc.endsWith('.svg') || imageSrc.endsWith('.webp')) return imageSrc;
+  const lastDot = imageSrc.lastIndexOf('.');
+  if (lastDot === -1) return imageSrc;
+  return imageSrc.substring(0, lastDot) + '.webp';
+}
+---
+
+<div
+  class={sliderClasses}
+  id={id}
+  data-before-after-slider
+  data-initial-position={initialPosition}
+  data-enable-keyboard={enableKeyboard}
+  data-enable-touch={enableTouch}
+  style={`aspect-ratio: ${aspectRatio};`}
+>
+  <!-- After Image (background, full visible) -->
+  <div class="before-after-slider__image before-after-slider__image--after">
+    <picture>
+      {!afterImage.src.endsWith('.svg') && (
+        <source srcset={afterImage.srcWebP || getWebPSrc(afterImage.src)} type="image/webp" />
+      )}
+      <img
+        src={afterImage.src}
+        alt={afterImage.alt}
+        width={imageWidth}
+        height={imageHeight}
+        loading="lazy"
+        decoding="async"
+        draggable="false"
+      />
+    </picture>
+    {showLabels && (
+      <span class="before-after-slider__label before-after-slider__label--after" aria-hidden="true">
+        {labelAfter}
+      </span>
+    )}
+  </div>
+
+  <!-- Before Image (foreground, clipped) -->
+  <div
+    class="before-after-slider__image before-after-slider__image--before"
+    style={`clip-path: inset(0 ${100 - initialPosition}% 0 0);`}
+  >
+    <picture>
+      {!beforeImage.src.endsWith('.svg') && (
+        <source srcset={beforeImage.srcWebP || getWebPSrc(beforeImage.src)} type="image/webp" />
+      )}
+      <img
+        src={beforeImage.src}
+        alt={beforeImage.alt}
+        width={imageWidth}
+        height={imageHeight}
+        loading="lazy"
+        decoding="async"
+        draggable="false"
+      />
+    </picture>
+    {showLabels && (
+      <span class="before-after-slider__label before-after-slider__label--before" aria-hidden="true">
+        {labelBefore}
+      </span>
+    )}
+  </div>
+
+  <!-- Slider Handle -->
+  <div
+    class="before-after-slider__handle"
+    style={`left: ${initialPosition}%; --handle-width: ${handleWidth}px;`}
+    role="slider"
+    aria-label="Image comparison slider"
+    aria-valuemin="0"
+    aria-valuemax="100"
+    aria-valuenow={initialPosition}
+    aria-valuetext={`Showing ${initialPosition}% before and ${100 - initialPosition}% after`}
+    tabindex="0"
+  >
+    <div class="before-after-slider__handle-line"></div>
+    <div class="before-after-slider__handle-grip">
+      <svg
+        class="before-after-slider__handle-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+      <svg
+        class="before-after-slider__handle-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Screen reader description -->
+  <div class="sr-only" aria-live="polite" data-slider-announcement></div>
+</div>
+
+<style>
+  /* =================================================================
+   * BEFORE/AFTER SLIDER COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .before-after-slider {
+    /* Layout */
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+
+    /* Visual */
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+
+    /* Prevent text selection during drag */
+    user-select: none;
+    -webkit-user-select: none;
+
+    /* Touch action for swipe gestures */
+    touch-action: pan-y pinch-zoom;
+
+    /* Cursor */
+    cursor: ew-resize;
+  }
+
+  .before-after-slider:focus-within {
+    box-shadow: var(--shadow-md), var(--focus-ring);
+  }
+
+  /* =================================================================
+   * IMAGE LAYERS
+   * ================================================================= */
+  .before-after-slider__image {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  .before-after-slider__image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+  }
+
+  .before-after-slider__image--after {
+    z-index: 1;
+  }
+
+  .before-after-slider__image--before {
+    z-index: 2;
+    /* Initial clip-path is set inline via style attribute */
+    will-change: clip-path;
+  }
+
+  /* =================================================================
+   * LABELS
+   * ================================================================= */
+  .before-after-slider__label {
+    position: absolute;
+    bottom: var(--spacing-4);
+    padding: var(--spacing-1-5) var(--spacing-3);
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    color: var(--color-text-inverse);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wider);
+    border-radius: var(--radius-md);
+    z-index: 5;
+    pointer-events: none;
+  }
+
+  .before-after-slider__label--before {
+    left: var(--spacing-4);
+  }
+
+  .before-after-slider__label--after {
+    right: var(--spacing-4);
+  }
+
+  /* =================================================================
+   * SLIDER HANDLE
+   * ================================================================= */
+  .before-after-slider__handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateX(-50%);
+    cursor: ew-resize;
+
+    /* Touch target size */
+    width: var(--spacing-12);
+
+    /* Remove default focus outline, handled by parent */
+    outline: none;
+  }
+
+  .before-after-slider__handle-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: var(--handle-width, 4px);
+    background-color: var(--color-background);
+    box-shadow:
+      0 0 10px rgba(0, 0, 0, 0.3),
+      0 0 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .before-after-slider__handle-grip {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--spacing-11);
+    height: var(--spacing-11);
+    background-color: var(--color-background);
+    border-radius: var(--radius-full);
+    box-shadow:
+      var(--shadow-lg),
+      0 0 0 3px rgba(255, 255, 255, 0.3);
+    transition:
+      transform var(--duration-150) var(--ease-spring-soft),
+      box-shadow var(--duration-150) var(--ease-smooth);
+  }
+
+  .before-after-slider__handle:hover .before-after-slider__handle-grip,
+  .before-after-slider__handle:focus .before-after-slider__handle-grip {
+    transform: scale(1.1);
+    box-shadow:
+      var(--shadow-xl),
+      0 0 0 3px rgba(255, 255, 255, 0.5),
+      var(--glow-primary-sm);
+  }
+
+  .before-after-slider__handle-icon {
+    width: var(--spacing-4);
+    height: var(--spacing-4);
+    color: var(--color-primary);
+    flex-shrink: 0;
+  }
+
+  /* Active/dragging state */
+  .before-after-slider--dragging .before-after-slider__handle-grip {
+    transform: scale(1.15);
+    box-shadow:
+      var(--shadow-xl),
+      0 0 0 4px rgba(255, 255, 255, 0.6),
+      var(--glow-primary-md);
+  }
+
+  /* =================================================================
+   * SCREEN READER ONLY
+   * ================================================================= */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  /* Mobile adjustments */
+  @media screen and (max-width: 767px) {
+    .before-after-slider__label {
+      font-size: 0.65rem;
+      padding: var(--spacing-1) var(--spacing-2);
+      bottom: var(--spacing-3);
+    }
+
+    .before-after-slider__label--before {
+      left: var(--spacing-3);
+    }
+
+    .before-after-slider__label--after {
+      right: var(--spacing-3);
+    }
+
+    .before-after-slider__handle-grip {
+      width: var(--spacing-10);
+      height: var(--spacing-10);
+    }
+
+    .before-after-slider__handle-icon {
+      width: var(--spacing-3);
+      height: var(--spacing-3);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .before-after-slider__handle-grip {
+      transition: none;
+    }
+
+    .before-after-slider__handle:hover .before-after-slider__handle-grip,
+    .before-after-slider__handle:focus .before-after-slider__handle-grip,
+    .before-after-slider--dragging .before-after-slider__handle-grip {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+  @media (forced-colors: active) {
+    .before-after-slider {
+      border: 2px solid currentColor;
+    }
+
+    .before-after-slider__handle-line {
+      background-color: Highlight;
+    }
+
+    .before-after-slider__handle-grip {
+      border: 2px solid currentColor;
+      background-color: Canvas;
+    }
+
+    .before-after-slider__label {
+      background-color: Canvas;
+      color: CanvasText;
+      border: 1px solid currentColor;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .before-after-slider {
+      box-shadow: none;
+      border: 1px solid var(--color-border);
+    }
+
+    .before-after-slider__handle {
+      display: none;
+    }
+
+    .before-after-slider__image--before {
+      clip-path: inset(0 50% 0 0) !important;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * BeforeAfterSlider Interactive Functionality
+   * Handles mouse, touch, and keyboard interactions for the comparison slider.
+   */
+
+  interface SliderState {
+    isDragging: boolean;
+    startX: number;
+    startPosition: number;
+    currentPosition: number;
+    sliderWidth: number;
+  }
+
+  function initBeforeAfterSliders(): void {
+    // Check for reduced motion preference
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const sliders = document.querySelectorAll<HTMLElement>('[data-before-after-slider]');
+
+    sliders.forEach((slider) => {
+      // Skip if already initialized
+      if (slider.dataset.initialized === 'true') return;
+      slider.dataset.initialized = 'true';
+
+      const handle = slider.querySelector<HTMLElement>('.before-after-slider__handle');
+      const beforeImage = slider.querySelector<HTMLElement>('.before-after-slider__image--before');
+      const announcement = slider.querySelector<HTMLElement>('[data-slider-announcement]');
+
+      if (!handle || !beforeImage) return;
+
+      // Configuration
+      const enableKeyboard = slider.dataset.enableKeyboard !== 'false';
+      const enableTouch = slider.dataset.enableTouch !== 'false';
+      const initialPosition = parseFloat(slider.dataset.initialPosition || '50');
+
+      // State
+      const state: SliderState = {
+        isDragging: false,
+        startX: 0,
+        startPosition: initialPosition,
+        currentPosition: initialPosition,
+        sliderWidth: slider.offsetWidth,
+      };
+
+      // Debounce announcement for screen readers
+      let announcementTimeout: ReturnType<typeof setTimeout> | null = null;
+
+      /**
+       * Update the slider position
+       */
+      function updatePosition(position: number, animate: boolean = false): void {
+        // Clamp position between 0 and 100
+        const clampedPosition = Math.max(0, Math.min(100, position));
+        state.currentPosition = clampedPosition;
+
+        // Update clip-path on before image
+        if (!prefersReducedMotion && animate) {
+          beforeImage!.style.transition = 'clip-path var(--duration-200) var(--ease-out)';
+        } else {
+          beforeImage!.style.transition = 'none';
+        }
+        beforeImage!.style.clipPath = `inset(0 ${100 - clampedPosition}% 0 0)`;
+
+        // Update handle position
+        handle!.style.left = `${clampedPosition}%`;
+
+        // Update ARIA attributes
+        handle!.setAttribute('aria-valuenow', String(Math.round(clampedPosition)));
+        handle!.setAttribute(
+          'aria-valuetext',
+          `Showing ${Math.round(clampedPosition)}% before and ${Math.round(100 - clampedPosition)}% after`
+        );
+
+        // Announce change to screen readers (debounced)
+        if (announcement) {
+          if (announcementTimeout) clearTimeout(announcementTimeout);
+          announcementTimeout = setTimeout(() => {
+            announcement.textContent = `Image comparison: ${Math.round(clampedPosition)} percent before, ${Math.round(100 - clampedPosition)} percent after`;
+          }, 300);
+        }
+      }
+
+      /**
+       * Calculate position from event coordinates
+       */
+      function getPositionFromEvent(clientX: number): number {
+        const rect = slider.getBoundingClientRect();
+        const x = clientX - rect.left;
+        return (x / rect.width) * 100;
+      }
+
+      /**
+       * Handle drag start
+       */
+      function handleDragStart(clientX: number): void {
+        state.isDragging = true;
+        state.startX = clientX;
+        state.startPosition = state.currentPosition;
+        state.sliderWidth = slider.offsetWidth;
+        slider.classList.add('before-after-slider--dragging');
+      }
+
+      /**
+       * Handle drag move
+       */
+      function handleDragMove(clientX: number): void {
+        if (!state.isDragging) return;
+
+        const position = getPositionFromEvent(clientX);
+        updatePosition(position);
+      }
+
+      /**
+       * Handle drag end
+       */
+      function handleDragEnd(): void {
+        if (!state.isDragging) return;
+
+        state.isDragging = false;
+        slider.classList.remove('before-after-slider--dragging');
+      }
+
+      // Mouse Events
+      function handleMouseDown(e: MouseEvent): void {
+        e.preventDefault();
+        handleDragStart(e.clientX);
+      }
+
+      function handleMouseMove(e: MouseEvent): void {
+        handleDragMove(e.clientX);
+      }
+
+      function handleMouseUp(): void {
+        handleDragEnd();
+      }
+
+      // Touch Events
+      function handleTouchStart(e: TouchEvent): void {
+        if (!enableTouch || e.touches.length !== 1) return;
+        handleDragStart(e.touches[0].clientX);
+      }
+
+      function handleTouchMove(e: TouchEvent): void {
+        if (!enableTouch || e.touches.length !== 1) return;
+        e.preventDefault(); // Prevent scrolling while dragging
+        handleDragMove(e.touches[0].clientX);
+      }
+
+      function handleTouchEnd(): void {
+        handleDragEnd();
+      }
+
+      // Keyboard Events
+      function handleKeyDown(e: KeyboardEvent): void {
+        if (!enableKeyboard) return;
+
+        const step = e.shiftKey ? 10 : 1; // Larger step with Shift
+        let newPosition = state.currentPosition;
+
+        switch (e.key) {
+          case 'ArrowLeft':
+          case 'ArrowDown':
+            e.preventDefault();
+            newPosition = state.currentPosition - step;
+            break;
+          case 'ArrowRight':
+          case 'ArrowUp':
+            e.preventDefault();
+            newPosition = state.currentPosition + step;
+            break;
+          case 'Home':
+            e.preventDefault();
+            newPosition = 0;
+            break;
+          case 'End':
+            e.preventDefault();
+            newPosition = 100;
+            break;
+          default:
+            return;
+        }
+
+        updatePosition(newPosition, true);
+      }
+
+      // Click anywhere on slider to jump to position
+      function handleSliderClick(e: MouseEvent): void {
+        // Don't trigger if clicking the handle
+        if ((e.target as HTMLElement).closest('.before-after-slider__handle')) return;
+
+        const position = getPositionFromEvent(e.clientX);
+        updatePosition(position, true);
+      }
+
+      // Attach event listeners
+      slider.addEventListener('mousedown', handleMouseDown);
+      slider.addEventListener('click', handleSliderClick);
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+
+      if (enableTouch) {
+        slider.addEventListener('touchstart', handleTouchStart, { passive: true });
+        slider.addEventListener('touchmove', handleTouchMove, { passive: false });
+        slider.addEventListener('touchend', handleTouchEnd);
+        slider.addEventListener('touchcancel', handleTouchEnd);
+      }
+
+      if (enableKeyboard) {
+        handle.addEventListener('keydown', handleKeyDown);
+      }
+
+      // Handle window resize
+      function handleResize(): void {
+        state.sliderWidth = slider.offsetWidth;
+      }
+      window.addEventListener('resize', handleResize);
+
+      // Cleanup function for Astro View Transitions
+      function cleanup(): void {
+        slider.removeEventListener('mousedown', handleMouseDown);
+        slider.removeEventListener('click', handleSliderClick);
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+
+        if (enableTouch) {
+          slider.removeEventListener('touchstart', handleTouchStart);
+          slider.removeEventListener('touchmove', handleTouchMove);
+          slider.removeEventListener('touchend', handleTouchEnd);
+          slider.removeEventListener('touchcancel', handleTouchEnd);
+        }
+
+        if (enableKeyboard) {
+          handle.removeEventListener('keydown', handleKeyDown);
+        }
+
+        window.removeEventListener('resize', handleResize);
+
+        if (announcementTimeout) clearTimeout(announcementTimeout);
+      }
+
+      // Store cleanup function for potential later use
+      (slider as any).__cleanupSlider = cleanup;
+    });
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initBeforeAfterSliders);
+  } else {
+    initBeforeAfterSliders();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', () => {
+    // Reset initialized state for sliders
+    document.querySelectorAll<HTMLElement>('[data-before-after-slider]').forEach((slider) => {
+      // Call cleanup if exists
+      if ((slider as any).__cleanupSlider) {
+        (slider as any).__cleanupSlider();
+      }
+      slider.dataset.initialized = 'false';
+    });
+    initBeforeAfterSliders();
+  });
+</script>

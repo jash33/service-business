@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
+  <rect width="400" height="300" fill="#f8fafc"/>
+  <rect x="40" y="40" width="320" height="220" rx="12" fill="#e6eaf2" stroke="#365395" stroke-width="2"/>
+  <rect x="60" y="60" width="280" height="180" rx="8" fill="#fff" stroke="#c2cbdf"/>
+  <rect x="80" y="80" width="80" height="40" rx="4" fill="#365395"/>
+  <text x="120" y="105" text-anchor="middle" fill="#fff" font-family="Arial" font-size="14" font-weight="bold">2.5K</text>
+  <text x="120" y="115" text-anchor="middle" fill="#c2cbdf" font-family="Arial" font-size="8">Users</text>
+  <rect x="180" y="80" width="80" height="40" rx="4" fill="#10b981"/>
+  <text x="220" y="105" text-anchor="middle" fill="#fff" font-family="Arial" font-size="14" font-weight="bold">+15%</text>
+  <text x="220" y="115" text-anchor="middle" fill="#d1fae5" font-family="Arial" font-size="8">Growth</text>
+  <rect x="280" y="80" width="40" height="40" rx="4" fill="#8b5cf6"/>
+  <text x="300" y="105" text-anchor="middle" fill="#fff" font-family="Arial" font-size="14" font-weight="bold">85</text>
+  <polyline points="80,200 120,180 160,190 200,160 240,170 280,140 320,150" stroke="#365395" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="80" cy="200" r="4" fill="#365395"/>
+  <circle cx="120" cy="180" r="4" fill="#365395"/>
+  <circle cx="160" cy="190" r="4" fill="#365395"/>
+  <circle cx="200" cy="160" r="4" fill="#365395"/>
+  <circle cx="240" cy="170" r="4" fill="#365395"/>
+  <circle cx="280" cy="140" r="4" fill="#365395"/>
+  <circle cx="320" cy="150" r="4" fill="#365395"/>
+  <rect x="80" y="130" width="25" height="45" rx="2" fill="#06b6d4" opacity="0.5"/>
+  <rect x="115" y="140" width="25" height="35" rx="2" fill="#06b6d4" opacity="0.5"/>
+  <rect x="150" y="125" width="25" height="50" rx="2" fill="#06b6d4" opacity="0.5"/>
+</svg>

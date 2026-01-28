@@ -1,0 +1,12 @@
+{
+  "id": "social-proof-counter",
+  "category": "UI",
+  "title": "Animated Social Proof Statistics Counter",
+  "description": "Display key business metrics (projects completed, years in business, satisfied customers) with animated counting effect on scroll. Builds credibility through quantifiable achievements.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-26T01:51:05.727Z",
+  "updatedAt": "2026-01-26T01:51:05.727Z"
+}

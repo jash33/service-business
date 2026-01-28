@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769478896000-a03b1a62",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-27T01:54:56.000Z",
+  "projectPath": "C:\\Users\\James\\Repos\\service-business",
+  "projectName": "service-business",
+  "featureId": "video-testimonials",
+  "featureName": "Video Testimonials Section",
+  "error": "Claude Code process exited with code 1",
+  "errorType": "execution"
+}

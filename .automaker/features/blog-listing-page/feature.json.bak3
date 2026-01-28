@@ -1,0 +1,14 @@
+{
+  "id": "blog-listing-page",
+  "category": "Content",
+  "title": "Blog Listing and Archive Page",
+  "description": "Build a blog listing page with article cards, categories, tags, and search functionality. Includes pagination, featured post highlighting, and RSS feed generation.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [
+    "seo-head-component"
+  ],
+  "createdAt": "2026-01-26T01:51:05.724Z",
+  "updatedAt": "2026-01-26T01:51:05.724Z"
+}

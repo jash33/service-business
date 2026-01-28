@@ -237,6 +237,25 @@ export interface CTAEventParams extends BaseEventParams {
 }
 
 /**
+ * Phone click event parameters for conversion tracking
+ * Optimized for GA4 phone call conversions
+ */
+export interface PhoneClickEventParams extends BaseEventParams {
+  /** The phone number that was clicked (cleaned format) */
+  phone_number: string;
+  /** Location on the page where the click occurred */
+  click_location: string;
+  /** Type of phone interaction */
+  click_type: 'call' | 'sms';
+  /** Whether this is from a mobile device */
+  is_mobile: boolean;
+  /** The link URL (tel: or sms:) */
+  link_url: string;
+  /** Button or link text if available */
+  link_text?: string;
+}
+
+/**
  * Lead generation event parameters
  */
 export interface LeadEventParams extends BaseEventParams {
@@ -257,6 +276,7 @@ export type EventParams =
   | ScrollEventParams
   | CTAEventParams
   | LeadEventParams
+  | PhoneClickEventParams
   | Record<string, unknown>;
 
 // =================================================================

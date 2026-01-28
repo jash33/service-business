@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "autoLoopWasRunning": false,
+  "maxConcurrency": 1,
+  "projectPath": "C:\\Users\\James\\Repos\\service-business",
+  "branchName": null,
+  "runningFeatureIds": [
+    "vendor-directory-page"
+  ],
+  "savedAt": "2026-01-27T21:50:02.229Z"
+}

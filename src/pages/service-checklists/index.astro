@@ -1,0 +1,775 @@
+---
+/**
+ * Service Checklists Listing Page
+ * Displays all available service preparation checklists and maintenance guides.
+ *
+ * Features:
+ * - Featured checklist highlighting
+ * - Category and service type filtering
+ * - Tag-based filtering
+ * - Pagination
+ * - SEO optimized
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import ServiceChecklistCard from '../../components/ServiceChecklistCard.astro';
+import ContactCTA from '../../components/ContactCTA.astro';
+import {
+  SERVICE_CHECKLISTS,
+  SERVICE_CHECKLISTS_PAGE_CONFIG,
+  sortChecklistsByDate,
+  paginateChecklists,
+  getAllChecklistTags,
+  getChecklistsByCategory,
+  getChecklistsByServiceType,
+} from '../../config/service-checklists.config';
+import {
+  CHECKLIST_CATEGORIES,
+  SERVICE_TYPES,
+  type ChecklistFilterOption,
+} from '../../types/service-checklist';
+
+// Get URL parameters for filtering and pagination
+const url = Astro.url;
+const searchParams = url.searchParams;
+const categoryParam = searchParams.get('category') || 'all';
+const serviceTypeParam = searchParams.get('service') || 'all';
+const tagParam = searchParams.get('tag') || '';
+const pageParam = parseInt(searchParams.get('page') || '1', 10);
+
+// Filter checklists by category
+let filteredChecklists = categoryParam === 'all'
+  ? SERVICE_CHECKLISTS
+  : getChecklistsByCategory(categoryParam);
+
+// Filter by service type if specified
+if (serviceTypeParam !== 'all') {
+  filteredChecklists = filteredChecklists.filter(
+    checklist => checklist.serviceType === serviceTypeParam
+  );
+}
+
+// Filter by tag if specified
+if (tagParam) {
+  filteredChecklists = filteredChecklists.filter(checklist =>
+    checklist.tags.some(tag => tag.slug === tagParam)
+  );
+}
+
+// Sort checklists by date (newest first)
+const sortedChecklists = sortChecklistsByDate(filteredChecklists);
+
+// Separate featured checklist if showing all and on first page
+const showFeaturedHero = categoryParam === 'all' && serviceTypeParam === 'all' && !tagParam && pageParam === 1;
+const featuredChecklist = showFeaturedHero
+  ? sortedChecklists.find(checklist => checklist.featured)
+  : null;
+const remainingChecklists = featuredChecklist
+  ? sortedChecklists.filter(checklist => checklist.id !== featuredChecklist.id)
+  : sortedChecklists;
+
+// Paginate checklists
+const { checklists: paginatedChecklists, totalPages, currentPage } = paginateChecklists(
+  remainingChecklists,
+  pageParam,
+  SERVICE_CHECKLISTS_PAGE_CONFIG.checklistsPerPage
+);
+
+// Build category filter options with counts
+const categoriesWithCounts: ChecklistFilterOption[] = CHECKLIST_CATEGORIES.map(cat => ({
+  ...cat,
+  count: cat.value === 'all'
+    ? SERVICE_CHECKLISTS.length
+    : SERVICE_CHECKLISTS.filter(c => c.category === cat.value).length,
+})).filter(cat => (cat.count && cat.count > 0) || cat.value === 'all');
+
+// Build service type filter options with counts
+const serviceTypesWithCounts: ChecklistFilterOption[] = SERVICE_TYPES.map(st => ({
+  ...st,
+  count: st.value === 'all'
+    ? SERVICE_CHECKLISTS.length
+    : SERVICE_CHECKLISTS.filter(c => c.serviceType === st.value).length,
+})).filter(st => (st.count && st.count > 0) || st.value === 'all');
+
+// Build tag filter options with counts
+const allTags = getAllChecklistTags();
+const tagsWithCounts: ChecklistFilterOption[] = allTags.map(tag => ({
+  label: tag.name,
+  value: tag.slug,
+  count: SERVICE_CHECKLISTS.filter(c => c.tags.some(t => t.slug === tag.slug)).length,
+})).sort((a, b) => (b.count || 0) - (a.count || 0)).slice(0, 12);
+
+// SEO
+const pageTitle = categoryParam !== 'all'
+  ? `${CHECKLIST_CATEGORIES.find(c => c.value === categoryParam)?.label || 'Checklists'} | Service Checklists`
+  : tagParam
+    ? `Checklists tagged "${allTags.find(t => t.slug === tagParam)?.name || tagParam}" | Service Checklists`
+    : 'Service Checklists & Maintenance Guides | Free PDF Downloads';
+const pageDescription = 'Download free service preparation checklists and maintenance guides. Keep your website running smoothly with our comprehensive, expert-crafted PDF checklists.';
+
+// Build pagination URL
+function buildPageUrl(page: number): string {
+  const params = new URLSearchParams();
+  if (categoryParam !== 'all') params.set('category', categoryParam);
+  if (serviceTypeParam !== 'all') params.set('service', serviceTypeParam);
+  if (tagParam) params.set('tag', tagParam);
+  if (page > 1) params.set('page', page.toString());
+  const queryString = params.toString();
+  return queryString ? `/service-checklists?${queryString}` : '/service-checklists';
+}
+
+// Check if filter is active
+const hasActiveFilters = categoryParam !== 'all' || serviceTypeParam !== 'all' || tagParam;
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+>
+  <!-- Hero Section -->
+  <section class="checklists-hero">
+    <div class="checklists-hero__container">
+      <div class="checklists-hero__content">
+        <h1 class="checklists-hero__title">{SERVICE_CHECKLISTS_PAGE_CONFIG.heading}</h1>
+        <p class="checklists-hero__subtitle">{SERVICE_CHECKLISTS_PAGE_CONFIG.subheading}</p>
+      </div>
+
+      <!-- Quick stats -->
+      <div class="checklists-hero__stats">
+        <div class="checklists-hero__stat">
+          <span class="checklists-hero__stat-value">{SERVICE_CHECKLISTS.length}</span>
+          <span class="checklists-hero__stat-label">Checklists</span>
+        </div>
+        <div class="checklists-hero__stat">
+          <span class="checklists-hero__stat-value">{SERVICE_CHECKLISTS.reduce((sum, c) => sum + c.sections.reduce((s, sec) => s + sec.items.length, 0), 0)}+</span>
+          <span class="checklists-hero__stat-label">Total Items</span>
+        </div>
+        <div class="checklists-hero__stat">
+          <span class="checklists-hero__stat-value">Free</span>
+          <span class="checklists-hero__stat-label">PDF Downloads</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <section class="checklists-listing" id={SERVICE_CHECKLISTS_PAGE_CONFIG.id}>
+    <div class="checklists-listing__container">
+      <!-- Sidebar with filters -->
+      <aside class="checklists-listing__sidebar">
+        <div class="checklists-filter">
+          <h2 class="checklists-filter__title">Filter Checklists</h2>
+
+          <!-- Category Filter -->
+          <div class="checklists-filter__group">
+            <h3 class="checklists-filter__group-title">Category</h3>
+            <ul class="checklists-filter__list">
+              {categoriesWithCounts.map((cat) => (
+                <li class="checklists-filter__item">
+                  <a
+                    href={cat.value === 'all'
+                      ? (serviceTypeParam !== 'all' ? `/service-checklists?service=${serviceTypeParam}` : '/service-checklists')
+                      : (serviceTypeParam !== 'all'
+                          ? `/service-checklists?category=${cat.value}&service=${serviceTypeParam}`
+                          : `/service-checklists?category=${cat.value}`)}
+                    class:list={[
+                      'checklists-filter__link',
+                      { 'checklists-filter__link--active': categoryParam === cat.value }
+                    ]}
+                    aria-current={categoryParam === cat.value ? 'page' : undefined}
+                  >
+                    <span>{cat.label}</span>
+                    <span class="checklists-filter__count">{cat.count}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <!-- Service Type Filter -->
+          <div class="checklists-filter__group">
+            <h3 class="checklists-filter__group-title">Service Type</h3>
+            <ul class="checklists-filter__list">
+              {serviceTypesWithCounts.map((st) => (
+                <li class="checklists-filter__item">
+                  <a
+                    href={st.value === 'all'
+                      ? (categoryParam !== 'all' ? `/service-checklists?category=${categoryParam}` : '/service-checklists')
+                      : (categoryParam !== 'all'
+                          ? `/service-checklists?category=${categoryParam}&service=${st.value}`
+                          : `/service-checklists?service=${st.value}`)}
+                    class:list={[
+                      'checklists-filter__link',
+                      { 'checklists-filter__link--active': serviceTypeParam === st.value }
+                    ]}
+                    aria-current={serviceTypeParam === st.value ? 'page' : undefined}
+                  >
+                    <span>{st.label}</span>
+                    <span class="checklists-filter__count">{st.count}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <!-- Tags Filter -->
+          {tagsWithCounts.length > 0 && (
+            <div class="checklists-filter__group">
+              <h3 class="checklists-filter__group-title">Popular Tags</h3>
+              <div class="checklists-filter__tags">
+                {tagsWithCounts.map((tag) => (
+                  <a
+                    href={`/service-checklists?tag=${tag.value}`}
+                    class:list={[
+                      'checklists-filter__tag',
+                      { 'checklists-filter__tag--active': tagParam === tag.value }
+                    ]}
+                  >
+                    {tag.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <!-- Clear Filters -->
+          {hasActiveFilters && (
+            <a href="/service-checklists" class="checklists-filter__clear">
+              <svg class="checklists-filter__clear-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Clear all filters
+            </a>
+          )}
+        </div>
+      </aside>
+
+      <!-- Main content area -->
+      <div class="checklists-listing__main">
+        <!-- Featured Checklist -->
+        {featuredChecklist && (
+          <div class="checklists-listing__featured">
+            <ServiceChecklistCard
+              {...featuredChecklist}
+              showPreview={true}
+            />
+          </div>
+        )}
+
+        <!-- Results info -->
+        <div class="checklists-listing__results-info">
+          <p class="checklists-listing__results-count">
+            {hasActiveFilters ? (
+              <>Showing {filteredChecklists.length} {filteredChecklists.length === 1 ? 'checklist' : 'checklists'}</>
+            ) : (
+              <>All {SERVICE_CHECKLISTS.length} checklists</>
+            )}
+          </p>
+        </div>
+
+        <!-- Checklists Grid -->
+        {paginatedChecklists.length > 0 ? (
+          <div class="checklists-listing__grid">
+            {paginatedChecklists.map((checklist) => (
+              <ServiceChecklistCard
+                {...checklist}
+              />
+            ))}
+          </div>
+        ) : (
+          <div class="checklists-listing__empty">
+            <svg class="checklists-listing__empty-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <h3 class="checklists-listing__empty-title">No checklists found</h3>
+            <p class="checklists-listing__empty-text">
+              Try adjusting your filters or <a href="/service-checklists">view all checklists</a>.
+            </p>
+          </div>
+        )}
+
+        <!-- Pagination -->
+        {totalPages > 1 && (
+          <nav class="checklists-pagination" aria-label="Checklists pagination">
+            <ul class="checklists-pagination__list">
+              {currentPage > 1 && (
+                <li>
+                  <a href={buildPageUrl(currentPage - 1)} class="checklists-pagination__link checklists-pagination__link--prev" aria-label="Previous page">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <polyline points="15,18 9,12 15,6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Previous
+                  </a>
+                </li>
+              )}
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <li>
+                  <a
+                    href={buildPageUrl(page)}
+                    class:list={[
+                      'checklists-pagination__link',
+                      { 'checklists-pagination__link--current': page === currentPage }
+                    ]}
+                    aria-current={page === currentPage ? 'page' : undefined}
+                  >
+                    {page}
+                  </a>
+                </li>
+              ))}
+
+              {currentPage < totalPages && (
+                <li>
+                  <a href={buildPageUrl(currentPage + 1)} class="checklists-pagination__link checklists-pagination__link--next" aria-label="Next page">
+                    Next
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <polyline points="9,18 15,12 9,6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </a>
+                </li>
+              )}
+            </ul>
+          </nav>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <ContactCTA
+    headline="Need Custom Guidance?"
+    supportingText="Our team can create customized checklists and guides tailored to your specific business needs."
+    primaryCTA={{
+      text: "Contact Us",
+      href: "/contact"
+    }}
+    secondaryCTA={{
+      text: "View Services",
+      href: "/services"
+    }}
+  />
+</Layout>
+
+<style>
+  /* =================================================================
+   * HERO SECTION
+   * ================================================================= */
+  .checklists-hero {
+    background: linear-gradient(135deg, var(--color-primary-50) 0%, var(--color-background) 100%);
+    padding: var(--spacing-12) var(--spacing-4);
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .checklists-hero__container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .checklists-hero__content {
+    text-align: center;
+    margin-bottom: var(--spacing-8);
+  }
+
+  .checklists-hero__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4) 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .checklists-hero__subtitle {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin: 0 auto;
+    max-width: 600px;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .checklists-hero__stats {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-8);
+  }
+
+  .checklists-hero__stat {
+    text-align: center;
+  }
+
+  .checklists-hero__stat-value {
+    display: block;
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+  }
+
+  .checklists-hero__stat-label {
+    display: block;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  /* =================================================================
+   * LISTING SECTION
+   * ================================================================= */
+  .checklists-listing {
+    padding: var(--spacing-12) var(--spacing-4);
+  }
+
+  .checklists-listing__container {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: var(--spacing-8);
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* =================================================================
+   * SIDEBAR FILTER
+   * ================================================================= */
+  .checklists-listing__sidebar {
+    position: sticky;
+    top: var(--spacing-6);
+    align-self: start;
+  }
+
+  .checklists-filter {
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-5);
+  }
+
+  .checklists-filter__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-5) 0;
+    padding-bottom: var(--spacing-3);
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .checklists-filter__group {
+    margin-bottom: var(--spacing-5);
+  }
+
+  .checklists-filter__group:last-of-type {
+    margin-bottom: 0;
+  }
+
+  .checklists-filter__group-title {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+    margin: 0 0 var(--spacing-3) 0;
+  }
+
+  .checklists-filter__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .checklists-filter__item {
+    margin-bottom: var(--spacing-1);
+  }
+
+  .checklists-filter__link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-2) var(--spacing-3);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    transition: all var(--duration-150) var(--ease-in-out);
+  }
+
+  .checklists-filter__link:hover {
+    background-color: var(--color-background-muted);
+    color: var(--color-text-primary);
+  }
+
+  .checklists-filter__link--active {
+    background-color: var(--color-primary-50);
+    color: var(--color-primary);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .checklists-filter__count {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    background-color: var(--color-background-muted);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-full);
+  }
+
+  .checklists-filter__link--active .checklists-filter__count {
+    background-color: var(--color-primary-100);
+    color: var(--color-primary-700);
+  }
+
+  .checklists-filter__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+  }
+
+  .checklists-filter__tag {
+    display: inline-block;
+    padding: var(--spacing-1) var(--spacing-3);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    background-color: var(--color-background-muted);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-full);
+    text-decoration: none;
+    transition: all var(--duration-150) var(--ease-in-out);
+  }
+
+  .checklists-filter__tag:hover {
+    background-color: var(--color-primary-50);
+    border-color: var(--color-primary-100);
+    color: var(--color-primary);
+  }
+
+  .checklists-filter__tag--active {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  .checklists-filter__clear {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    margin-top: var(--spacing-4);
+    padding-top: var(--spacing-4);
+    border-top: 1px solid var(--color-border-light);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-error);
+    text-decoration: none;
+    transition: color var(--duration-150) var(--ease-in-out);
+  }
+
+  .checklists-filter__clear:hover {
+    color: var(--color-error-600, #dc2626);
+    text-decoration: underline;
+  }
+
+  .checklists-filter__clear-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* =================================================================
+   * MAIN CONTENT
+   * ================================================================= */
+  .checklists-listing__main {
+    min-width: 0;
+  }
+
+  .checklists-listing__featured {
+    margin-bottom: var(--spacing-8);
+  }
+
+  .checklists-listing__results-info {
+    margin-bottom: var(--spacing-4);
+  }
+
+  .checklists-listing__results-count {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+    margin: 0;
+  }
+
+  .checklists-listing__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--spacing-6);
+  }
+
+  /* =================================================================
+   * EMPTY STATE
+   * ================================================================= */
+  .checklists-listing__empty {
+    text-align: center;
+    padding: var(--spacing-12) var(--spacing-6);
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-xl);
+  }
+
+  .checklists-listing__empty-icon {
+    width: 48px;
+    height: 48px;
+    color: var(--color-text-tertiary);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .checklists-listing__empty-title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-2) 0;
+  }
+
+  .checklists-listing__empty-text {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  .checklists-listing__empty-text a {
+    color: var(--color-primary);
+  }
+
+  /* =================================================================
+   * PAGINATION
+   * ================================================================= */
+  .checklists-pagination {
+    margin-top: var(--spacing-8);
+  }
+
+  .checklists-pagination__list {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .checklists-pagination__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-1);
+    min-width: 44px;
+    min-height: 44px;
+    padding: var(--spacing-2) var(--spacing-3);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition: all var(--duration-150) var(--ease-in-out);
+  }
+
+  .checklists-pagination__link:hover {
+    background-color: var(--color-background-muted);
+    border-color: var(--color-primary-200);
+    color: var(--color-primary);
+  }
+
+  .checklists-pagination__link--current {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  .checklists-pagination__link svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* =================================================================
+   * RESPONSIVE
+   * ================================================================= */
+  @media screen and (max-width: 1024px) {
+    .checklists-listing__container {
+      grid-template-columns: 1fr;
+    }
+
+    .checklists-listing__sidebar {
+      position: static;
+      order: -1;
+    }
+
+    .checklists-filter {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-4);
+    }
+
+    .checklists-filter__title {
+      width: 100%;
+      margin-bottom: var(--spacing-3);
+    }
+
+    .checklists-filter__group {
+      flex: 1;
+      min-width: 200px;
+      margin-bottom: 0;
+    }
+
+    .checklists-filter__clear {
+      width: 100%;
+      justify-content: center;
+      margin-top: var(--spacing-2);
+      padding-top: var(--spacing-4);
+      border-top: 1px solid var(--color-border-light);
+    }
+  }
+
+  @media screen and (max-width: 640px) {
+    .checklists-hero {
+      padding: var(--spacing-8) var(--spacing-4);
+    }
+
+    .checklists-hero__title {
+      font-size: var(--font-size-2xl);
+    }
+
+    .checklists-hero__stats {
+      flex-direction: column;
+      gap: var(--spacing-4);
+    }
+
+    .checklists-listing__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .checklists-filter {
+      flex-direction: column;
+    }
+
+    .checklists-filter__group {
+      min-width: 100%;
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .checklists-filter__link,
+    .checklists-filter__tag,
+    .checklists-pagination__link {
+      transition: none;
+    }
+  }
+</style>

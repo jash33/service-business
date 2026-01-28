@@ -135,6 +135,10 @@ export interface PortfolioSectionProps {
   initialFilter?: string;
   /** Whether to show featured projects first */
   showFeaturedFirst?: boolean;
+  /** Whether to show skeleton loading placeholders while content loads */
+  showSkeletonLoading?: boolean;
+  /** Number of skeleton cards to show during loading state */
+  skeletonCount?: number;
 }
 
 /**

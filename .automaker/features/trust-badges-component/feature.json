@@ -1,0 +1,12 @@
+{
+  "id": "trust-badges-component",
+  "category": "UI",
+  "title": "Trust Badges and Certifications Display",
+  "description": "Create a component to showcase industry certifications, licenses, insurance badges, and awards. Helps establish credibility and professionalism with potential customers.",
+  "status": "verified",
+  "priority": 1,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-26T01:51:05.710Z",
+  "updatedAt": "2026-01-26T04:09:13.442Z"
+}

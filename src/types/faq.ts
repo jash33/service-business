@@ -45,6 +45,8 @@ export interface FAQAccordionProps {
   id?: string;
   /** Additional CSS class names */
   class?: string;
+  /** Whether to include FAQPage schema markup for rich snippets (default: true) */
+  includeSchema?: boolean;
 }
 
 /**

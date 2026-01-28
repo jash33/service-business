@@ -23,7 +23,7 @@
  * DM Sans: Heading font with geometric, modern style
  */
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+/* Google Fonts loaded via preload links in Layout.astro for better performance */
 
 /* =================================================================
  * CSS RESET & BASE STYLES
@@ -316,22 +316,101 @@ th {
   border-width: 0;
 }
 
-/* Skip link for keyboard navigation */
+/* =================================================================
+ * SKIP NAVIGATION LINK - WCAG 2.1 AA Compliant
+ * =================================================================
+ * Provides keyboard users a way to bypass repetitive navigation
+ * and jump directly to main content. This improves accessibility
+ * for users who navigate via keyboard or assistive technologies.
+ *
+ * WCAG Success Criteria:
+ * - 2.4.1 Bypass Blocks (Level A)
+ * - 2.4.3 Focus Order (Level A)
+ * - 2.4.7 Focus Visible (Level AA)
+ * ================================================================= */
 .skip-link {
-  position: absolute;
+  /* Positioning - fixed to viewport top-left */
+  position: fixed;
   top: var(--spacing-4);
   left: var(--spacing-4);
   z-index: var(--z-max);
-  padding: var(--spacing-2) var(--spacing-4);
-  background: var(--color-background);
-  border: var(--border-width-2) solid var(--color-primary);
+
+  /* Sizing and spacing */
+  padding: var(--spacing-3) var(--spacing-6);
+
+  /* Typography */
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+  white-space: nowrap;
+
+  /* Colors - high contrast for visibility */
+  color: var(--color-text-inverse);
+  background: var(--color-primary);
+  border: var(--border-width-2) solid var(--color-primary-dark);
   border-radius: var(--radius-md);
+
+  /* Shadow for visual prominence */
+  box-shadow: var(--shadow-lg);
+
+  /* Hidden by default - moved off-screen but still accessible to screen readers */
   transform: translateY(-200%);
-  transition: transform var(--duration-150) var(--ease-in-out);
+  opacity: 0;
+
+  /* Smooth transition for appearance */
+  transition:
+    transform var(--duration-200) var(--ease-out),
+    opacity var(--duration-200) var(--ease-out);
 }
 
+/* Show skip link on focus - keyboard navigation */
 .skip-link:focus {
   transform: translateY(0);
+  opacity: 1;
+  outline: var(--focus-ring-width) solid var(--color-background);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Enhanced focus ring for better visibility */
+.skip-link:focus-visible {
+  transform: translateY(0);
+  opacity: 1;
+  outline: var(--focus-ring-width) solid var(--color-background);
+  outline-offset: var(--focus-ring-offset);
+  box-shadow:
+    var(--shadow-lg),
+    0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-width) + 2px) var(--color-primary-dark);
+}
+
+/* Hover state when visible */
+.skip-link:hover {
+  background: var(--color-primary-dark);
+  border-color: var(--color-primary-900);
+}
+
+/* Active/pressed state */
+.skip-link:active {
+  background: var(--color-primary-900);
+  transform: translateY(1px);
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .skip-link {
+    transition: none;
+  }
+}
+
+/* Remove focus outline when main content receives focus after skip */
+#main-content:focus {
+  outline: none;
+}
+
+/* Visual indicator for main content when focused via skip link */
+#main-content:focus-visible {
+  outline: var(--focus-ring-width) dashed var(--color-primary);
+  outline-offset: calc(-1 * var(--focus-ring-width));
 }
 
 /* =================================================================

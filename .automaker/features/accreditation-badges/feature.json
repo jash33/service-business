@@ -1,0 +1,12 @@
+{
+  "id": "accreditation-badges",
+  "category": "UI",
+  "title": "Professional Accreditation Badges",
+  "description": "Showcase industry certifications, BBB accreditation, chamber of commerce membership, and insurance verification badges with clickable verification links.",
+  "status": "verified",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-26T01:51:05.751Z",
+  "updatedAt": "2026-01-26T04:13:14.064Z"
+}

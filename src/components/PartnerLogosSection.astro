@@ -1,0 +1,552 @@
+---
+/**
+ * PartnerLogosSection Component
+ * An auto-scrolling carousel displaying trusted partner and supplier logos.
+ * Builds credibility through brand association and industry relationships.
+ *
+ * Features:
+ * - Infinite auto-scrolling marquee effect
+ * - Pause on hover for accessibility
+ * - Responsive logo sizing
+ * - Smooth CSS-based animation
+ * - Accessible with proper semantic structure
+ * - Respects prefers-reduced-motion preference
+ * - Works with Astro View Transitions
+ * - Dark mode support
+ *
+ * @example Basic usage
+ * ```astro
+ * <PartnerLogosSection
+ *   heading="Our Trusted Partners"
+ *   logos={[
+ *     { id: 'partner-1', name: 'Company A', logoSrc: '/images/partner-a.png' },
+ *     { id: 'partner-2', name: 'Company B', logoSrc: '/images/partner-b.png' },
+ *   ]}
+ * />
+ * ```
+ *
+ * @example With custom settings
+ * ```astro
+ * <PartnerLogosSection
+ *   heading="Trusted By Industry Leaders"
+ *   subheading="We partner with the best to deliver exceptional results"
+ *   logos={partnerLogos}
+ *   scrollSpeed={40}
+ *   pauseOnHover={true}
+ * />
+ * ```
+ */
+
+import type { PartnerLogosSectionProps, PartnerLogo } from '../types/partner';
+
+interface Props extends PartnerLogosSectionProps {}
+
+const {
+  heading = 'Our Trusted Partners',
+  subheading,
+  logos = [],
+  autoScroll = true,
+  scrollSpeed = 30,
+  pauseOnHover = true,
+  id = 'partner-logos',
+  class: className = '',
+} = Astro.props;
+
+// Build CSS classes
+const sectionClasses = [
+  'partner-logos-section',
+  className,
+].filter(Boolean).join(' ');
+
+// Check if we have logos to display
+const hasLogos = logos && logos.length > 0;
+
+// Calculate animation duration based on number of logos and scroll speed
+// More logos = longer track = slower perceived speed at same duration
+const trackWidth = logos.length * 200; // Approximate width per logo
+const animationDuration = trackWidth / scrollSpeed;
+---
+
+<section
+  class={sectionClasses}
+  id={id}
+  aria-labelledby={`${id}-heading`}
+  data-partner-logos-section
+  data-auto-scroll={autoScroll}
+  data-pause-on-hover={pauseOnHover}
+>
+  <div class="partner-logos-section__container">
+    <!-- Section Header -->
+    <header class="partner-logos-section__header section-heading--decorated">
+      <h2 id={`${id}-heading`} class="partner-logos-section__heading">{heading}</h2>
+      {subheading && (
+        <p class="partner-logos-section__subheading">{subheading}</p>
+      )}
+    </header>
+
+    <!-- Partner Logos Carousel -->
+    {hasLogos ? (
+      <div
+        class="partner-logos-section__carousel"
+        role="region"
+        aria-label="Partner logos carousel"
+        aria-roledescription="carousel"
+      >
+        <div
+          class="partner-logos-section__track"
+          style={`--scroll-duration: ${animationDuration}s;`}
+        >
+          <!-- First set of logos -->
+          {logos.map((logo) => (
+            <div class="partner-logos-section__item" role="group" aria-label={`${logo.name} logo`}>
+              {logo.href ? (
+                <a
+                  href={logo.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="partner-logos-section__link"
+                  aria-label={`Visit ${logo.name} website`}
+                >
+                  <img
+                    src={logo.logoSrc}
+                    alt={logo.alt || `${logo.name} logo`}
+                    width={logo.width || 160}
+                    height={logo.height || 60}
+                    loading="lazy"
+                    decoding="async"
+                    class="partner-logos-section__logo"
+                  />
+                </a>
+              ) : (
+                <img
+                  src={logo.logoSrc}
+                  alt={logo.alt || `${logo.name} logo`}
+                  width={logo.width || 160}
+                  height={logo.height || 60}
+                  loading="lazy"
+                  decoding="async"
+                  class="partner-logos-section__logo"
+                />
+              )}
+            </div>
+          ))}
+          <!-- Duplicate logos for seamless infinite scroll -->
+          {logos.map((logo) => (
+            <div class="partner-logos-section__item" role="group" aria-hidden="true">
+              {logo.href ? (
+                <a
+                  href={logo.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="partner-logos-section__link"
+                  tabindex="-1"
+                >
+                  <img
+                    src={logo.logoSrc}
+                    alt=""
+                    width={logo.width || 160}
+                    height={logo.height || 60}
+                    loading="lazy"
+                    decoding="async"
+                    class="partner-logos-section__logo"
+                  />
+                </a>
+              ) : (
+                <img
+                  src={logo.logoSrc}
+                  alt=""
+                  width={logo.width || 160}
+                  height={logo.height || 60}
+                  loading="lazy"
+                  decoding="async"
+                  class="partner-logos-section__logo"
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    ) : (
+      <!-- Empty State -->
+      <div class="partner-logos-section__empty" role="status" aria-live="polite">
+        <p class="partner-logos-section__empty-text">Partner logos coming soon.</p>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  /* =================================================================
+   * PARTNER LOGOS SECTION COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .partner-logos-section {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background);
+    overflow: hidden;
+  }
+
+  .partner-logos-section__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  /* Section Header */
+  .partner-logos-section__header {
+    text-align: center;
+    margin-bottom: var(--spacing-12);
+  }
+
+  .partner-logos-section__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4);
+    line-height: var(--line-height-tight);
+  }
+
+  .partner-logos-section__subheading {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin: 0;
+    max-width: 40rem;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* Carousel Container */
+  .partner-logos-section__carousel {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 10%,
+      black 90%,
+      transparent
+    );
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 10%,
+      black 90%,
+      transparent
+    );
+  }
+
+  /* Scrolling Track */
+  .partner-logos-section__track {
+    display: flex;
+    gap: var(--spacing-12);
+    width: max-content;
+    animation: scrollLogos var(--scroll-duration, 30s) linear infinite;
+  }
+
+  /* Pause on hover */
+  [data-pause-on-hover="true"] .partner-logos-section__carousel:hover .partner-logos-section__track {
+    animation-play-state: paused;
+  }
+
+  /* Individual Logo Item */
+  .partner-logos-section__item {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-4) var(--spacing-6);
+    min-width: 160px;
+    height: 80px;
+  }
+
+  /* Logo Link */
+  .partner-logos-section__link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform var(--duration-200) var(--ease-out),
+                opacity var(--duration-200) var(--ease-out);
+    border-radius: var(--radius-md);
+  }
+
+  .partner-logos-section__link:hover {
+    transform: scale(1.05);
+  }
+
+  .partner-logos-section__link:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--spacing-2);
+  }
+
+  /* Logo Image */
+  .partner-logos-section__logo {
+    max-width: 160px;
+    max-height: 60px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    filter: grayscale(100%) opacity(0.6);
+    transition: filter var(--duration-300) var(--ease-out);
+  }
+
+  /* Show color on hover (entire carousel) */
+  .partner-logos-section__carousel:hover .partner-logos-section__logo {
+    filter: grayscale(0%) opacity(1);
+  }
+
+  /* Individual item hover for linked logos */
+  .partner-logos-section__link:hover .partner-logos-section__logo {
+    filter: grayscale(0%) opacity(1);
+  }
+
+  /* Empty State */
+  .partner-logos-section__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-16) var(--spacing-8);
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-xl);
+    border: 2px dashed var(--color-border);
+  }
+
+  .partner-logos-section__empty-text {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-tertiary);
+    margin: 0;
+    text-align: center;
+  }
+
+  /* =================================================================
+   * KEYFRAME ANIMATIONS
+   * =================================================================
+   */
+
+  @keyframes scrollLogos {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * =================================================================
+   */
+
+  /* Tablet (768px) */
+  @media screen and (min-width: 768px) {
+    .partner-logos-section {
+      padding: var(--spacing-20) var(--spacing-8);
+    }
+
+    .partner-logos-section__header {
+      margin-bottom: var(--spacing-16);
+    }
+
+    .partner-logos-section__heading {
+      font-size: var(--font-size-4xl);
+    }
+
+    .partner-logos-section__track {
+      gap: var(--spacing-16);
+    }
+
+    .partner-logos-section__item {
+      min-width: 180px;
+      height: 100px;
+      padding: var(--spacing-6) var(--spacing-8);
+    }
+
+    .partner-logos-section__logo {
+      max-width: 180px;
+      max-height: 70px;
+    }
+  }
+
+  /* Desktop (1024px) */
+  @media screen and (min-width: 1024px) {
+    .partner-logos-section__track {
+      gap: var(--spacing-20);
+    }
+
+    .partner-logos-section__item {
+      min-width: 200px;
+      height: 100px;
+    }
+
+    .partner-logos-section__logo {
+      max-width: 200px;
+      max-height: 80px;
+    }
+  }
+
+  /* Large Desktop (1280px) */
+  @media screen and (min-width: 1280px) {
+    .partner-logos-section {
+      padding: var(--spacing-24) var(--spacing-8);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * =================================================================
+   */
+  @media (prefers-reduced-motion: reduce) {
+    .partner-logos-section__track {
+      animation: none;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .partner-logos-section__carousel {
+      mask-image: none;
+      -webkit-mask-image: none;
+    }
+
+    /* Hide duplicates when not scrolling */
+    .partner-logos-section__item[aria-hidden="true"] {
+      display: none;
+    }
+
+    .partner-logos-section__link:hover {
+      transform: none;
+    }
+
+    .partner-logos-section__logo {
+      filter: grayscale(0%) opacity(0.8);
+    }
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * =================================================================
+   */
+  @media (forced-colors: active) {
+    .partner-logos-section__logo {
+      filter: none;
+    }
+
+    .partner-logos-section__carousel {
+      mask-image: none;
+      -webkit-mask-image: none;
+    }
+
+    .partner-logos-section__link:focus-visible {
+      outline: 2px solid currentColor;
+    }
+
+    .partner-logos-section__empty {
+      border: 2px solid currentColor;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * =================================================================
+   */
+  @media print {
+    .partner-logos-section {
+      padding: var(--spacing-8) 0;
+      background-color: transparent;
+    }
+
+    .partner-logos-section__track {
+      animation: none;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: var(--spacing-4);
+      width: 100%;
+    }
+
+    .partner-logos-section__carousel {
+      mask-image: none;
+      -webkit-mask-image: none;
+    }
+
+    .partner-logos-section__item[aria-hidden="true"] {
+      display: none;
+    }
+
+    .partner-logos-section__logo {
+      filter: grayscale(100%);
+      max-width: 100px;
+      max-height: 40px;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * PartnerLogosSection Interactive Functionality
+   * Handles pause on hover and visibility-based animation control.
+   */
+
+  function initPartnerLogosSection(): void {
+    const sections = document.querySelectorAll<HTMLElement>('[data-partner-logos-section]');
+
+    sections.forEach((section) => {
+      // Skip if already initialized
+      if (section.dataset.initialized === 'true') return;
+      section.dataset.initialized = 'true';
+
+      const track = section.querySelector<HTMLElement>('.partner-logos-section__track');
+      if (!track) return;
+
+      // Pause animation when section is not visible (performance optimization)
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              track.style.animationPlayState = 'running';
+            } else {
+              track.style.animationPlayState = 'paused';
+            }
+          });
+        },
+        { threshold: 0.1 }
+      );
+
+      observer.observe(section);
+
+      // Cleanup function for Astro View Transitions
+      function cleanup(): void {
+        observer.disconnect();
+      }
+
+      // Store cleanup function for potential later use
+      (section as any).__cleanupPartnerLogos = cleanup;
+    });
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPartnerLogosSection);
+  } else {
+    initPartnerLogosSection();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', () => {
+    // Reset initialized state for sections
+    document.querySelectorAll<HTMLElement>('[data-partner-logos-section]').forEach((section) => {
+      // Call cleanup if exists
+      if ((section as any).__cleanupPartnerLogos) {
+        (section as any).__cleanupPartnerLogos();
+      }
+      section.dataset.initialized = 'false';
+    });
+    initPartnerLogosSection();
+  });
+</script>

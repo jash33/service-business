@@ -1,0 +1,30 @@
+{
+  "category": "Uncategorized",
+  "description": "change the default dev port to 3002",
+  "title": "",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": true,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "main",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": "change the default dev port to 3002",
+  "status": "in_progress",
+  "id": "feature-1769572722114-7ctaadhka",
+  "descriptionHistory": [
+    {
+      "description": "change the default dev port to 3002",
+      "timestamp": "2026-01-28T03:58:42.126Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-28T03:58:42.143Z",
+  "updatedAt": "2026-01-28T03:58:42.524Z"
+}

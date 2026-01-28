@@ -1,0 +1,380 @@
+---
+/**
+ * SocialSharing Component
+ * Social media sharing buttons for blog posts with multiple platform support.
+ *
+ * Features:
+ * - Share buttons for Twitter/X, Facebook, LinkedIn, and email
+ * - Copy link functionality
+ * - Accessible with proper ARIA labels
+ * - Hover effects and animations
+ * - Works without JavaScript (opens share URLs)
+ *
+ * @example
+ * ```astro
+ * <SocialSharing
+ *   url="https://example.com/blog/article"
+ *   title="Article Title"
+ *   description="Article description"
+ * />
+ * ```
+ */
+
+interface Props {
+  /** The URL to share */
+  url: string;
+  /** The title of the content being shared */
+  title: string;
+  /** Optional description for platforms that support it */
+  description?: string;
+  /** Optional hashtags for Twitter (comma-separated) */
+  hashtags?: string;
+  /** Additional CSS class names */
+  class?: string;
+  /** Layout variant */
+  variant?: 'horizontal' | 'vertical';
+}
+
+const {
+  url,
+  title,
+  description = '',
+  hashtags = '',
+  class: className = '',
+  variant = 'horizontal',
+} = Astro.props;
+
+// Encode values for URLs
+const encodedUrl = encodeURIComponent(url);
+const encodedTitle = encodeURIComponent(title);
+const encodedDescription = encodeURIComponent(description);
+const encodedHashtags = encodeURIComponent(hashtags.replace(/\s/g, ''));
+
+// Generate share URLs
+const shareUrls = {
+  twitter: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}${hashtags ? `&hashtags=${encodedHashtags}` : ''}`,
+  facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
+  linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
+  email: `mailto:?subject=${encodedTitle}&body=${encodedDescription}%0A%0A${encodedUrl}`,
+};
+---
+
+<div class={`social-sharing social-sharing--${variant} ${className}`} data-social-sharing>
+  <span class="social-sharing__label">Share this article:</span>
+
+  <div class="social-sharing__buttons">
+    <!-- Twitter/X -->
+    <a
+      href={shareUrls.twitter}
+      class="social-sharing__button social-sharing__button--twitter"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Share on Twitter"
+      title="Share on Twitter"
+    >
+      <svg class="social-sharing__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+      </svg>
+      <span class="social-sharing__button-text">Twitter</span>
+    </a>
+
+    <!-- Facebook -->
+    <a
+      href={shareUrls.facebook}
+      class="social-sharing__button social-sharing__button--facebook"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Share on Facebook"
+      title="Share on Facebook"
+    >
+      <svg class="social-sharing__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+      </svg>
+      <span class="social-sharing__button-text">Facebook</span>
+    </a>
+
+    <!-- LinkedIn -->
+    <a
+      href={shareUrls.linkedin}
+      class="social-sharing__button social-sharing__button--linkedin"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Share on LinkedIn"
+      title="Share on LinkedIn"
+    >
+      <svg class="social-sharing__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+      </svg>
+      <span class="social-sharing__button-text">LinkedIn</span>
+    </a>
+
+    <!-- Email -->
+    <a
+      href={shareUrls.email}
+      class="social-sharing__button social-sharing__button--email"
+      aria-label="Share via Email"
+      title="Share via Email"
+    >
+      <svg class="social-sharing__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="22,6 12,13 2,6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="social-sharing__button-text">Email</span>
+    </a>
+
+    <!-- Copy Link -->
+    <button
+      type="button"
+      class="social-sharing__button social-sharing__button--copy"
+      data-copy-link
+      data-url={url}
+      aria-label="Copy link to clipboard"
+      title="Copy link"
+    >
+      <svg class="social-sharing__icon social-sharing__icon--copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <svg class="social-sharing__icon social-sharing__icon--check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="social-sharing__button-text">Copy</span>
+    </button>
+  </div>
+</div>
+
+<script>
+  // Copy link functionality
+  function initSocialSharing() {
+    const copyButtons = document.querySelectorAll('[data-copy-link]');
+
+    copyButtons.forEach((button) => {
+      button.addEventListener('click', async () => {
+        const url = button.getAttribute('data-url');
+        if (!url) return;
+
+        try {
+          await navigator.clipboard.writeText(url);
+
+          // Show success state
+          button.classList.add('social-sharing__button--copied');
+
+          // Reset after 2 seconds
+          setTimeout(() => {
+            button.classList.remove('social-sharing__button--copied');
+          }, 2000);
+        } catch (err) {
+          // Fallback for older browsers
+          const textArea = document.createElement('textarea');
+          textArea.value = url;
+          textArea.style.position = 'fixed';
+          textArea.style.left = '-999999px';
+          document.body.appendChild(textArea);
+          textArea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textArea);
+
+          button.classList.add('social-sharing__button--copied');
+          setTimeout(() => {
+            button.classList.remove('social-sharing__button--copied');
+          }, 2000);
+        }
+      });
+    });
+  }
+
+  // Run on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSocialSharing);
+  } else {
+    initSocialSharing();
+  }
+
+  // Re-run on Astro page transitions
+  document.addEventListener('astro:page-load', initSocialSharing);
+</script>
+
+<style>
+  /* =================================================================
+   * SOCIAL SHARING STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention
+   */
+
+  .social-sharing {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+  }
+
+  .social-sharing--vertical {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .social-sharing__label {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+  }
+
+  .social-sharing__buttons {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    flex-wrap: wrap;
+  }
+
+  .social-sharing--vertical .social-sharing__buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .social-sharing__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-3);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      color var(--duration-150) var(--ease-in-out),
+      background-color var(--duration-150) var(--ease-in-out),
+      border-color var(--duration-150) var(--ease-in-out),
+      transform var(--duration-150) var(--ease-in-out);
+  }
+
+  .social-sharing--vertical .social-sharing__button {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .social-sharing__button:hover {
+    transform: translateY(-2px);
+  }
+
+  .social-sharing__button:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .social-sharing__button:active {
+    transform: translateY(0);
+  }
+
+  .social-sharing__icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  .social-sharing__button-text {
+    display: none;
+  }
+
+  /* Platform-specific colors */
+  .social-sharing__button--twitter:hover {
+    color: #ffffff;
+    background-color: #000000;
+    border-color: #000000;
+  }
+
+  .social-sharing__button--facebook:hover {
+    color: #ffffff;
+    background-color: #1877f2;
+    border-color: #1877f2;
+  }
+
+  .social-sharing__button--linkedin:hover {
+    color: #ffffff;
+    background-color: #0a66c2;
+    border-color: #0a66c2;
+  }
+
+  .social-sharing__button--email:hover {
+    color: #ffffff;
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+
+  .social-sharing__button--copy:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+
+  /* Copy button states */
+  .social-sharing__icon--check {
+    display: none;
+  }
+
+  .social-sharing__button--copied .social-sharing__icon--copy {
+    display: none;
+  }
+
+  .social-sharing__button--copied .social-sharing__icon--check {
+    display: block;
+    color: var(--color-success);
+  }
+
+  .social-sharing__button--copied {
+    color: var(--color-success);
+    border-color: var(--color-success);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  @media screen and (min-width: 640px) {
+    .social-sharing__button-text {
+      display: inline;
+    }
+  }
+
+  @media screen and (max-width: 639px) {
+    .social-sharing {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--spacing-3);
+    }
+
+    .social-sharing__button {
+      padding: var(--spacing-3);
+      min-width: 44px;
+      min-height: 44px;
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .social-sharing__button {
+      transition: none;
+    }
+
+    .social-sharing__button:hover {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .social-sharing {
+      display: none;
+    }
+  }
+</style>

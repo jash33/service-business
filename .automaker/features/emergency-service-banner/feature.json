@@ -1,0 +1,12 @@
+{
+  "id": "emergency-service-banner",
+  "category": "UI",
+  "title": "24/7 Emergency Service Banner",
+  "description": "Add a prominent dismissible banner for emergency services with click-to-call functionality. Includes localStorage persistence to remember dismissal state and urgent styling.",
+  "status": "verified",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-26T01:51:05.711Z",
+  "updatedAt": "2026-01-26T14:09:11.624Z"
+}

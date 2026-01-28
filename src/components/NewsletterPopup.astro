@@ -1,0 +1,563 @@
+---
+/**
+ * Newsletter Popup Component
+ * Modal popup for newsletter signup with exit-intent detection
+ * and timed display options.
+ *
+ * Features:
+ * - Exit-intent detection
+ * - Timed delay before showing
+ * - Remembers dismissal (localStorage)
+ * - Smooth animations
+ * - Accessible modal dialog
+ * - Focus trap for keyboard navigation
+ * - GDPR compliant
+ *
+ * @example
+ * ```astro
+ * <NewsletterPopup />
+ * ```
+ */
+
+import { newsletterConfig } from '../config/newsletter.config';
+import NewsletterForm from './NewsletterForm.astro';
+
+interface Props {
+  /** Override popup enabled state */
+  enabled?: boolean;
+  /** Custom headline */
+  headline?: string;
+  /** Custom description */
+  description?: string;
+  /** Delay before showing (ms) */
+  showDelay?: number;
+  /** Enable exit intent detection */
+  exitIntent?: boolean;
+}
+
+const {
+  enabled = newsletterConfig.popup.enabled,
+  headline = 'Join Our Newsletter',
+  description = 'Be the first to know about new features, tips, and exclusive offers. No spam, unsubscribe anytime.',
+  showDelay = newsletterConfig.popup.showDelay,
+  exitIntent = newsletterConfig.popup.showOnExitIntent,
+} = Astro.props;
+
+const popupConfig = newsletterConfig.popup;
+---
+
+{enabled && (
+  <div
+    id="newsletter-popup"
+    class="newsletter-popup"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="newsletter-popup-title"
+    aria-describedby="newsletter-popup-description"
+    data-show-delay={showDelay}
+    data-exit-intent={exitIntent}
+    data-dismissal-days={popupConfig.dismissalDays}
+    data-max-shows={popupConfig.maxShowsPerSession}
+    data-exclude-pages={JSON.stringify(popupConfig.excludePages)}
+    hidden
+  >
+    <!-- Backdrop overlay -->
+    <div class="newsletter-popup__backdrop" aria-hidden="true"></div>
+
+    <!-- Modal content -->
+    <div class="newsletter-popup__container">
+      <div class="newsletter-popup__content">
+        <!-- Close button -->
+        <button
+          type="button"
+          class="newsletter-popup__close"
+          aria-label="Close newsletter popup"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24" aria-hidden="true">
+            <path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z" clip-rule="evenodd" />
+          </svg>
+        </button>
+
+        <!-- Header -->
+        <div class="newsletter-popup__header">
+          <!-- Decorative icon -->
+          <div class="newsletter-popup__icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="32" height="32">
+              <path d="M1.5 8.67v8.58a3 3 0 003 3h15a3 3 0 003-3V8.67l-8.928 5.493a3 3 0 01-3.144 0L1.5 8.67z" />
+              <path d="M22.5 6.908V6.75a3 3 0 00-3-3h-15a3 3 0 00-3 3v.158l9.714 5.978a1.5 1.5 0 001.572 0L22.5 6.908z" />
+            </svg>
+          </div>
+
+          <h2 id="newsletter-popup-title" class="newsletter-popup__title">
+            {headline}
+          </h2>
+          <p id="newsletter-popup-description" class="newsletter-popup__description">
+            {description}
+          </p>
+        </div>
+
+        <!-- Newsletter Form -->
+        <NewsletterForm
+          source="popup"
+          variant="stacked"
+          showHeader={false}
+          showNameField={true}
+        />
+
+        <!-- No thanks link -->
+        <button type="button" class="newsletter-popup__dismiss">
+          No thanks, maybe later
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+<style>
+  /* =================================================================
+   * NEWSLETTER POPUP STYLES
+   * ================================================================= */
+
+  .newsletter-popup {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal, 500);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-4);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--duration-300) var(--ease-out),
+      visibility var(--duration-300) var(--ease-out);
+  }
+
+  .newsletter-popup[data-visible="true"] {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* -----------------------------------------------------------------
+   * Backdrop
+   * ----------------------------------------------------------------- */
+  .newsletter-popup__backdrop {
+    position: absolute;
+    inset: 0;
+    background-color: var(--color-background-overlay);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  /* -----------------------------------------------------------------
+   * Container
+   * ----------------------------------------------------------------- */
+  .newsletter-popup__container {
+    position: relative;
+    width: 100%;
+    max-width: 28rem;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: scale(0.95) translateY(10px);
+    transition: transform var(--duration-300) var(--ease-spring-soft);
+  }
+
+  .newsletter-popup[data-visible="true"] .newsletter-popup__container {
+    transform: scale(1) translateY(0);
+  }
+
+  /* -----------------------------------------------------------------
+   * Content
+   * ----------------------------------------------------------------- */
+  .newsletter-popup__content {
+    position: relative;
+    background-color: var(--color-background);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-2xl);
+    padding: var(--spacing-8);
+  }
+
+  /* -----------------------------------------------------------------
+   * Close Button
+   * ----------------------------------------------------------------- */
+  .newsletter-popup__close {
+    position: absolute;
+    top: var(--spacing-4);
+    right: var(--spacing-4);
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-full);
+    color: var(--color-text-tertiary);
+    cursor: pointer;
+    transition:
+      color var(--duration-150) var(--ease-in-out),
+      background-color var(--duration-150) var(--ease-in-out);
+  }
+
+  .newsletter-popup__close:hover {
+    color: var(--color-text-primary);
+    background-color: var(--color-background-muted);
+  }
+
+  .newsletter-popup__close:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  /* -----------------------------------------------------------------
+   * Header
+   * ----------------------------------------------------------------- */
+  .newsletter-popup__header {
+    text-align: center;
+    margin-bottom: var(--spacing-6);
+  }
+
+  .newsletter-popup__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 4rem;
+    height: 4rem;
+    margin-bottom: var(--spacing-4);
+    background: linear-gradient(135deg, var(--color-primary-100) 0%, var(--color-accent-subtle) 100%);
+    border-radius: var(--radius-full);
+    color: var(--color-primary);
+  }
+
+  .newsletter-popup__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-2);
+    line-height: var(--line-height-tight);
+  }
+
+  .newsletter-popup__description {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* -----------------------------------------------------------------
+   * Dismiss Link
+   * ----------------------------------------------------------------- */
+  .newsletter-popup__dismiss {
+    display: block;
+    width: 100%;
+    margin-top: var(--spacing-4);
+    padding: var(--spacing-2);
+    background: transparent;
+    border: none;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+    text-align: center;
+    cursor: pointer;
+    transition: color var(--duration-150) var(--ease-in-out);
+  }
+
+  .newsletter-popup__dismiss:hover {
+    color: var(--color-text-secondary);
+  }
+
+  .newsletter-popup__dismiss:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  /* -----------------------------------------------------------------
+   * Responsive
+   * ----------------------------------------------------------------- */
+  @media (max-width: 480px) {
+    .newsletter-popup {
+      padding: var(--spacing-2);
+      align-items: flex-end;
+    }
+
+    .newsletter-popup__container {
+      max-width: 100%;
+    }
+
+    .newsletter-popup__content {
+      padding: var(--spacing-6);
+      border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+    }
+
+    .newsletter-popup__title {
+      font-size: var(--font-size-xl);
+    }
+  }
+
+  /* -----------------------------------------------------------------
+   * Reduced Motion
+   * ----------------------------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .newsletter-popup {
+      transition: none;
+    }
+
+    .newsletter-popup__container {
+      transition: none;
+    }
+
+    .newsletter-popup__close {
+      transition: none;
+    }
+
+    .newsletter-popup__dismiss {
+      transition: none;
+    }
+  }
+
+  /* -----------------------------------------------------------------
+   * Hidden State
+   * ----------------------------------------------------------------- */
+  .newsletter-popup[hidden] {
+    display: none;
+  }
+</style>
+
+<script>
+  /**
+   * Newsletter Popup Client-Side Logic
+   * Handles popup display timing, exit-intent detection,
+   * and dismissal persistence.
+   */
+
+  const STORAGE_KEYS = {
+    DISMISSED: 'newsletter_popup_dismissed',
+    DISMISSED_AT: 'newsletter_popup_dismissed_at',
+    SUBSCRIBED: 'newsletter_subscribed',
+    SESSION_SHOWS: 'newsletter_popup_session_shows',
+  };
+
+  let popup: HTMLElement | null = null;
+  let isInitialized = false;
+  let showTimeout: ReturnType<typeof setTimeout> | null = null;
+  let exitIntentEnabled = false;
+
+  function initNewsletterPopup(): void {
+    popup = document.getElementById('newsletter-popup');
+    if (!popup || isInitialized) return;
+
+    isInitialized = true;
+
+    const showDelay = parseInt(popup.dataset.showDelay || '30000', 10);
+    exitIntentEnabled = popup.dataset.exitIntent === 'true';
+    const dismissalDays = parseInt(popup.dataset.dismissalDays || '14', 10);
+    const maxShows = parseInt(popup.dataset.maxShows || '1', 10);
+    const excludePages = JSON.parse(popup.dataset.excludePages || '[]') as string[];
+
+    // Check if we should show the popup
+    if (!shouldShowPopup(dismissalDays, maxShows, excludePages)) {
+      return;
+    }
+
+    // Setup event listeners
+    setupCloseButtons();
+    setupBackdropClick();
+    setupKeyboardNavigation();
+    setupSubscriptionListener();
+
+    // Setup exit intent detection
+    if (exitIntentEnabled) {
+      setupExitIntent();
+    }
+
+    // Setup timed display
+    if (showDelay > 0) {
+      showTimeout = setTimeout(() => {
+        showPopup();
+      }, showDelay);
+    }
+  }
+
+  function shouldShowPopup(dismissalDays: number, maxShows: number, excludePages: string[]): boolean {
+    // Check if user is already subscribed
+    if (localStorage.getItem(STORAGE_KEYS.SUBSCRIBED) === 'true') {
+      return false;
+    }
+
+    // Check if popup was dismissed recently
+    const dismissedAt = localStorage.getItem(STORAGE_KEYS.DISMISSED_AT);
+    if (dismissedAt) {
+      const dismissedTime = parseInt(dismissedAt, 10);
+      const daysSinceDismissal = (Date.now() - dismissedTime) / (1000 * 60 * 60 * 24);
+      if (daysSinceDismissal < dismissalDays) {
+        return false;
+      }
+    }
+
+    // Check session shows limit
+    const sessionShows = parseInt(sessionStorage.getItem(STORAGE_KEYS.SESSION_SHOWS) || '0', 10);
+    if (sessionShows >= maxShows) {
+      return false;
+    }
+
+    // Check excluded pages
+    const currentPath = window.location.pathname;
+    if (excludePages.some(page => currentPath.startsWith(page))) {
+      return false;
+    }
+
+    return true;
+  }
+
+  function showPopup(): void {
+    if (!popup) return;
+
+    // Clear any pending timeout
+    if (showTimeout) {
+      clearTimeout(showTimeout);
+      showTimeout = null;
+    }
+
+    // Increment session show count
+    const sessionShows = parseInt(sessionStorage.getItem(STORAGE_KEYS.SESSION_SHOWS) || '0', 10);
+    sessionStorage.setItem(STORAGE_KEYS.SESSION_SHOWS, (sessionShows + 1).toString());
+
+    // Show popup
+    popup.hidden = false;
+    popup.setAttribute('data-visible', 'true');
+
+    // Prevent body scroll
+    document.body.style.overflow = 'hidden';
+
+    // Focus the close button for accessibility
+    setTimeout(() => {
+      const closeBtn = popup?.querySelector('.newsletter-popup__close') as HTMLButtonElement;
+      closeBtn?.focus();
+    }, 100);
+  }
+
+  function hidePopup(remember: boolean = true): void {
+    if (!popup) return;
+
+    // Hide popup
+    popup.setAttribute('data-visible', 'false');
+
+    // Restore body scroll
+    document.body.style.overflow = '';
+
+    // Wait for animation then hide
+    setTimeout(() => {
+      if (popup) popup.hidden = true;
+    }, 300);
+
+    // Remember dismissal
+    if (remember) {
+      localStorage.setItem(STORAGE_KEYS.DISMISSED, 'true');
+      localStorage.setItem(STORAGE_KEYS.DISMISSED_AT, Date.now().toString());
+    }
+  }
+
+  function setupCloseButtons(): void {
+    if (!popup) return;
+
+    const closeBtn = popup.querySelector('.newsletter-popup__close');
+    const dismissBtn = popup.querySelector('.newsletter-popup__dismiss');
+
+    closeBtn?.addEventListener('click', () => hidePopup());
+    dismissBtn?.addEventListener('click', () => hidePopup());
+  }
+
+  function setupBackdropClick(): void {
+    if (!popup) return;
+
+    const backdrop = popup.querySelector('.newsletter-popup__backdrop');
+    backdrop?.addEventListener('click', () => hidePopup());
+  }
+
+  function setupKeyboardNavigation(): void {
+    if (!popup) return;
+
+    // Close on Escape key
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && popup?.getAttribute('data-visible') === 'true') {
+        hidePopup();
+      }
+    });
+
+    // Focus trap
+    popup.addEventListener('keydown', (event) => {
+      if (event.key !== 'Tab') return;
+
+      const focusableElements = popup?.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+
+      if (!focusableElements || focusableElements.length === 0) return;
+
+      const firstElement = focusableElements[0] as HTMLElement;
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+      if (event.shiftKey) {
+        if (document.activeElement === firstElement) {
+          event.preventDefault();
+          lastElement.focus();
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          event.preventDefault();
+          firstElement.focus();
+        }
+      }
+    });
+  }
+
+  function setupExitIntent(): void {
+    let hasShown = false;
+
+    const handleMouseLeave = (event: MouseEvent) => {
+      if (hasShown) return;
+
+      // Check if mouse is leaving through the top of the viewport
+      if (event.clientY <= 0) {
+        hasShown = true;
+        showPopup();
+        document.removeEventListener('mouseout', handleMouseLeave);
+      }
+    };
+
+    // Only add exit intent on desktop
+    if (window.matchMedia('(min-width: 768px)').matches) {
+      document.addEventListener('mouseout', handleMouseLeave);
+    }
+  }
+
+  function setupSubscriptionListener(): void {
+    // Listen for successful subscription to hide popup
+    window.addEventListener('newsletter:subscribed', () => {
+      // Don't remember dismissal since they subscribed
+      setTimeout(() => hidePopup(false), 3000);
+    });
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initNewsletterPopup);
+  } else {
+    initNewsletterPopup();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', () => {
+    isInitialized = false;
+    initNewsletterPopup();
+  });
+
+  // Clean up on page navigation
+  document.addEventListener('astro:before-swap', () => {
+    if (showTimeout) {
+      clearTimeout(showTimeout);
+      showTimeout = null;
+    }
+  });
+</script>

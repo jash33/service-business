@@ -1,0 +1,102 @@
+---
+/**
+ * Video Testimonials Page
+ * Showcase page for video testimonials from satisfied customers.
+ *
+ * Features:
+ * - Full video testimonials section
+ * - Lazy loading for optimal performance
+ * - Accessible video players with keyboard navigation
+ * - Responsive grid layout
+ */
+
+import Layout from '../layouts/Layout.astro';
+import VideoTestimonialsSection from '../components/VideoTestimonialsSection.astro';
+import {
+  VIDEO_TESTIMONIALS,
+  VIDEO_TESTIMONIALS_CONFIG,
+} from '../config/video-testimonials.config';
+---
+
+<Layout
+  title="Video Testimonials"
+  description="Watch real customer testimonials from businesses we've helped succeed online. Hear firsthand experiences from Houston business owners."
+>
+  <main id="main-content">
+    <!-- Hero Section -->
+    <section class="video-testimonials-hero">
+      <div class="video-testimonials-hero__container">
+        <h1 class="video-testimonials-hero__title">
+          Real Stories from Real Clients
+        </h1>
+        <p class="video-testimonials-hero__description">
+          Don't just take our word for it. Watch real business owners share their experiences
+          and the results they've achieved working with our team.
+        </p>
+      </div>
+    </section>
+
+    <!-- Video Testimonials Section -->
+    <VideoTestimonialsSection
+      heading={VIDEO_TESTIMONIALS_CONFIG.heading}
+      subheading={VIDEO_TESTIMONIALS_CONFIG.subheading}
+      testimonials={VIDEO_TESTIMONIALS}
+      id={VIDEO_TESTIMONIALS_CONFIG.id}
+    />
+  </main>
+</Layout>
+
+<style>
+  /* Hero Section Styles */
+  .video-testimonials-hero {
+    padding: var(--spacing-16) var(--spacing-4);
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-50) 0%,
+      var(--color-background) 100%
+    );
+  }
+
+  .video-testimonials-hero__container {
+    max-width: var(--container-4xl);
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .video-testimonials-hero__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4);
+    line-height: var(--line-height-tight);
+  }
+
+  .video-testimonials-hero__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin: 0;
+    max-width: 40rem;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* Responsive Styles */
+  @media screen and (min-width: 768px) {
+    .video-testimonials-hero {
+      padding: var(--spacing-20) var(--spacing-8);
+    }
+
+    .video-testimonials-hero__title {
+      font-size: var(--font-size-5xl);
+    }
+  }
+
+  @media screen and (min-width: 1024px) {
+    .video-testimonials-hero {
+      padding: var(--spacing-24) var(--spacing-8);
+    }
+  }
+</style>

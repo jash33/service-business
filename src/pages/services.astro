@@ -16,11 +16,16 @@ import Layout from '../layouts/Layout.astro';
 import PricingCard from '../components/PricingCard.astro';
 import AddonsTable from '../components/AddonsTable.astro';
 import ProcessTimeline from '../components/ProcessTimeline.astro';
+import ServiceComparisonTable from '../components/ServiceComparisonTable.astro';
 import Button from '../components/Button.astro';
 import ServiceCard from '../components/ServiceCard.astro';
+import InstantQuoteCalculator from '../components/InstantQuoteCalculator.astro';
 import type { PricingCardProps } from '../components/PricingCard.astro';
 import type { Addon } from '../components/AddonsTable.astro';
 import type { ProcessPhase } from '../components/ProcessTimeline.astro';
+import type { ComparisonPackage, ComparisonFeature } from '../components/ServiceComparisonTable.astro';
+import type { ServiceSchema, ServiceArea, OpeningHoursSpecification } from '../types/seo';
+import { localBusinessSchema } from '../config/seo.config';
 
 /**
  * Consolidated service data for the unified services page.
@@ -299,6 +304,129 @@ const processPhases: ProcessPhase[] = [
     clientInvolvement: 'Low',
   },
 ];
+
+// Comparison table data for service packages
+const comparisonPackages: ComparisonPackage[] = [
+  {
+    id: 'starter',
+    name: 'Starter',
+    price: '$499',
+    priceNote: 'One-time',
+    isPopular: false,
+    cta: { text: 'Get Started', href: '/contact?tier=starter' },
+  },
+  {
+    id: 'professional',
+    name: 'Professional',
+    price: '$899',
+    priceNote: 'One-time',
+    isPopular: true,
+    cta: { text: 'Choose Professional', href: '/contact?tier=professional' },
+  },
+  {
+    id: 'premium',
+    name: 'Premium',
+    price: '$1,499+',
+    priceNote: 'Starting at',
+    isPopular: false,
+    cta: { text: 'Contact for Quote', href: '/contact?tier=premium' },
+  },
+];
+
+const comparisonFeatures: ComparisonFeature[] = [
+  // Design & Structure
+  { name: 'Custom Design', category: 'Design & Structure', starter: true, professional: true, premium: true },
+  { name: 'Number of Pages', category: 'Design & Structure', starter: '1 page', professional: 'Up to 5', premium: 'Unlimited', highlight: true },
+  { name: 'Mobile Responsive', category: 'Design & Structure', starter: true, professional: true, premium: true },
+  { name: 'Custom Animations', category: 'Design & Structure', starter: false, professional: false, premium: true, highlight: true },
+
+  // Features & Functionality
+  { name: 'Contact Form', category: 'Features & Functionality', starter: true, professional: true, premium: true },
+  { name: 'Blog / News Section', category: 'Features & Functionality', starter: false, professional: true, premium: true, highlight: true },
+  { name: 'Content Management (CMS)', category: 'Features & Functionality', starter: false, professional: true, premium: true, highlight: true },
+  { name: 'E-commerce / Shopping Cart', category: 'Features & Functionality', starter: false, professional: false, premium: true, highlight: true },
+  { name: 'Newsletter Signup', category: 'Features & Functionality', starter: false, professional: false, premium: true },
+
+  // SEO & Performance
+  { name: 'Basic SEO Setup', category: 'SEO & Performance', starter: true, professional: true, premium: true },
+  { name: 'Advanced SEO Strategy', category: 'SEO & Performance', starter: false, professional: true, premium: true, highlight: true },
+  { name: 'Speed Optimization', category: 'SEO & Performance', starter: 'Basic', professional: 'Standard', premium: 'Premium' },
+  { name: 'Analytics Integration', category: 'SEO & Performance', starter: true, professional: true, premium: true },
+
+  // Support & Delivery
+  { name: 'Revision Rounds', category: 'Support & Delivery', starter: '1 round', professional: '2 rounds', premium: '3 rounds', highlight: true },
+  { name: 'Delivery Time', category: 'Support & Delivery', starter: '2 weeks', professional: '3 weeks', premium: '4-6 weeks' },
+  { name: 'Post-Launch Support', category: 'Support & Delivery', starter: '14 days', professional: '30 days', premium: 'Priority' },
+  { name: 'Social Media Links', category: 'Support & Delivery', starter: true, professional: true, premium: true },
+];
+
+// Service area configuration (shared across all services)
+const serviceAreaConfig: ServiceArea[] = [
+  { type: 'City', name: 'Houston', addressLocality: 'Houston', addressRegion: 'TX', addressCountry: 'US' },
+  { type: 'City', name: 'Katy', addressLocality: 'Katy', addressRegion: 'TX', addressCountry: 'US' },
+  { type: 'City', name: 'Sugar Land', addressLocality: 'Sugar Land', addressRegion: 'TX', addressCountry: 'US' },
+  { type: 'City', name: 'The Woodlands', addressLocality: 'The Woodlands', addressRegion: 'TX', addressCountry: 'US' },
+];
+
+// Service availability/hours (shared across all services)
+const serviceHoursConfig: OpeningHoursSpecification[] = [
+  { dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], opens: '09:00', closes: '17:00' },
+];
+
+// Provider information (from LocalBusiness schema)
+const providerInfo = {
+  type: 'ProfessionalService' as const,
+  name: localBusinessSchema.name,
+  url: localBusinessSchema.url,
+  telephone: localBusinessSchema.telephone,
+  address: localBusinessSchema.address,
+  priceRange: localBusinessSchema.priceRange,
+};
+
+/**
+ * Generate Service schemas for all services on this page
+ * Each service gets its own structured data for rich search results
+ */
+const serviceSchemas: ServiceSchema[] = services.map((service) => {
+  // Parse the price from the startingPrice string (e.g., "$499" -> 499)
+  const priceMatch = service.startingPrice.match(/[\d,.]+/);
+  const priceValue = priceMatch ? parseFloat(priceMatch[0].replace(/,/g, '')) : undefined;
+
+  // Get related services (all services except the current one)
+  const relatedServices = services
+    .filter((s) => s.id !== service.id)
+    .map((s) => s.name);
+
+  return {
+    type: 'Service',
+    name: service.name,
+    description: service.shortDescription,
+    url: `/services#${service.id}`,
+    serviceType: service.name,
+    provider: providerInfo,
+    offers: {
+      price: priceValue,
+      priceCurrency: 'USD',
+      priceSpecification: service.priceNote,
+      availability: 'InStock',
+      url: service.ctaHref,
+    },
+    areaServed: serviceAreaConfig,
+    hoursAvailable: serviceHoursConfig,
+    hasOfferCatalog: service.benefits.length > 0
+      ? {
+          name: `${service.name} Features`,
+          itemListElement: service.benefits,
+        }
+      : undefined,
+    isRelatedTo: relatedServices,
+    audience: {
+      type: 'BusinessAudience',
+      name: 'Small Businesses',
+      audienceType: 'Small Business Owners',
+    },
+  } as ServiceSchema;
+});
 ---
 
 <Layout
@@ -307,6 +435,7 @@ const processPhases: ProcessPhase[] = [
   openGraph={{
     type: 'website',
   }}
+  jsonLd={serviceSchemas}
 >
   <main>
     <!-- Services Hero Section - Unique to Services Page -->
@@ -648,6 +777,18 @@ const processPhases: ProcessPhase[] = [
       </div>
     </section>
 
+    <!-- Package Comparison Table Section -->
+    <section id="compare" class="comparison-section-wrapper" aria-labelledby="comparison-heading">
+      <div class="comparison-section-wrapper__container">
+        <ServiceComparisonTable
+          packages={comparisonPackages}
+          features={comparisonFeatures}
+          heading="Compare Packages"
+          subheading="See exactly what's included in each package to find the right fit for your business."
+        />
+      </div>
+    </section>
+
     <!-- Add-ons Section -->
     <section id="addons" class="addons-section-wrapper" aria-labelledby="addons-heading">
       <div class="addons-section-wrapper__container">
@@ -669,6 +810,15 @@ const processPhases: ProcessPhase[] = [
         />
       </div>
     </section>
+
+    <!-- Instant Quote Calculator Section -->
+    <InstantQuoteCalculator
+      title="Build Your Custom Quote"
+      description="Get an instant estimate for your web project. Select your options below to see your personalized quote in real-time."
+      ctaText="Request Your Full Quote"
+      ctaHref="/contact"
+      showRange={true}
+    />
 
     <!-- CTA Section -->
     <section class="cta-section" aria-labelledby="cta-heading">
@@ -1519,12 +1669,26 @@ const processPhases: ProcessPhase[] = [
   }
 
   /* =================================================================
+   * COMPARISON SECTION
+   * ================================================================= */
+
+  .comparison-section-wrapper {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+  }
+
+  .comparison-section-wrapper__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  /* =================================================================
    * ADD-ONS SECTION
    * ================================================================= */
 
   .addons-section-wrapper {
     padding: var(--spacing-16) var(--spacing-4);
-    background-color: var(--color-background-subtle);
+    background-color: var(--color-background);
   }
 
   .addons-section-wrapper__container {
@@ -1734,6 +1898,10 @@ const processPhases: ProcessPhase[] = [
 
     .pricing-section__grid {
       grid-template-columns: repeat(2, 1fr);
+    }
+
+    .comparison-section-wrapper {
+      padding: var(--spacing-20) var(--spacing-6);
     }
 
     .addons-section-wrapper {

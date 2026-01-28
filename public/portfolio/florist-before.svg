@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="oldPinkBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#fce4ec"/>
+      <stop offset="100%" style="stop-color:#f8bbd9"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="800" height="600" fill="url(#oldPinkBg)"/>
+  <!-- Old header with dated design -->
+  <rect x="0" y="0" width="800" height="100" fill="#880e4f"/>
+  <text x="400" y="55" font-family="Brush Script MT, cursive" font-size="42" fill="#fce4ec" text-anchor="middle">Houston Florist</text>
+  <text x="400" y="80" font-family="Arial" font-size="12" fill="#f8bbd9" text-anchor="middle">★ Flowers for Every Occasion ★</text>
+  <!-- Old navigation bar -->
+  <rect x="0" y="100" width="800" height="40" fill="#ad1457"/>
+  <text x="100" y="125" font-family="Arial" font-size="13" fill="#fff">HOME</text>
+  <text x="200" y="125" font-family="Arial" font-size="13" fill="#fff">PRODUCTS</text>
+  <text x="320" y="125" font-family="Arial" font-size="13" fill="#fff">ABOUT US</text>
+  <text x="440" y="125" font-family="Arial" font-size="13" fill="#fff">GALLERY</text>
+  <text x="540" y="125" font-family="Arial" font-size="13" fill="#fff">CONTACT</text>
+  <!-- Main content - dated layout -->
+  <rect x="40" y="160" width="200" height="300" fill="#fff" stroke="#ddd"/>
+  <text x="50" y="190" font-family="Arial" font-size="14" font-weight="bold" fill="#880e4f">Categories</text>
+  <text x="50" y="220" font-family="Arial" font-size="12" fill="#666">→ Roses</text>
+  <text x="50" y="245" font-family="Arial" font-size="12" fill="#666">→ Bouquets</text>
+  <text x="50" y="270" font-family="Arial" font-size="12" fill="#666">→ Arrangements</text>
+  <text x="50" y="295" font-family="Arial" font-size="12" fill="#666">→ Plants</text>
+  <text x="50" y="320" font-family="Arial" font-size="12" fill="#666">→ Gift Baskets</text>
+  <!-- Product grid - old style -->
+  <rect x="260" y="160" width="240" height="140" fill="#fff" stroke="#ccc"/>
+  <rect x="270" y="170" width="100" height="80" fill="#f5f5f5"/>
+  <text x="320" y="215" font-family="Arial" font-size="24" text-anchor="middle">🌹</text>
+  <text x="270" y="275" font-family="Arial" font-size="11" fill="#333">Red Roses - $29.99</text>
+  <rect x="390" y="170" width="100" height="80" fill="#f5f5f5"/>
+  <text x="440" y="215" font-family="Arial" font-size="24" text-anchor="middle">🌷</text>
+  <text x="390" y="275" font-family="Arial" font-size="11" fill="#333">Tulips - $24.99</text>
+  <!-- More dated elements -->
+  <rect x="520" y="160" width="240" height="300" fill="#fff" stroke="#ddd"/>
+  <text x="540" y="190" font-family="Arial" font-size="14" font-weight="bold" fill="#880e4f">Special Offers!</text>
+  <text x="540" y="220" font-family="Arial" font-size="12" fill="#c62828">★ 20% OFF ★</text>
+  <text x="540" y="245" font-family="Arial" font-size="11" fill="#666">Valentine's Day Special</text>
+  <rect x="540" y="260" width="180" height="80" fill="#fce4ec" stroke="#f48fb1"/>
+  <text x="630" y="305" font-family="Brush Script MT" font-size="16" fill="#880e4f" text-anchor="middle">Order Now!</text>
+  <!-- Footer -->
+  <rect x="0" y="520" width="800" height="80" fill="#4a148c"/>
+  <text x="400" y="555" font-family="Arial" font-size="12" fill="#ce93d8" text-anchor="middle">© 2014 Houston Florist | Call: 555-FLOWERS</text>
+  <!-- BEFORE watermark -->
+  <text x="400" y="450" font-family="Arial Black" font-size="60" fill="rgba(136,14,79,0.1)" text-anchor="middle">BEFORE</text>
+</svg>

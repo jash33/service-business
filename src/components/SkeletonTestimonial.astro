@@ -1,0 +1,175 @@
+---
+/**
+ * SkeletonTestimonial Component
+ * A skeleton loading placeholder for testimonial cards.
+ * Displays an animated shimmer effect to indicate loading state.
+ *
+ * Features:
+ * - Matches the layout of TestimonialCard
+ * - Animated shimmer effect for visual feedback
+ * - Respects prefers-reduced-motion
+ * - Accessible with proper ARIA attributes
+ *
+ * @example Basic usage
+ * ```astro
+ * <SkeletonTestimonial />
+ * ```
+ *
+ * @example With custom class
+ * ```astro
+ * <SkeletonTestimonial class="custom-skeleton" />
+ * ```
+ */
+
+interface Props {
+  /** Additional CSS classes */
+  class?: string;
+  /** Optional label for screen readers */
+  ariaLabel?: string;
+}
+
+const {
+  class: className = '',
+  ariaLabel = 'Loading testimonial...',
+} = Astro.props;
+
+// Build CSS classes
+const cardClasses = [
+  'skeleton-testimonial',
+  className,
+].filter(Boolean).join(' ');
+---
+
+<article
+  class={cardClasses}
+  aria-hidden="true"
+  aria-label={ariaLabel}
+  role="presentation"
+>
+  <!-- Quote Icon Skeleton -->
+  <div class="skeleton skeleton-testimonial__icon"></div>
+
+  <!-- Quote Text Skeleton -->
+  <div class="skeleton-testimonial__quote">
+    <div class="skeleton skeleton-testimonial__line"></div>
+    <div class="skeleton skeleton-testimonial__line"></div>
+    <div class="skeleton skeleton-testimonial__line"></div>
+    <div class="skeleton skeleton-testimonial__line skeleton-testimonial__line--short"></div>
+  </div>
+
+  <!-- Footer Skeleton -->
+  <div class="skeleton-testimonial__footer">
+    <div class="skeleton skeleton-testimonial__name"></div>
+    <div class="skeleton skeleton-testimonial__attribution"></div>
+    <div class="skeleton skeleton-testimonial__location"></div>
+  </div>
+</article>
+
+<style>
+  /* =================================================================
+   * SKELETON TESTIMONIAL COMPONENT STYLES
+   * =================================================================
+   * Matches the layout of TestimonialCard component
+   * Uses design system variables for consistency
+   */
+
+  .skeleton-testimonial {
+    /* Layout */
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+
+    /* Box model */
+    padding: var(--spacing-6);
+
+    /* Visual */
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+  }
+
+  /* Quote Icon Skeleton */
+  .skeleton-testimonial__icon {
+    width: var(--spacing-10);
+    height: var(--spacing-10);
+    border-radius: var(--radius-full);
+  }
+
+  /* Quote Text Skeleton */
+  .skeleton-testimonial__quote {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    flex: 1;
+  }
+
+  .skeleton-testimonial__line {
+    width: 100%;
+    height: 16px;
+    border-radius: var(--radius-base);
+  }
+
+  .skeleton-testimonial__line--short {
+    width: 65%;
+  }
+
+  /* Footer Skeleton */
+  .skeleton-testimonial__footer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    padding-top: var(--spacing-4);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .skeleton-testimonial__name {
+    width: 120px;
+    height: 18px;
+    border-radius: var(--radius-base);
+  }
+
+  .skeleton-testimonial__attribution {
+    width: 150px;
+    height: 14px;
+    border-radius: var(--radius-base);
+  }
+
+  .skeleton-testimonial__location {
+    width: 100px;
+    height: 14px;
+    border-radius: var(--radius-base);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+  @media screen and (min-width: 768px) {
+    .skeleton-testimonial {
+      padding: var(--spacing-8);
+      gap: var(--spacing-5);
+    }
+
+    .skeleton-testimonial__icon {
+      width: var(--spacing-12);
+      height: var(--spacing-12);
+    }
+
+    .skeleton-testimonial__line {
+      height: 20px;
+    }
+
+    .skeleton-testimonial__name {
+      height: 22px;
+      width: 140px;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES - Hide skeletons in print
+   * ================================================================= */
+  @media print {
+    .skeleton-testimonial {
+      display: none;
+    }
+  }
+</style>

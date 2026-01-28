@@ -1,0 +1,12 @@
+{
+  "id": "service-area-map-interactive",
+  "category": "UI",
+  "title": "Interactive Service Area Map",
+  "description": "Replace static map with interactive Google Maps embed showing service coverage area. Includes custom styling, markers for key locations, and mobile-optimized controls.",
+  "status": "verified",
+  "priority": 3,
+  "complexity": "moderate",
+  "createdAt": "2026-01-26T01:51:05.728Z",
+  "updatedAt": "2026-01-27T16:34:30.015Z",
+  "descriptionHistory": []
+}

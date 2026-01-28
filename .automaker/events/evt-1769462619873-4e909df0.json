@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769462619873-4e909df0",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-26T21:23:39.873Z",
+  "projectPath": "C:\\Users\\James\\Repos\\service-business",
+  "projectName": "service-business",
+  "featureId": "schema-markup-faq",
+  "featureName": "FAQ Schema Markup Enhancement",
+  "error": "Claude Code process exited with code 1",
+  "errorType": "execution"
+}

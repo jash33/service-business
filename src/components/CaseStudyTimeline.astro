@@ -1,0 +1,397 @@
+---
+/**
+ * CaseStudyTimeline Component
+ * Displays project timeline milestones with icons, durations, and descriptions.
+ * Supports vertical (default) and horizontal orientations.
+ *
+ * @example
+ * ```astro
+ * <CaseStudyTimeline
+ *   milestones={caseStudy.timeline}
+ *   orientation="vertical"
+ * />
+ * ```
+ */
+
+import type { TimelineMilestone, CaseStudyTimelineProps } from '../types/case-study';
+import { TIMELINE_ICONS } from '../types/case-study';
+
+interface Props extends CaseStudyTimelineProps {}
+
+const {
+  milestones,
+  class: className = '',
+  orientation = 'vertical',
+} = Astro.props;
+
+/**
+ * Get icon for milestone
+ */
+function getIcon(icon?: TimelineMilestone['icon']): string {
+  if (!icon) return '📌';
+  return TIMELINE_ICONS[icon] || '📌';
+}
+
+/**
+ * Get SVG icon for milestone
+ */
+function getSvgIcon(icon?: TimelineMilestone['icon']): string {
+  const icons: Record<string, string> = {
+    discovery: `<path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>`,
+    design: `<path d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>`,
+    development: `<path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>`,
+    testing: `<path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>`,
+    launch: `<path d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>`,
+    optimization: `<path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>`,
+  };
+  return icons[icon || ''] || icons.discovery;
+}
+---
+
+<section class={`timeline timeline--${orientation} ${className}`} aria-label="Project Timeline">
+  <div class="timeline__container">
+    <ol class="timeline__list" role="list">
+      {milestones.map((milestone, index) => (
+        <li class="timeline__item" data-step={index + 1}>
+          <div class="timeline__marker">
+            <div class="timeline__icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
+                <Fragment set:html={getSvgIcon(milestone.icon)} />
+              </svg>
+            </div>
+            {index < milestones.length - 1 && (
+              <div class="timeline__connector" aria-hidden="true"></div>
+            )}
+          </div>
+          <div class="timeline__content">
+            <div class="timeline__header">
+              <h3 class="timeline__title">{milestone.title}</h3>
+              <span class="timeline__duration">{milestone.duration}</span>
+            </div>
+            <p class="timeline__description">{milestone.description}</p>
+            {(milestone.startDate || milestone.endDate) && (
+              <div class="timeline__dates">
+                {milestone.startDate && (
+                  <time datetime={milestone.startDate}>
+                    {new Date(milestone.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  </time>
+                )}
+                {milestone.startDate && milestone.endDate && <span aria-hidden="true">→</span>}
+                {milestone.endDate && (
+                  <time datetime={milestone.endDate}>
+                    {new Date(milestone.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </time>
+                )}
+              </div>
+            )}
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  /* =================================================================
+   * TIMELINE COMPONENT STYLES
+   * ================================================================= */
+
+  .timeline {
+    padding: var(--spacing-8) 0;
+  }
+
+  .timeline__container {
+    max-width: var(--container-4xl);
+    margin: 0 auto;
+    padding: 0 var(--spacing-4);
+  }
+
+  .timeline__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* =================================================================
+   * VERTICAL ORIENTATION (Default)
+   * ================================================================= */
+
+  .timeline--vertical .timeline__item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--spacing-4);
+    position: relative;
+    padding-bottom: var(--spacing-8);
+  }
+
+  .timeline--vertical .timeline__item:last-child {
+    padding-bottom: 0;
+  }
+
+  .timeline--vertical .timeline__marker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  .timeline--vertical .timeline__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--spacing-12);
+    height: var(--spacing-12);
+    background: var(--gradient-primary);
+    border-radius: var(--radius-full);
+    color: var(--color-text-inverse);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    box-shadow: var(--shadow-md);
+  }
+
+  .timeline--vertical .timeline__icon svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .timeline--vertical .timeline__connector {
+    position: absolute;
+    top: var(--spacing-12);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 3px;
+    height: calc(100% - var(--spacing-12) + var(--spacing-8));
+    background: linear-gradient(
+      to bottom,
+      var(--color-primary-300),
+      var(--color-primary-100)
+    );
+    border-radius: var(--radius-full);
+  }
+
+  .timeline--vertical .timeline__content {
+    padding-top: var(--spacing-2);
+  }
+
+  .timeline--vertical .timeline__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-3);
+    margin-bottom: var(--spacing-2);
+  }
+
+  .timeline__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .timeline__duration {
+    display: inline-flex;
+    padding: var(--spacing-1) var(--spacing-3);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary-700);
+    background-color: var(--color-primary-50);
+    border-radius: var(--radius-full);
+  }
+
+  .timeline__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0 0 var(--spacing-2);
+  }
+
+  .timeline__dates {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+  }
+
+  /* =================================================================
+   * HORIZONTAL ORIENTATION
+   * ================================================================= */
+
+  .timeline--horizontal .timeline__list {
+    display: flex;
+    overflow-x: auto;
+    gap: var(--spacing-6);
+    padding: var(--spacing-4) 0;
+    scroll-snap-type: x mandatory;
+  }
+
+  .timeline--horizontal .timeline__item {
+    flex: 0 0 280px;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding-top: var(--spacing-6);
+  }
+
+  .timeline--horizontal .timeline__marker {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .timeline--horizontal .timeline__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--spacing-10);
+    height: var(--spacing-10);
+    background: var(--gradient-primary);
+    border-radius: var(--radius-full);
+    color: var(--color-text-inverse);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    box-shadow: var(--shadow-md);
+  }
+
+  .timeline--horizontal .timeline__icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .timeline--horizontal .timeline__connector {
+    flex: 1;
+    height: 3px;
+    background: linear-gradient(
+      to right,
+      var(--color-primary-300),
+      var(--color-primary-100)
+    );
+    margin-left: var(--spacing-2);
+  }
+
+  .timeline--horizontal .timeline__content {
+    padding: var(--spacing-8) var(--spacing-4) var(--spacing-4);
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    height: 100%;
+  }
+
+  .timeline--horizontal .timeline__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-3);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  @media screen and (min-width: 768px) {
+    .timeline__container {
+      padding: 0 var(--spacing-6);
+    }
+
+    .timeline__title {
+      font-size: var(--font-size-xl);
+    }
+
+    .timeline--vertical .timeline__icon {
+      width: var(--spacing-14);
+      height: var(--spacing-14);
+    }
+
+    .timeline--vertical .timeline__icon svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .timeline--vertical .timeline__connector {
+      top: var(--spacing-14);
+      height: calc(100% - var(--spacing-14) + var(--spacing-8));
+    }
+  }
+
+  @media screen and (min-width: 1024px) {
+    .timeline--horizontal .timeline__item {
+      flex: 0 0 320px;
+    }
+  }
+
+  /* =================================================================
+   * ANIMATIONS
+   * ================================================================= */
+
+  .timeline__item {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: timelineReveal 0.5s ease-out forwards;
+  }
+
+  .timeline__item:nth-child(1) { animation-delay: 0.1s; }
+  .timeline__item:nth-child(2) { animation-delay: 0.2s; }
+  .timeline__item:nth-child(3) { animation-delay: 0.3s; }
+  .timeline__item:nth-child(4) { animation-delay: 0.4s; }
+  .timeline__item:nth-child(5) { animation-delay: 0.5s; }
+  .timeline__item:nth-child(6) { animation-delay: 0.6s; }
+
+  @keyframes timelineReveal {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+
+  @media (prefers-reduced-motion: reduce) {
+    .timeline__item {
+      opacity: 1;
+      transform: none;
+      animation: none;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+
+  @media print {
+    .timeline {
+      padding: var(--spacing-4) 0;
+    }
+
+    .timeline--horizontal .timeline__list {
+      flex-direction: column;
+      overflow: visible;
+    }
+
+    .timeline--horizontal .timeline__item {
+      flex: none;
+      padding-left: var(--spacing-12);
+    }
+
+    .timeline__icon {
+      background: none;
+      border: 2px solid var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .timeline__connector {
+      display: none;
+    }
+  }
+</style>

@@ -1,7 +1,7 @@
 ---
 /**
  * Contact Form Component
- * A fully accessible, validated contact form with spam prevention.
+ * A fully accessible, validated contact form with Formspree integration.
  *
  * Features:
  * - Real-time client-side validation
@@ -10,6 +10,7 @@
  * - WCAG 2.1 AA compliant accessibility
  * - Loading and success/error states
  * - Responsive design
+ * - Formspree API integration for email notifications
  *
  * @example
  * ```astro
@@ -26,6 +27,9 @@ import {
 const projectOptions = PROJECT_TYPE_OPTIONS;
 const budgetOptions = BUDGET_RANGE_OPTIONS;
 const config = DEFAULT_VALIDATION_CONFIG;
+
+// Get Formspree endpoint from environment variable
+const formspreeEndpoint = import.meta.env.PUBLIC_FORMSPREE_ENDPOINT || '';
 ---
 
 <section class="contact-form-section" aria-labelledby="contact-form-heading">
@@ -42,6 +46,7 @@ const config = DEFAULT_VALIDATION_CONFIG;
       class="contact-form"
       novalidate
       aria-describedby="form-description"
+      data-formspree-endpoint={formspreeEndpoint}
     >
       <!-- Hidden field for spam prevention timing -->
       <input type="hidden" id="form-start-time" name="formStartTime" value="" />
@@ -1121,9 +1126,8 @@ const config = DEFAULT_VALIDATION_CONFIG;
         message: formData.get('message')?.toString().trim() || '',
       };
 
-      // Simulate API call (replace with actual API endpoint)
-      // For now, we'll simulate a successful submission
-      await simulateApiCall(data);
+      // Submit to Formspree API
+      await submitToFormspree(data);
 
       // Show success
       showFormSuccess();
@@ -1132,14 +1136,12 @@ const config = DEFAULT_VALIDATION_CONFIG;
     } catch (error) {
       console.error('Form submission error:', error);
 
-      if (error instanceof Error) {
-        if (error.message === 'Network error') {
-          showFormError('Unable to connect. Please check your internet connection and try again.');
-        } else if (error.message === 'Timeout') {
-          showFormError('The request timed out. Please try again.');
-        } else {
-          showFormError('An unexpected error occurred. Please try again later.');
-        }
+      if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+        // Network error (no internet, CORS issue, etc.)
+        showFormError('Unable to connect. Please check your internet connection and try again.');
+      } else if (error instanceof Error) {
+        // Use the specific error message from Formspree error handling
+        showFormError(error.message);
       } else {
         showFormError('An unexpected error occurred. Please try again later.');
       }
@@ -1148,17 +1150,123 @@ const config = DEFAULT_VALIDATION_CONFIG;
     }
   }
 
-  // Simulate API call (replace with actual implementation)
-  async function simulateApiCall(data: Record<string, string>): Promise<void> {
-    return new Promise((resolve, reject) => {
-      // Simulate network delay
-      setTimeout(() => {
-        // For demo purposes, always succeed
-        // In production, this would be a fetch() call to your API
-        console.log('Form data submitted:', data);
-        resolve();
-      }, 1500);
+  /**
+   * Submit form data to Formspree API
+   * @see https://formspree.io/docs/api
+   */
+  async function submitToFormspree(data: Record<string, string>): Promise<void> {
+    const endpoint = form?.getAttribute('data-formspree-endpoint');
+
+    if (!endpoint) {
+      console.warn('Formspree endpoint not configured. Form submission simulated.');
+      // Fallback for development/testing when endpoint is not configured
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          console.log('Form data (simulated):', data);
+          resolve();
+        }, 1000);
+      });
+    }
+
+    // Prepare form data for Formspree
+    // Format the data for better readability in emails
+    const formattedData = {
+      name: data.name,
+      email: data.email,
+      phone: data.phone || 'Not provided',
+      businessName: data.businessName || 'Not provided',
+      projectType: formatProjectType(data.projectType),
+      budgetRange: formatBudgetRange(data.budgetRange),
+      message: data.message,
+      // Subject line for email notification
+      _subject: `New Contact Form Submission from ${data.name}`,
+      // Replyto so business owner can reply directly to sender
+      _replyto: data.email,
+    };
+
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify(formattedData),
     });
+
+    // Handle various Formspree response scenarios
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+
+      // Formspree specific error handling
+      if (response.status === 400) {
+        // Validation errors from Formspree
+        const errors = errorData.errors || [];
+        if (errors.some((e: {code?: string}) => e.code === 'EMPTY')) {
+          throw new Error('Please fill out all required fields.');
+        }
+        if (errors.some((e: {code?: string}) => e.code === 'TYPE_EMAIL')) {
+          throw new Error('Please enter a valid email address.');
+        }
+        throw new Error('Please check your form inputs and try again.');
+      }
+
+      if (response.status === 403) {
+        // Form not activated or domain not verified
+        throw new Error('Form submission is not configured correctly. Please contact us directly.');
+      }
+
+      if (response.status === 429) {
+        // Rate limited
+        throw new Error('Too many submissions. Please wait a moment and try again.');
+      }
+
+      if (response.status >= 500) {
+        // Server errors
+        throw new Error('Server error. Please try again later.');
+      }
+
+      throw new Error('Unable to submit form. Please try again.');
+    }
+
+    const result = await response.json();
+
+    // Check for Formspree success response
+    if (result.ok !== true && result.success !== true) {
+      throw new Error('Form submission failed. Please try again.');
+    }
+  }
+
+  /**
+   * Format project type for readable email
+   */
+  function formatProjectType(value: string): string {
+    const labels: Record<string, string> = {
+      'website-design': 'New Website Design',
+      'website-redesign': 'Website Redesign',
+      'e-commerce': 'E-Commerce Store',
+      'web-application': 'Web Application',
+      'business-automation': 'Business Automation',
+      'existing-website-support': 'Existing Website Support',
+      'maintenance': 'Website Maintenance',
+      'consultation': 'Consultation',
+      'other': 'Other',
+    };
+    return labels[value] || value;
+  }
+
+  /**
+   * Format budget range for readable email
+   */
+  function formatBudgetRange(value: string): string {
+    const labels: Record<string, string> = {
+      'under-500': 'Under $500',
+      '500-1000': '$500 - $1,000',
+      '1000-2500': '$1,000 - $2,500',
+      '2500-5000': '$2,500 - $5,000',
+      '5000-plus': '$5,000+',
+      'not-sure': 'Not sure yet',
+    };
+    return labels[value] || value;
   }
 
   // Initialize when DOM is ready

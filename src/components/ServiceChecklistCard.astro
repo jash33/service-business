@@ -1,0 +1,678 @@
+---
+/**
+ * ServiceChecklistCard Component
+ * A card component for displaying a single service preparation checklist or maintenance guide.
+ *
+ * Features:
+ * - Thumbnail image with lazy loading
+ * - Category and service type badges
+ * - Item count and estimated time display
+ * - Preview of checklist items
+ * - Download/view button with gated content indicator
+ * - Featured checklist highlighting
+ * - Accessible with proper heading hierarchy
+ * - Touch-friendly target sizes (44x44px minimum)
+ * - Reduced motion support
+ *
+ * @example Basic usage
+ * ```astro
+ * <ServiceChecklistCard
+ *   id="maintenance-checklist"
+ *   title="Monthly Maintenance Checklist"
+ *   description="Keep your website running smoothly..."
+ *   featuredImage={{ src: '/thumbnails/checklist.svg', alt: 'Checklist preview' }}
+ *   category="maintenance"
+ *   serviceType="maintenance"
+ *   tags={[{ slug: 'maintenance', name: 'Maintenance' }]}
+ *   sections={[...]}
+ *   slug="monthly-maintenance-checklist"
+ *   publishedDate="2024-01-20"
+ * />
+ * ```
+ */
+
+import type { ServiceChecklistCardProps } from '../types/service-checklist';
+import { CATEGORY_LABELS, SERVICE_TYPE_LABELS } from '../types/service-checklist';
+import { getChecklistTotalItems } from '../config/service-checklists.config';
+
+interface Props extends ServiceChecklistCardProps {}
+
+const {
+  id,
+  slug,
+  title,
+  description,
+  featuredImage,
+  category,
+  serviceType,
+  tags = [],
+  sections,
+  fileSize,
+  estimatedTime,
+  publishedDate,
+  featured = false,
+  downloadCount,
+  isGated = false,
+  showPreview = false,
+  class: className = '',
+} = Astro.props;
+
+// Build CSS classes
+const cardClasses = [
+  'checklist-card',
+  featured && 'checklist-card--featured',
+  className,
+].filter(Boolean).join(' ');
+
+// Format the publication date
+const formattedDate = new Date(publishedDate).toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+});
+
+// Get category and service type labels
+const categoryLabel = CATEGORY_LABELS[category] || category;
+const serviceTypeLabel = SERVICE_TYPE_LABELS[serviceType] || serviceType;
+
+// Calculate total items
+const totalItems = sections.reduce((total, section) => total + section.items.length, 0);
+
+// Format download count
+const formattedDownloads = downloadCount
+  ? downloadCount >= 1000
+    ? `${(downloadCount / 1000).toFixed(1)}k`
+    : downloadCount.toString()
+  : null;
+
+// Get preview items (first 5 items from first section)
+const previewItems = showPreview && sections.length > 0
+  ? sections[0].items.slice(0, 5)
+  : [];
+
+// Detail page URL
+const detailUrl = `/service-checklists/${slug}`;
+---
+
+<article class={cardClasses} id={`checklist-${id}`} data-checklist-card>
+  <!-- Image Container -->
+  <div class="checklist-card__image-container">
+    <a href={detailUrl} class="checklist-card__image-link" aria-label={`View ${title}`}>
+      <img
+        src={featuredImage.src}
+        alt={featuredImage.alt}
+        width={featuredImage.width || 400}
+        height={featuredImage.height || 300}
+        loading="lazy"
+        decoding="async"
+        class="checklist-card__image"
+      />
+    </a>
+
+    <!-- Featured badge -->
+    {featured && (
+      <span class="checklist-card__badge checklist-card__badge--featured" aria-label="Featured checklist">
+        Featured
+      </span>
+    )}
+
+    <!-- Gated badge -->
+    {isGated && (
+      <span class="checklist-card__badge checklist-card__badge--gated">
+        <svg class="checklist-card__badge-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        Email Required
+      </span>
+    )}
+
+    <!-- Category badge -->
+    <span class="checklist-card__badge checklist-card__badge--category">
+      {categoryLabel}
+    </span>
+  </div>
+
+  <!-- Content -->
+  <div class="checklist-card__content">
+    <!-- Service Type -->
+    <span class="checklist-card__service-type">{serviceTypeLabel}</span>
+
+    <h3 class="checklist-card__title">
+      <a href={detailUrl} class="checklist-card__title-link">{title}</a>
+    </h3>
+
+    <p class="checklist-card__description">{description}</p>
+
+    <!-- Stats -->
+    <div class="checklist-card__stats">
+      <span class="checklist-card__stat">
+        <svg class="checklist-card__stat-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M9 11l3 3L22 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        {totalItems} items
+      </span>
+      {estimatedTime && (
+        <span class="checklist-card__stat">
+          <svg class="checklist-card__stat-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+            <polyline points="12,6 12,12 16,14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          {estimatedTime}
+        </span>
+      )}
+    </div>
+
+    <!-- Preview items (if enabled) -->
+    {showPreview && previewItems.length > 0 && (
+      <ul class="checklist-card__preview" aria-label="Checklist preview">
+        {previewItems.map((item) => (
+          <li class="checklist-card__preview-item">
+            <svg class="checklist-card__preview-check" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            <span>{item.text}</span>
+          </li>
+        ))}
+        {totalItems > 5 && (
+          <li class="checklist-card__preview-more">
+            +{totalItems - 5} more items
+          </li>
+        )}
+      </ul>
+    )}
+
+    <!-- Tags -->
+    {tags.length > 0 && (
+      <ul class="checklist-card__tags" aria-label="Checklist tags">
+        {tags.slice(0, 3).map((tag) => (
+          <li class="checklist-card__tag">
+            <a href={`/service-checklists?tag=${tag.slug}`} class="checklist-card__tag-link">
+              {tag.name}
+            </a>
+          </li>
+        ))}
+        {tags.length > 3 && (
+          <li class="checklist-card__tag checklist-card__tag--more">
+            +{tags.length - 3}
+          </li>
+        )}
+      </ul>
+    )}
+  </div>
+
+  <!-- Footer -->
+  <div class="checklist-card__footer">
+    <div class="checklist-card__meta">
+      {fileSize && (
+        <span class="checklist-card__file-info">
+          <svg class="checklist-card__icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          {fileSize}
+        </span>
+      )}
+      {formattedDownloads && (
+        <span class="checklist-card__downloads">
+          <svg class="checklist-card__icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          {formattedDownloads}
+        </span>
+      )}
+    </div>
+    <a
+      href={detailUrl}
+      class="checklist-card__view-btn"
+      aria-label={`View and download ${title}`}
+    >
+      <span>View Checklist</span>
+      <svg class="checklist-card__arrow" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="12,5 19,12 12,19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+  </div>
+</article>
+
+<style>
+  /* =================================================================
+   * SERVICE CHECKLIST CARD STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention
+   */
+
+  .checklist-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition:
+      box-shadow var(--duration-300) var(--ease-out),
+      transform var(--duration-300) var(--ease-out),
+      border-color var(--duration-300) var(--ease-out);
+  }
+
+  .checklist-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+    border-color: var(--color-primary-200);
+  }
+
+  .checklist-card--featured {
+    border-color: var(--color-primary-300);
+  }
+
+  .checklist-card--featured:hover {
+    border-color: var(--color-primary-400);
+    box-shadow: var(--shadow-xl), var(--shadow-primary);
+  }
+
+  /* =================================================================
+   * IMAGE CONTAINER
+   * ================================================================= */
+  .checklist-card__image-container {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background-color: var(--color-background-muted);
+  }
+
+  .checklist-card__image-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .checklist-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--duration-300) var(--ease-out);
+  }
+
+  .checklist-card:hover .checklist-card__image {
+    transform: scale(1.05);
+  }
+
+  /* =================================================================
+   * BADGES
+   * ================================================================= */
+  .checklist-card__badge {
+    position: absolute;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    padding: var(--spacing-1) var(--spacing-2);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+    border-radius: var(--radius-md);
+    z-index: 3;
+  }
+
+  .checklist-card__badge--featured {
+    top: var(--spacing-3);
+    left: var(--spacing-3);
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  .checklist-card__badge--gated {
+    top: var(--spacing-3);
+    right: var(--spacing-3);
+    background-color: var(--color-warning-100, #fef3c7);
+    color: var(--color-warning-800, #92400e);
+    border: 1px solid var(--color-warning-200, #fde68a);
+  }
+
+  .checklist-card__badge-icon {
+    width: 12px;
+    height: 12px;
+  }
+
+  .checklist-card__badge--category {
+    bottom: var(--spacing-3);
+    left: var(--spacing-3);
+    background-color: var(--color-background-elevated);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+  }
+
+  /* =================================================================
+   * CONTENT AREA
+   * ================================================================= */
+  .checklist-card__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    padding: var(--spacing-5);
+    flex: 1;
+  }
+
+  .checklist-card__service-type {
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  .checklist-card__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .checklist-card__title-link {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--duration-150) var(--ease-in-out);
+  }
+
+  .checklist-card__title-link:hover {
+    color: var(--color-primary);
+  }
+
+  .checklist-card__title-link:focus-visible {
+    outline: none;
+    color: var(--color-primary);
+  }
+
+  .checklist-card__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* =================================================================
+   * STATS
+   * ================================================================= */
+  .checklist-card__stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-4);
+    margin-top: var(--spacing-2);
+  }
+
+  .checklist-card__stat {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+  }
+
+  .checklist-card__stat-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  /* =================================================================
+   * PREVIEW ITEMS
+   * ================================================================= */
+  .checklist-card__preview {
+    list-style: none;
+    margin: var(--spacing-3) 0 0 0;
+    padding: var(--spacing-3);
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-lg);
+  }
+
+  .checklist-card__preview-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-2);
+    padding: var(--spacing-1) 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .checklist-card__preview-check {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: var(--color-border);
+  }
+
+  .checklist-card__preview-more {
+    padding: var(--spacing-2) 0 0 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    font-style: italic;
+  }
+
+  /* =================================================================
+   * TAGS
+   * ================================================================= */
+  .checklist-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+    margin: var(--spacing-2) 0 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .checklist-card__tag {
+    display: inline-block;
+  }
+
+  .checklist-card__tag-link {
+    display: inline-block;
+    padding: var(--spacing-1) var(--spacing-2);
+    background-color: var(--color-primary-50);
+    color: var(--color-primary-700);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-primary-100);
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      border-color var(--duration-150) var(--ease-in-out),
+      color var(--duration-150) var(--ease-in-out);
+  }
+
+  .checklist-card__tag-link:hover {
+    background-color: var(--color-primary-100);
+    border-color: var(--color-primary-200);
+    color: var(--color-primary-800);
+  }
+
+  .checklist-card__tag-link:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .checklist-card__tag--more {
+    padding: var(--spacing-1) var(--spacing-2);
+    color: var(--color-text-tertiary);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+  }
+
+  /* =================================================================
+   * FOOTER
+   * ================================================================= */
+  .checklist-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-3);
+    padding: var(--spacing-4) var(--spacing-5);
+    border-top: 1px solid var(--color-border-light);
+    margin-top: auto;
+  }
+
+  .checklist-card__meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+  }
+
+  .checklist-card__file-info,
+  .checklist-card__downloads {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  .checklist-card__icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+
+  .checklist-card__view-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-4);
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    text-decoration: none;
+    border-radius: var(--radius-lg);
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      transform var(--duration-150) var(--ease-in-out),
+      box-shadow var(--duration-150) var(--ease-in-out);
+  }
+
+  .checklist-card__view-btn:hover {
+    background-color: var(--color-primary-600);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .checklist-card__view-btn:active {
+    transform: translateY(0);
+  }
+
+  .checklist-card__view-btn:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .checklist-card__arrow {
+    width: 16px;
+    height: 16px;
+    transition: transform var(--duration-150) var(--ease-in-out);
+  }
+
+  .checklist-card__view-btn:hover .checklist-card__arrow {
+    transform: translateX(4px);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+  @media screen and (max-width: 767px) {
+    .checklist-card__content {
+      padding: var(--spacing-4);
+    }
+
+    .checklist-card__footer {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--spacing-3);
+      padding: var(--spacing-3) var(--spacing-4);
+    }
+
+    .checklist-card__meta {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    .checklist-card__view-btn {
+      justify-content: center;
+      min-height: 44px;
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .checklist-card,
+    .checklist-card__image,
+    .checklist-card__tag-link,
+    .checklist-card__view-btn,
+    .checklist-card__title-link,
+    .checklist-card__arrow {
+      transition: none;
+    }
+
+    .checklist-card:hover {
+      transform: none;
+    }
+
+    .checklist-card:hover .checklist-card__image {
+      transform: none;
+    }
+
+    .checklist-card__view-btn:hover {
+      transform: none;
+    }
+
+    .checklist-card__view-btn:hover .checklist-card__arrow {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+  @media (forced-colors: active) {
+    .checklist-card {
+      border: 2px solid currentColor;
+    }
+
+    .checklist-card__badge {
+      border: 1px solid currentColor;
+    }
+
+    .checklist-card__tag-link {
+      border: 1px solid currentColor;
+    }
+
+    .checklist-card__view-btn {
+      border: 2px solid currentColor;
+    }
+  }
+</style>

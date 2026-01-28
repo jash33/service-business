@@ -1,0 +1,342 @@
+---
+/**
+ * Team Page - Houston Web Services
+ * A page showcasing the team members with their bios, photos,
+ * specializations, and contact information.
+ *
+ * Features:
+ * - Hero section with page introduction
+ * - Grid of team member cards
+ * - Responsive layout for all screen sizes
+ * - Full SEO optimization with structured data
+ * - WCAG 2.1 AA accessible
+ */
+
+import Layout from '../layouts/Layout.astro';
+import Button from '../components/Button.astro';
+import TeamMemberCard from '../components/TeamMemberCard.astro';
+import { TEAM_MEMBERS, TEAM_PAGE_CONFIG } from '../config/team.config';
+---
+
+<Layout
+  title="Our Team"
+  description="Meet the talented team behind Houston Web Services. Our experts bring years of experience in web development, design, SEO, and digital marketing to help your business succeed online."
+  openGraph={{
+    type: 'website',
+  }}
+  jsonLd={{
+    type: 'WebPage',
+    name: 'Our Team - Houston Web Services',
+    description: 'Meet the talented team behind Houston Web Services. Our experts bring years of experience in web development, design, SEO, and digital marketing.',
+  }}
+>
+  <main>
+    <!-- Hero Section -->
+    <section class="team-hero" aria-labelledby="team-hero-heading">
+      <div class="team-hero__container">
+        <span class="team-hero__eyebrow reveal reveal--up">Our Team</span>
+        <h1 id="team-hero-heading" class="team-hero__title reveal reveal--up reveal--delay-1">
+          {TEAM_PAGE_CONFIG.heroHeading}
+        </h1>
+        <p class="team-hero__subtitle reveal reveal--up reveal--delay-2">
+          {TEAM_PAGE_CONFIG.heroSubheading}
+        </p>
+      </div>
+    </section>
+
+    <!-- Team Introduction Section -->
+    <section class="team-intro" aria-labelledby="team-intro-heading">
+      <div class="team-intro__container">
+        <div class="team-intro__content reveal reveal--up">
+          <h2 id="team-intro-heading" class="team-intro__heading">
+            {TEAM_PAGE_CONFIG.sectionHeading}
+          </h2>
+          <p class="team-intro__description">
+            {TEAM_PAGE_CONFIG.sectionDescription}
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Team Members Grid Section -->
+    <section class="team-grid-section" aria-labelledby="team-members-heading">
+      <div class="team-grid-section__container">
+        <h2 id="team-members-heading" class="sr-only">Team Members</h2>
+        <div class="team-grid">
+          {TEAM_MEMBERS.map((member, index) => (
+            <div class={`team-grid__item reveal reveal--up reveal--delay-${Math.min(index + 1, 4)}`}>
+              <TeamMemberCard {...member} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Call to Action Section -->
+    <section class="team-cta" aria-labelledby="team-cta-heading">
+      <div class="team-cta__container">
+        <h2 id="team-cta-heading" class="team-cta__title reveal reveal--up">
+          Ready to Work With Us?
+        </h2>
+        <p class="team-cta__description reveal reveal--up reveal--delay-1">
+          Let's discuss how our team can help bring your vision to life.
+          Schedule a free consultation today.
+        </p>
+        <div class="team-cta__buttons reveal reveal--up reveal--delay-2">
+          <Button
+            text="Get in Touch"
+            href="/contact"
+            variant="primary"
+            size="large"
+          />
+          <Button
+            text="View Our Work"
+            href="/portfolio"
+            variant="secondary"
+            size="large"
+          />
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  /* =================================================================
+   * HERO SECTION
+   * ================================================================= */
+  .team-hero {
+    padding: var(--spacing-20) var(--spacing-4) var(--spacing-16);
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-50) 0%,
+      var(--color-background) 100%
+    );
+    text-align: center;
+  }
+
+  .team-hero__container {
+    max-width: var(--container-4xl);
+    margin: 0 auto;
+  }
+
+  .team-hero__eyebrow {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wider);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .team-hero__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4);
+    line-height: var(--line-height-tight);
+    letter-spacing: var(--letter-spacing-tight);
+  }
+
+  .team-hero__subtitle {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    max-width: 36rem;
+    margin: 0 auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* =================================================================
+   * TEAM INTRODUCTION SECTION
+   * ================================================================= */
+  .team-intro {
+    padding: var(--spacing-12) var(--spacing-4) var(--spacing-8);
+    background-color: var(--color-background);
+  }
+
+  .team-intro__container {
+    max-width: var(--container-4xl);
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .team-intro__content {
+    max-width: 40rem;
+    margin: 0 auto;
+  }
+
+  .team-intro__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4);
+    line-height: var(--line-height-tight);
+  }
+
+  .team-intro__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0;
+  }
+
+  /* =================================================================
+   * TEAM MEMBERS GRID SECTION
+   * ================================================================= */
+  .team-grid-section {
+    padding: var(--spacing-8) var(--spacing-4) var(--spacing-20);
+    background-color: var(--color-background);
+  }
+
+  .team-grid-section__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  .team-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-8);
+  }
+
+  .team-grid__item {
+    display: flex;
+  }
+
+  /* Ensure cards stretch to fill grid cell */
+  .team-grid__item :global(.team-card) {
+    flex: 1;
+  }
+
+  /* =================================================================
+   * CALL TO ACTION SECTION
+   * ================================================================= */
+  .team-cta {
+    padding: var(--spacing-20) var(--spacing-4);
+    background-color: var(--color-primary);
+    text-align: center;
+  }
+
+  .team-cta__container {
+    max-width: var(--container-3xl);
+    margin: 0 auto;
+  }
+
+  .team-cta__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-inverse);
+    margin: 0 0 var(--spacing-4);
+    line-height: var(--line-height-tight);
+  }
+
+  .team-cta__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-primary-100);
+    line-height: var(--line-height-relaxed);
+    margin: 0 0 var(--spacing-8);
+    max-width: 32rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .team-cta__buttons {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Override secondary button colors for dark background */
+  .team-cta :global(.btn--secondary) {
+    color: var(--color-text-inverse);
+    border-color: var(--color-text-inverse);
+  }
+
+  .team-cta :global(.btn--secondary:hover:not(.btn--disabled)) {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--color-text-inverse);
+    color: var(--color-text-inverse);
+  }
+
+  /* =================================================================
+   * SCREEN READER ONLY
+   * ================================================================= */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  /* Small tablets (640px) */
+  @media screen and (min-width: 640px) {
+    .team-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .team-cta__buttons {
+      flex-direction: row;
+    }
+  }
+
+  /* Large tablets and small desktops (1024px) */
+  @media screen and (min-width: 1024px) {
+    .team-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* Mobile adjustments */
+  @media (max-width: 767px) {
+    .team-hero {
+      padding: var(--spacing-12) var(--spacing-4) var(--spacing-10);
+    }
+
+    .team-hero__title {
+      font-size: var(--font-size-3xl);
+    }
+
+    .team-hero__subtitle {
+      font-size: var(--font-size-base);
+    }
+
+    .team-intro {
+      padding: var(--spacing-10) var(--spacing-4) var(--spacing-6);
+    }
+
+    .team-intro__heading {
+      font-size: var(--font-size-2xl);
+    }
+
+    .team-grid-section {
+      padding: var(--spacing-6) var(--spacing-4) var(--spacing-12);
+    }
+
+    .team-cta {
+      padding: var(--spacing-12) var(--spacing-4);
+    }
+
+    .team-cta__title {
+      font-size: var(--font-size-2xl);
+    }
+  }
+</style>

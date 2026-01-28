@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="modernBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f8fafc"/>
+      <stop offset="100%" style="stop-color:#e0f2fe"/>
+    </linearGradient>
+    <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0ea5e9"/>
+      <stop offset="100%" style="stop-color:#0284c7"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="800" height="600" fill="url(#modernBg)"/>
+  <!-- Modern header -->
+  <rect x="0" y="0" width="800" height="70" fill="#fff" opacity="0.95"/>
+  <circle cx="50" cy="35" r="20" fill="url(#heroGrad)"/>
+  <text x="80" y="42" font-family="Inter, sans-serif" font-size="20" font-weight="bold" fill="#0f172a">Houston Dental</text>
+  <!-- Modern navigation -->
+  <text x="450" y="40" font-family="Inter" font-size="14" fill="#64748b">Services</text>
+  <text x="530" y="40" font-family="Inter" font-size="14" fill="#64748b">About</text>
+  <text x="600" y="40" font-family="Inter" font-size="14" fill="#64748b">Reviews</text>
+  <rect x="670" y="22" width="100" height="36" rx="18" fill="url(#heroGrad)"/>
+  <text x="695" y="46" font-family="Inter" font-size="13" font-weight="600" fill="#fff">Book Now</text>
+  <!-- Hero section -->
+  <rect x="40" y="90" width="720" height="280" rx="16" fill="#fff"/>
+  <rect x="40" y="90" width="360" height="280" rx="16" fill="url(#heroGrad)"/>
+  <text x="70" y="160" font-family="Inter" font-size="32" font-weight="bold" fill="#fff">Smile With</text>
+  <text x="70" y="200" font-family="Inter" font-size="32" font-weight="bold" fill="#fff">Confidence</text>
+  <text x="70" y="240" font-family="Inter" font-size="14" fill="rgba(255,255,255,0.9)">Modern dental care for the whole family.</text>
+  <text x="70" y="260" font-family="Inter" font-size="14" fill="rgba(255,255,255,0.9)">Book your appointment online today.</text>
+  <rect x="70" y="290" width="140" height="44" rx="22" fill="#fff"/>
+  <text x="100" y="318" font-family="Inter" font-size="14" font-weight="600" fill="#0284c7">Get Started</text>
+  <!-- Feature image placeholder -->
+  <rect x="420" y="110" width="320" height="240" rx="12" fill="#e0f2fe"/>
+  <circle cx="580" cy="230" r="60" fill="#0ea5e9" opacity="0.3"/>
+  <text x="540" y="235" font-family="Inter" font-size="40">🦷</text>
+  <!-- Stats bar -->
+  <rect x="40" y="390" width="720" height="80" rx="12" fill="#fff"/>
+  <text x="120" y="430" font-family="Inter" font-size="28" font-weight="bold" fill="#0ea5e9">15+</text>
+  <text x="120" y="455" font-family="Inter" font-size="12" fill="#64748b">Years Experience</text>
+  <text x="320" y="430" font-family="Inter" font-size="28" font-weight="bold" fill="#0ea5e9">5000+</text>
+  <text x="320" y="455" font-family="Inter" font-size="12" fill="#64748b">Happy Patients</text>
+  <text x="540" y="430" font-family="Inter" font-size="28" font-weight="bold" fill="#0ea5e9">4.9★</text>
+  <text x="540" y="455" font-family="Inter" font-size="12" fill="#64748b">Google Rating</text>
+  <!-- Footer hint -->
+  <rect x="40" y="490" width="720" height="90" rx="12" fill="#0f172a"/>
+  <text x="70" y="530" font-family="Inter" font-size="14" fill="#94a3b8">Ready to transform your smile?</text>
+  <text x="70" y="555" font-family="Inter" font-size="18" font-weight="600" fill="#fff">Schedule Your Free Consultation</text>
+  <!-- "AFTER" watermark -->
+  <text x="400" y="560" font-family="Arial Black" font-size="60" fill="rgba(14,165,233,0.08)" text-anchor="middle">AFTER</text>
+</svg>

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
+  <rect width="400" height="300" fill="#f8fafc"/>
+  <rect x="40" y="40" width="320" height="220" rx="12" fill="#e6eaf2" stroke="#365395" stroke-width="2"/>
+  <rect x="60" y="60" width="280" height="40" rx="8" fill="#365395"/>
+  <text x="200" y="86" text-anchor="middle" fill="#fff" font-family="Arial" font-size="18" font-weight="bold">MAINTENANCE CALENDAR</text>
+  <rect x="70" y="115" width="60" height="50" rx="4" fill="#fff" stroke="#c2cbdf" stroke-width="1"/>
+  <text x="100" y="133" text-anchor="middle" fill="#365395" font-family="Arial" font-size="12" font-weight="bold">JAN</text>
+  <circle cx="100" cy="150" r="8" fill="#10b981"/>
+  <rect x="140" y="115" width="60" height="50" rx="4" fill="#fff" stroke="#c2cbdf" stroke-width="1"/>
+  <text x="170" y="133" text-anchor="middle" fill="#365395" font-family="Arial" font-size="12" font-weight="bold">FEB</text>
+  <circle cx="170" cy="150" r="8" fill="#10b981"/>
+  <rect x="210" y="115" width="60" height="50" rx="4" fill="#fff" stroke="#c2cbdf" stroke-width="1"/>
+  <text x="240" y="133" text-anchor="middle" fill="#365395" font-family="Arial" font-size="12" font-weight="bold">MAR</text>
+  <circle cx="240" cy="150" r="8" fill="#f59e0b"/>
+  <rect x="280" y="115" width="60" height="50" rx="4" fill="#fff" stroke="#c2cbdf" stroke-width="1"/>
+  <text x="310" y="133" text-anchor="middle" fill="#365395" font-family="Arial" font-size="12" font-weight="bold">APR</text>
+  <circle cx="310" cy="150" r="8" fill="#10b981"/>
+  <rect x="70" y="180" width="60" height="50" rx="4" fill="#fff" stroke="#c2cbdf" stroke-width="1"/>
+  <text x="100" y="198" text-anchor="middle" fill="#365395" font-family="Arial" font-size="12" font-weight="bold">MAY</text>
+  <circle cx="100" cy="215" r="8" fill="#10b981"/>
+  <rect x="140" y="180" width="60" height="50" rx="4" fill="#fff" stroke="#c2cbdf" stroke-width="1"/>
+  <text x="170" y="198" text-anchor="middle" fill="#365395" font-family="Arial" font-size="12" font-weight="bold">JUN</text>
+  <circle cx="170" cy="215" r="8" fill="#ef4444"/>
+</svg>

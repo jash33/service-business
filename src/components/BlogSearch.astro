@@ -1,0 +1,365 @@
+---
+/**
+ * BlogSearch Component
+ * A search input component for filtering blog articles.
+ *
+ * Features:
+ * - Real-time search filtering (client-side)
+ * - Accessible with proper ARIA labels
+ * - Clear button when text is entered
+ * - Search icon
+ * - Keyboard navigation support
+ *
+ * @example Basic usage
+ * ```astro
+ * <BlogSearch placeholder="Search articles..." />
+ * ```
+ */
+
+interface Props {
+  /** Current search query */
+  query?: string;
+  /** Placeholder text */
+  placeholder?: string;
+  /** Additional CSS class names */
+  class?: string;
+}
+
+const {
+  query = '',
+  placeholder = 'Search articles...',
+  class: className = '',
+} = Astro.props;
+
+const searchClasses = [
+  'blog-search',
+  className,
+].filter(Boolean).join(' ');
+---
+
+<div class={searchClasses} data-blog-search>
+  <div class="blog-search__wrapper">
+    <label for="blog-search-input" class="blog-search__label sr-only">
+      Search blog articles
+    </label>
+
+    <svg class="blog-search__icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+      <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+
+    <input
+      type="search"
+      id="blog-search-input"
+      class="blog-search__input"
+      placeholder={placeholder}
+      value={query}
+      autocomplete="off"
+      data-search-input
+    />
+
+    <button
+      type="button"
+      class="blog-search__clear"
+      aria-label="Clear search"
+      data-search-clear
+      hidden={!query}
+    >
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="blog-search__results" aria-live="polite" aria-atomic="true" data-search-results>
+    <!-- Results count will be announced here -->
+  </div>
+</div>
+
+<style>
+  /* =================================================================
+   * BLOG SEARCH COMPONENT STYLES
+   * ================================================================= */
+
+  .blog-search {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .blog-search__wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .blog-search__label {
+    /* Screen reader only */
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .blog-search__icon {
+    position: absolute;
+    left: var(--spacing-4);
+    width: var(--spacing-5);
+    height: var(--spacing-5);
+    color: var(--color-text-tertiary);
+    pointer-events: none;
+    transition: color var(--duration-150) var(--ease-in-out);
+  }
+
+  .blog-search__input {
+    width: 100%;
+    padding: var(--spacing-3) var(--spacing-4);
+    padding-left: var(--spacing-12);
+    padding-right: var(--spacing-12);
+    background-color: var(--color-background-subtle);
+    color: var(--color-text-primary);
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-normal);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    outline: none;
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      border-color var(--duration-150) var(--ease-in-out),
+      box-shadow var(--duration-150) var(--ease-in-out);
+  }
+
+  .blog-search__input::placeholder {
+    color: var(--color-text-tertiary);
+  }
+
+  .blog-search__input:hover {
+    background-color: var(--color-background-elevated);
+    border-color: var(--color-primary-200);
+  }
+
+  .blog-search__input:focus {
+    background-color: var(--color-background-elevated);
+    border-color: var(--color-primary);
+    box-shadow: var(--focus-ring);
+  }
+
+  .blog-search__input:focus + .blog-search__icon,
+  .blog-search__wrapper:focus-within .blog-search__icon {
+    color: var(--color-primary);
+  }
+
+  /* Remove default search input styles */
+  .blog-search__input::-webkit-search-cancel-button,
+  .blog-search__input::-webkit-search-decoration,
+  .blog-search__input::-webkit-search-results-button,
+  .blog-search__input::-webkit-search-results-decoration {
+    display: none;
+  }
+
+  .blog-search__clear {
+    position: absolute;
+    right: var(--spacing-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--spacing-8);
+    height: var(--spacing-8);
+    padding: 0;
+    background: none;
+    border: none;
+    color: var(--color-text-tertiary);
+    cursor: pointer;
+    border-radius: var(--radius-md);
+    transition:
+      color var(--duration-150) var(--ease-in-out),
+      background-color var(--duration-150) var(--ease-in-out);
+  }
+
+  .blog-search__clear:hover {
+    color: var(--color-text-primary);
+    background-color: var(--color-background-muted);
+  }
+
+  .blog-search__clear:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .blog-search__clear[hidden] {
+    display: none;
+  }
+
+  .blog-search__clear svg {
+    width: var(--spacing-4);
+    height: var(--spacing-4);
+  }
+
+  .blog-search__results {
+    margin-top: var(--spacing-2);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+    min-height: var(--spacing-5);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+  @media screen and (max-width: 767px) {
+    .blog-search {
+      max-width: none;
+    }
+
+    .blog-search__input {
+      min-height: 48px;
+    }
+
+    .blog-search__clear {
+      width: var(--spacing-10);
+      height: var(--spacing-10);
+      min-width: 44px;
+      min-height: 44px;
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .blog-search__input,
+    .blog-search__icon,
+    .blog-search__clear {
+      transition: none;
+    }
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+  @media (forced-colors: active) {
+    .blog-search__input {
+      border: 2px solid currentColor;
+    }
+
+    .blog-search__clear {
+      border: 1px solid currentColor;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Blog Search Client-Side Functionality
+   * Handles real-time search filtering and UI updates
+   */
+  function initBlogSearch() {
+    const searchContainers = document.querySelectorAll('[data-blog-search]');
+
+    searchContainers.forEach((container) => {
+      const input = container.querySelector('[data-search-input]') as HTMLInputElement;
+      const clearBtn = container.querySelector('[data-search-clear]') as HTMLButtonElement;
+      const results = container.querySelector('[data-search-results]') as HTMLElement;
+
+      if (!input || !clearBtn || !results) return;
+
+      // Get all blog cards on the page
+      const blogCards = document.querySelectorAll('[data-blog-card]');
+      const noResultsMessage = document.querySelector('[data-no-results]');
+
+      let debounceTimer: ReturnType<typeof setTimeout>;
+
+      const performSearch = (query: string) => {
+        const normalizedQuery = query.toLowerCase().trim();
+        let visibleCount = 0;
+
+        blogCards.forEach((card) => {
+          const title = card.getAttribute('data-title')?.toLowerCase() || '';
+          const excerpt = card.getAttribute('data-excerpt')?.toLowerCase() || '';
+          const tags = card.getAttribute('data-tags')?.toLowerCase() || '';
+          const category = card.getAttribute('data-category')?.toLowerCase() || '';
+
+          const matches = !normalizedQuery ||
+            title.includes(normalizedQuery) ||
+            excerpt.includes(normalizedQuery) ||
+            tags.includes(normalizedQuery) ||
+            category.includes(normalizedQuery);
+
+          if (matches) {
+            (card as HTMLElement).style.display = '';
+            visibleCount++;
+          } else {
+            (card as HTMLElement).style.display = 'none';
+          }
+        });
+
+        // Update results announcement for screen readers
+        if (normalizedQuery) {
+          results.textContent = `${visibleCount} article${visibleCount !== 1 ? 's' : ''} found`;
+        } else {
+          results.textContent = '';
+        }
+
+        // Show/hide no results message
+        if (noResultsMessage) {
+          if (visibleCount === 0 && normalizedQuery) {
+            (noResultsMessage as HTMLElement).style.display = 'block';
+          } else {
+            (noResultsMessage as HTMLElement).style.display = 'none';
+          }
+        }
+
+        // Update clear button visibility
+        clearBtn.hidden = !query;
+      };
+
+      // Input event listener with debounce
+      input.addEventListener('input', () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+          performSearch(input.value);
+        }, 150);
+      });
+
+      // Clear button handler
+      clearBtn.addEventListener('click', () => {
+        input.value = '';
+        clearBtn.hidden = true;
+        performSearch('');
+        input.focus();
+      });
+
+      // Handle escape key to clear search
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && input.value) {
+          input.value = '';
+          clearBtn.hidden = true;
+          performSearch('');
+        }
+      });
+
+      // Initialize with any existing value
+      if (input.value) {
+        performSearch(input.value);
+      }
+    });
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initBlogSearch);
+  } else {
+    initBlogSearch();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initBlogSearch);
+</script>

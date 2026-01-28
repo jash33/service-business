@@ -1,0 +1,1452 @@
+---
+/**
+ * Financing Options Page - Houston Web Services
+ * A comprehensive page detailing available payment plans, financing partners,
+ * and accepted payment methods to help customers understand affordability options.
+ *
+ * Sections:
+ * 1. Hero Section - Value proposition for flexible financing
+ * 2. Payment Plans - Different payment options available
+ * 3. Financing Partners - Third-party financing options
+ * 4. Accepted Payment Methods - Supported payment types
+ * 5. FAQ - Financing-related questions
+ * 6. CTA Section - Contact for custom arrangements
+ */
+
+import Layout from '../layouts/Layout.astro';
+import Button from '../components/Button.astro';
+import FAQAccordion from '../components/FAQAccordion.astro';
+import type { FAQItem } from '../types/faq';
+
+/**
+ * Payment plan data structure
+ */
+interface PaymentPlan {
+  id: string;
+  name: string;
+  description: string;
+  features: string[];
+  icon: string;
+  highlight?: string;
+  isPopular?: boolean;
+}
+
+/**
+ * Financing partner data structure
+ */
+interface FinancingPartner {
+  id: string;
+  name: string;
+  description: string;
+  aprRange: string;
+  termRange: string;
+  minAmount: string;
+  features: string[];
+  ctaText: string;
+  ctaHref: string;
+}
+
+/**
+ * Payment method data structure
+ */
+interface PaymentMethod {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+}
+
+// Payment plans data
+const paymentPlans: PaymentPlan[] = [
+  {
+    id: 'full-payment',
+    name: 'Pay in Full',
+    description: 'Save 10% when you pay the full project amount upfront. Best for businesses ready to invest in their online presence.',
+    features: [
+      '10% discount on total project cost',
+      'Priority project scheduling',
+      'Extra revision round included',
+      'Simple, one-time payment',
+    ],
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`,
+    highlight: 'Best Value',
+  },
+  {
+    id: 'split-payment',
+    name: '50/50 Split',
+    description: 'Split your payment into two installments—half to start, half on completion. Our most popular option.',
+    features: [
+      '50% deposit to begin project',
+      '50% due upon completion',
+      'No interest or fees',
+      'Standard project timeline',
+    ],
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 14V6c0-1.1-.9-2-2-2H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zm-9-1c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm13-6v11c0 1.1-.9 2-2 2H4v-2h17V7h2z"/></svg>`,
+    isPopular: true,
+  },
+  {
+    id: 'milestone-payment',
+    name: 'Milestone Payments',
+    description: 'Pay as we progress through key project milestones. Great for larger projects with extended timelines.',
+    features: [
+      '25% deposit to start',
+      '25% after design approval',
+      '25% after development',
+      '25% upon launch',
+    ],
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6z"/></svg>`,
+  },
+  {
+    id: 'monthly-payment',
+    name: 'Monthly Plan',
+    description: 'Spread your investment over 3-6 months with affordable monthly payments. Makes premium web design accessible.',
+    features: [
+      'Spread cost over 3-6 months',
+      'Low monthly payments',
+      'No credit check required',
+      'Project starts immediately',
+    ],
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm-8 4H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg>`,
+  },
+];
+
+// Financing partners data
+const financingPartners: FinancingPartner[] = [
+  {
+    id: 'affirm',
+    name: 'Affirm',
+    description: 'Pay over time with clear, transparent terms. No hidden fees, no surprises. Check your rate without affecting your credit score.',
+    aprRange: '0-36% APR',
+    termRange: '3-36 months',
+    minAmount: '$500',
+    features: [
+      'Soft credit check to see options',
+      'No prepayment penalties',
+      'Fixed monthly payments',
+      'Instant approval decisions',
+    ],
+    ctaText: 'Check Eligibility',
+    ctaHref: '/contact?financing=affirm',
+  },
+  {
+    id: 'paypal-credit',
+    name: 'PayPal Pay Later',
+    description: 'Use PayPal Pay in 4 for smaller projects or PayPal Credit for larger investments with special financing offers.',
+    aprRange: 'Pay in 4: 0% | Credit: Variable',
+    termRange: '4 payments or 6-24 months',
+    minAmount: '$99',
+    features: [
+      'Pay in 4 interest-free payments',
+      'PayPal Credit for larger amounts',
+      'Use existing PayPal account',
+      '6 months special financing on $99+',
+    ],
+    ctaText: 'Learn More',
+    ctaHref: '/contact?financing=paypal',
+  },
+  {
+    id: 'square-installments',
+    name: 'Square Installments',
+    description: 'Simple, straightforward financing with competitive rates. Perfect for small business owners who value simplicity.',
+    aprRange: '0-24% APR',
+    termRange: '3-24 months',
+    minAmount: '$300',
+    features: [
+      'Quick online application',
+      'Competitive interest rates',
+      'No early payoff penalties',
+      'Automatic payment reminders',
+    ],
+    ctaText: 'Get Started',
+    ctaHref: '/contact?financing=square',
+  },
+];
+
+// Payment methods data
+const paymentMethods: PaymentMethod[] = [
+  {
+    id: 'credit-card',
+    name: 'Credit & Debit Cards',
+    description: 'Visa, Mastercard, American Express, and Discover accepted. Process payments securely through Stripe.',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>`,
+  },
+  {
+    id: 'bank-transfer',
+    name: 'Bank Transfer (ACH)',
+    description: 'Direct bank transfers with no processing fees. Ideal for larger payments and recurring billing.',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M4 10v7h3v-7H4zm6 0v7h3v-7h-3zM2 22h19v-3H2v3zm14-12v7h3v-7h-3zm-4.5-9L2 6v2h19V6l-9.5-5z"/></svg>`,
+  },
+  {
+    id: 'paypal',
+    name: 'PayPal',
+    description: 'Pay securely with your PayPal balance, linked bank account, or cards. Buyer protection included.',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M9.93 12.99h-2.2L9.1 7.89c.04-.15.17-.26.33-.26h3.51c1.19 0 2.06.27 2.58.8.5.51.68 1.15.52 1.89-.31 1.62-1.65 2.67-3.59 2.67H10.9c-.16 0-.3.11-.33.26l-.64 3.74zm8.24-6.87c.44.56.65 1.32.53 2.29-.4 2.07-1.73 3.52-3.78 4.04l-.11.02c-.14.03-.3-.01-.4-.11l-.34-.32c-.16-.15-.2-.38-.11-.57l.04-.07c.04-.06.1-.11.17-.13.38-.08.71-.21 1-.38.66-.39 1.07-.92 1.23-1.6.1-.44.05-.82-.15-1.14-.21-.33-.6-.56-1.17-.68-.16-.03-.33-.05-.51-.06l-.78-.02H9.12c-.39 0-.73.26-.83.63l-2.4 9.69c-.14.54.27 1.06.83 1.06h2.88c.18 0 .34-.13.37-.31l.8-3.98c.09-.48.51-.83.99-.83h1.89c2.43 0 4.08-1.1 4.88-3.05l.04-.1c.18-.41.29-.85.33-1.29.06-.66-.03-1.23-.27-1.72-.25-.51-.64-.94-1.15-1.27-.52-.34-1.15-.55-1.88-.64-.14-.02-.27-.03-.41-.03h-3.09c-.39 0-.73.26-.83.63l-.89 3.6-.03.14.58-.02h1.29c.18 0 .34-.13.37-.31l.54-2.8c.07-.35.38-.6.74-.6h.6c.76.04 1.35.25 1.75.63z"/></svg>`,
+  },
+  {
+    id: 'venmo',
+    name: 'Venmo',
+    description: 'Quick and easy payments through the Venmo app. Great for deposits and smaller payments.',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19.27 3c.68 1.12.99 2.28.99 3.8 0 4.73-4.04 10.87-7.32 15.2H6.68L4 4.38l5.7-.52.97 7.8c.9-1.47 2.01-3.78 2.01-5.36 0-1.44-.25-2.43-.65-3.22L19.27 3z"/></svg>`,
+  },
+  {
+    id: 'zelle',
+    name: 'Zelle',
+    description: 'Fast, free bank-to-bank transfers. Money arrives directly in our business account, typically within minutes.',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M21.97 10.65l-1.93-5.79c-.26-.79-1-.97-1.61-.39l-3.22 3.04H6.16c-.89 0-1.61.72-1.61 1.61v.8h8.05l-8.05 6.43v2.01c0 .89.72 1.61 1.61 1.61h9.05l3.22 3.04c.61.58 1.35.4 1.61-.39l1.93-5.79c.26-.79-.08-1.68-.74-2.17l-2.56-1.94 2.56-1.9c.66-.49 1-.97.74-2.17zm-4.81 5.73H8.55v-1.61h6.43l2.18-2.06v5.73l-2.18-2.06h2.18z"/></svg>`,
+  },
+  {
+    id: 'check',
+    name: 'Check / Money Order',
+    description: 'Traditional payment methods accepted for clients who prefer them. Please allow 5-7 business days for processing.',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 16H6c-.55 0-1-.45-1-1V8h14v10c0 .55-.45 1-1 1zm-4.44-6.19l-2.35 3.02-1.56-1.88c-.2-.25-.58-.24-.78.01l-1.74 2.23c-.26.33-.02.81.39.81h8.98c.41 0 .65-.47.4-.8l-2.55-3.39c-.19-.26-.59-.26-.79 0z"/></svg>`,
+  },
+];
+
+// FAQ items for financing
+const financingFAQs: FAQItem[] = [
+  {
+    id: 'faq-financing-qualify',
+    question: 'Do I need good credit to use financing options?',
+    answer: `Not necessarily! Our in-house payment plans (50/50 Split and Monthly Plan) don't require a credit check at all. For third-party financing like Affirm or PayPal Credit, checking your eligibility uses a "soft pull" that doesn't affect your credit score. Even if you have less-than-perfect credit, you may still qualify for financing options.`,
+    category: 'pricing',
+  },
+  {
+    id: 'faq-financing-deposit',
+    question: 'Is a deposit required to start my project?',
+    answer: `Yes, we require a deposit to secure your spot in our project queue. The minimum deposit is 25% for milestone payments or 50% for our standard payment plan. This deposit is non-refundable but is applied toward your total project cost. We use deposits to allocate resources and ensure committed partnerships with our clients.`,
+    category: 'pricing',
+  },
+  {
+    id: 'faq-financing-late-payment',
+    question: 'What happens if I miss a payment?',
+    answer: `We understand that life happens. If you anticipate difficulty making a payment, please contact us in advance—we're happy to work with you on a modified schedule when possible. For in-house payment plans, a grace period of 7 days is provided. Project work may pause if payments become significantly overdue, but we always aim to find solutions together.`,
+    category: 'pricing',
+  },
+  {
+    id: 'faq-financing-refund',
+    question: 'What is your refund policy?',
+    answer: `<p>Our refund policy depends on project progress:</p><ul><li><strong>Before design begins:</strong> Full refund minus a $100 administrative fee</li><li><strong>During design phase:</strong> 50% refund of amounts paid</li><li><strong>After design approval:</strong> No refund, as development work has begun</li></ul><p>We're committed to your satisfaction and will work with you to address any concerns before considering refunds.</p>`,
+    category: 'pricing',
+  },
+  {
+    id: 'faq-financing-custom',
+    question: 'Can I request a custom payment arrangement?',
+    answer: `Absolutely! We understand that every business has unique financial circumstances. Contact us to discuss custom payment arrangements for larger projects or special situations. We've worked with seasonal businesses, startups, and established companies to create payment schedules that work for everyone.`,
+    category: 'pricing',
+  },
+  {
+    id: 'faq-financing-invoice',
+    question: 'How do I receive invoices and make payments?',
+    answer: `We send professional invoices via email with clear payment instructions and secure payment links. You can pay online using any of our accepted payment methods. For recurring payments (like monthly plans), we can set up automatic billing with your preferred payment method to ensure you never miss a payment.`,
+    category: 'process',
+  },
+];
+---
+
+<Layout
+  title="Financing Options"
+  description="Flexible payment plans and financing options for your website project. Learn about our 50/50 split, monthly payments, and third-party financing through Affirm and PayPal. No credit check required for most options."
+  openGraph={{
+    type: 'website',
+  }}
+>
+  <main>
+    <!-- Hero Section -->
+    <section class="financing-hero" aria-labelledby="financing-hero-heading">
+      <div class="financing-hero__container">
+        <div class="financing-hero__content">
+          <div class="financing-hero__badge">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true">
+              <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+            </svg>
+            <span>Flexible Payment Options Available</span>
+          </div>
+          <h1 id="financing-hero-heading" class="financing-hero__title">
+            Affordable Ways to<br/>
+            <span class="financing-hero__title-highlight">Invest in Your Business</span>
+          </h1>
+          <p class="financing-hero__description">
+            Don't let budget concerns hold back your business growth. We offer flexible payment plans and financing options to make professional web design accessible for businesses of all sizes.
+          </p>
+          <div class="financing-hero__cta-group">
+            <Button
+              text="View Payment Plans"
+              href="#payment-plans"
+              variant="primary"
+              size="large"
+            />
+            <Button
+              text="Contact Us"
+              href="/contact"
+              variant="secondary"
+              size="large"
+            />
+          </div>
+          <div class="financing-hero__trust-points">
+            <div class="financing-hero__trust-item">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20" aria-hidden="true">
+                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+              </svg>
+              <span>No Credit Check for In-House Plans</span>
+            </div>
+            <div class="financing-hero__trust-item">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20" aria-hidden="true">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+              <span>0% Interest Options Available</span>
+            </div>
+            <div class="financing-hero__trust-item">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20" aria-hidden="true">
+                <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+              </svg>
+              <span>Project Starts Immediately</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Payment Plans Section -->
+    <section id="payment-plans" class="payment-plans" aria-labelledby="payment-plans-heading">
+      <div class="payment-plans__container">
+        <header class="payment-plans__header">
+          <div class="payment-plans__header-wrapper">
+            <h2 id="payment-plans-heading" class="payment-plans__heading">
+              Payment Plans
+            </h2>
+          </div>
+          <p class="payment-plans__description">
+            Choose the payment structure that works best for your business. All plans include the same quality work and support.
+          </p>
+        </header>
+
+        <div class="payment-plans__grid">
+          {paymentPlans.map((plan) => (
+            <article class={`payment-plan-card ${plan.isPopular ? 'payment-plan-card--popular' : ''}`}>
+              {plan.highlight && (
+                <div class="payment-plan-card__badge">{plan.highlight}</div>
+              )}
+              {plan.isPopular && (
+                <div class="payment-plan-card__badge payment-plan-card__badge--popular">Most Popular</div>
+              )}
+              <div class="payment-plan-card__icon" aria-hidden="true" set:html={plan.icon} />
+              <h3 class="payment-plan-card__title">{plan.name}</h3>
+              <p class="payment-plan-card__description">{plan.description}</p>
+              <ul class="payment-plan-card__features">
+                {plan.features.map((feature) => (
+                  <li class="payment-plan-card__feature">
+                    <svg class="payment-plan-card__check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                    </svg>
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              <div class="payment-plan-card__cta">
+                <Button
+                  text="Choose Plan"
+                  href={`/contact?payment-plan=${plan.id}`}
+                  variant={plan.isPopular ? 'primary' : 'secondary'}
+                  size="medium"
+                  fullWidth={true}
+                />
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Financing Partners Section -->
+    <section id="financing-partners" class="financing-partners" aria-labelledby="financing-partners-heading">
+      <div class="financing-partners__container">
+        <header class="financing-partners__header">
+          <div class="financing-partners__header-wrapper">
+            <h2 id="financing-partners-heading" class="financing-partners__heading">
+              Third-Party Financing
+            </h2>
+          </div>
+          <p class="financing-partners__description">
+            Need longer terms or larger amounts? Our financing partners offer flexible options to fit your budget.
+          </p>
+        </header>
+
+        <div class="financing-partners__grid">
+          {financingPartners.map((partner) => (
+            <article class="financing-partner-card">
+              <h3 class="financing-partner-card__title">{partner.name}</h3>
+              <p class="financing-partner-card__description">{partner.description}</p>
+
+              <div class="financing-partner-card__details">
+                <div class="financing-partner-card__detail">
+                  <span class="financing-partner-card__detail-label">APR Range</span>
+                  <span class="financing-partner-card__detail-value">{partner.aprRange}</span>
+                </div>
+                <div class="financing-partner-card__detail">
+                  <span class="financing-partner-card__detail-label">Terms</span>
+                  <span class="financing-partner-card__detail-value">{partner.termRange}</span>
+                </div>
+                <div class="financing-partner-card__detail">
+                  <span class="financing-partner-card__detail-label">Minimum</span>
+                  <span class="financing-partner-card__detail-value">{partner.minAmount}</span>
+                </div>
+              </div>
+
+              <ul class="financing-partner-card__features">
+                {partner.features.map((feature) => (
+                  <li class="financing-partner-card__feature">
+                    <svg class="financing-partner-card__check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                    </svg>
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+
+              <div class="financing-partner-card__cta">
+                <Button
+                  text={partner.ctaText}
+                  href={partner.ctaHref}
+                  variant="secondary"
+                  size="medium"
+                  fullWidth={true}
+                />
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <div class="financing-partners__disclaimer">
+          <p>
+            <strong>Note:</strong> Third-party financing is subject to credit approval and terms set by the financing provider.
+            We can help you explore your options during a free consultation.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Payment Methods Section -->
+    <section id="payment-methods" class="payment-methods" aria-labelledby="payment-methods-heading">
+      <div class="payment-methods__container">
+        <header class="payment-methods__header">
+          <div class="payment-methods__header-wrapper">
+            <h2 id="payment-methods-heading" class="payment-methods__heading">
+              Accepted Payment Methods
+            </h2>
+          </div>
+          <p class="payment-methods__description">
+            We accept a variety of payment methods to make transactions convenient for you.
+          </p>
+        </header>
+
+        <div class="payment-methods__grid">
+          {paymentMethods.map((method) => (
+            <div class="payment-method-card">
+              <div class="payment-method-card__icon" aria-hidden="true" set:html={method.icon} />
+              <h3 class="payment-method-card__title">{method.name}</h3>
+              <p class="payment-method-card__description">{method.description}</p>
+            </div>
+          ))}
+        </div>
+
+        <div class="payment-methods__security">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24" aria-hidden="true">
+            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+          </svg>
+          <div class="payment-methods__security-text">
+            <strong>Secure Payments</strong>
+            <p>All transactions are encrypted and processed through industry-leading payment providers with bank-level security.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <FAQAccordion
+      items={financingFAQs}
+      heading="Financing Questions"
+      subheading="Common questions about payment plans, financing, and billing."
+      id="financing-faq"
+    />
+
+    <!-- CTA Section -->
+    <section class="cta-section" aria-labelledby="cta-heading">
+      <div class="cta-section__container">
+        <div class="cta-section__content">
+          <h2 id="cta-heading" class="cta-section__heading">
+            Let's Discuss Your Options
+          </h2>
+          <p class="cta-section__description">
+            Not sure which payment plan is right for you? Let's chat! We'll help you find the perfect arrangement that fits your budget and business goals.
+          </p>
+          <div class="cta-section__buttons">
+            <Button
+              text="Schedule a Free Consultation"
+              href="/contact"
+              variant="primary"
+              size="large"
+            />
+            <Button
+              text="Call (713) 555-0123"
+              href="tel:+17135550123"
+              variant="secondary"
+              size="large"
+            />
+          </div>
+          <p class="cta-section__reassurance">
+            No obligation. We're here to help you make the best decision for your business.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  /* =================================================================
+   * FINANCING PAGE STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention
+   */
+
+  /* =================================================================
+   * HERO SECTION
+   * ================================================================= */
+
+  .financing-hero {
+    position: relative;
+    padding: var(--spacing-16) var(--spacing-4) var(--spacing-20);
+    background: linear-gradient(
+      135deg,
+      var(--color-background) 0%,
+      var(--color-primary-50) 50%,
+      var(--color-background) 100%
+    );
+    overflow: hidden;
+  }
+
+  .financing-hero__container {
+    max-width: var(--container-4xl);
+    margin: 0 auto;
+  }
+
+  .financing-hero__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--spacing-5);
+  }
+
+  .financing-hero__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-4);
+    background-color: var(--color-success-light);
+    border: 1px solid var(--color-success-border);
+    border-radius: var(--radius-full);
+    color: var(--color-success-text);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .financing-hero__badge svg {
+    color: var(--color-success);
+  }
+
+  .financing-hero__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-tight);
+    margin: 0;
+  }
+
+  .financing-hero__title-highlight {
+    color: var(--color-primary);
+    display: block;
+  }
+
+  .financing-hero__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    max-width: 55ch;
+    margin: 0;
+  }
+
+  .financing-hero__cta-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    width: 100%;
+    max-width: 20rem;
+  }
+
+  .financing-hero__trust-points {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    margin-top: var(--spacing-4);
+  }
+
+  .financing-hero__trust-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .financing-hero__trust-item svg {
+    color: var(--color-success);
+    flex-shrink: 0;
+  }
+
+  /* =================================================================
+   * PAYMENT PLANS SECTION
+   * ================================================================= */
+
+  .payment-plans {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+  }
+
+  .payment-plans__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  .payment-plans__header {
+    text-align: center;
+    margin-bottom: var(--spacing-12);
+  }
+
+  .payment-plans__header-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .payment-plans__header-wrapper::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    margin-bottom: var(--spacing-3);
+    background: var(--color-accent);
+    border-radius: var(--radius-full);
+    box-shadow:
+      -12px 0 0 var(--color-primary),
+      12px 0 0 var(--color-accent-alt);
+    opacity: 0.8;
+  }
+
+  .payment-plans__header-wrapper::after {
+    content: '';
+    display: block;
+    width: 4rem;
+    height: 3px;
+    margin-top: var(--spacing-4);
+    background: linear-gradient(
+      90deg,
+      var(--color-primary) 0%,
+      var(--color-accent) 50%,
+      var(--color-accent-alt) 100%
+    );
+    border-radius: var(--radius-full);
+  }
+
+  .payment-plans__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4) 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .payment-plans__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-md);
+    color: var(--color-text-secondary);
+    max-width: 55ch;
+    margin: 0 auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .payment-plans__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+  }
+
+  /* Payment Plan Card */
+  .payment-plan-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-6);
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    transition:
+      box-shadow var(--duration-300) var(--ease-out),
+      transform var(--duration-300) var(--ease-out),
+      border-color var(--duration-300) var(--ease-out);
+  }
+
+  .payment-plan-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-4px);
+    border-color: var(--color-primary-200);
+  }
+
+  .payment-plan-card--popular {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-md), var(--glow-primary-sm);
+  }
+
+  .payment-plan-card--popular:hover {
+    box-shadow: var(--shadow-lg), var(--glow-primary-md);
+  }
+
+  .payment-plan-card__badge {
+    position: absolute;
+    top: var(--spacing-4);
+    right: var(--spacing-4);
+    padding: var(--spacing-1) var(--spacing-3);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: var(--radius-full);
+    background-color: var(--color-success-light);
+    color: var(--color-success-text);
+  }
+
+  .payment-plan-card__badge--popular {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  .payment-plan-card__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--spacing-12);
+    height: var(--spacing-12);
+    margin-bottom: var(--spacing-4);
+    background-color: var(--color-primary-50);
+    border-radius: var(--radius-lg);
+    color: var(--color-primary);
+  }
+
+  .payment-plan-card__icon :global(svg) {
+    width: var(--spacing-6);
+    height: var(--spacing-6);
+  }
+
+  .payment-plan-card__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-2) 0;
+  }
+
+  .payment-plan-card__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0 0 var(--spacing-4) 0;
+  }
+
+  .payment-plan-card__features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--spacing-6) 0;
+    flex-grow: 1;
+  }
+
+  .payment-plan-card__feature {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-2);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-2);
+    line-height: var(--line-height-relaxed);
+  }
+
+  .payment-plan-card__feature:last-child {
+    margin-bottom: 0;
+  }
+
+  .payment-plan-card__check {
+    flex-shrink: 0;
+    width: var(--spacing-5);
+    height: var(--spacing-5);
+    color: var(--color-success);
+    margin-top: 1px;
+  }
+
+  .payment-plan-card__cta {
+    margin-top: auto;
+  }
+
+  /* =================================================================
+   * FINANCING PARTNERS SECTION
+   * ================================================================= */
+
+  .financing-partners {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background);
+  }
+
+  .financing-partners__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  .financing-partners__header {
+    text-align: center;
+    margin-bottom: var(--spacing-12);
+  }
+
+  .financing-partners__header-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .financing-partners__header-wrapper::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    margin-bottom: var(--spacing-3);
+    background: var(--color-accent);
+    border-radius: var(--radius-full);
+    box-shadow:
+      -12px 0 0 var(--color-primary),
+      12px 0 0 var(--color-accent-alt);
+    opacity: 0.8;
+  }
+
+  .financing-partners__header-wrapper::after {
+    content: '';
+    display: block;
+    width: 4rem;
+    height: 3px;
+    margin-top: var(--spacing-4);
+    background: linear-gradient(
+      90deg,
+      var(--color-primary) 0%,
+      var(--color-accent) 50%,
+      var(--color-accent-alt) 100%
+    );
+    border-radius: var(--radius-full);
+  }
+
+  .financing-partners__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4) 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .financing-partners__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-md);
+    color: var(--color-text-secondary);
+    max-width: 55ch;
+    margin: 0 auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .financing-partners__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+  }
+
+  /* Financing Partner Card */
+  .financing-partner-card {
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-6);
+    background-color: var(--color-background-subtle);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    transition:
+      box-shadow var(--duration-300) var(--ease-out),
+      border-color var(--duration-300) var(--ease-out);
+  }
+
+  .financing-partner-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-primary-200);
+  }
+
+  .financing-partner-card__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-2) 0;
+  }
+
+  .financing-partner-card__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0 0 var(--spacing-4) 0;
+  }
+
+  .financing-partner-card__details {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-3);
+    margin-bottom: var(--spacing-4);
+    padding: var(--spacing-4);
+    background-color: var(--color-background);
+    border-radius: var(--radius-lg);
+  }
+
+  .financing-partner-card__detail {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    text-align: center;
+  }
+
+  .financing-partner-card__detail-label {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .financing-partner-card__detail-value {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+  }
+
+  .financing-partner-card__features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--spacing-6) 0;
+    flex-grow: 1;
+  }
+
+  .financing-partner-card__feature {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-2);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-2);
+    line-height: var(--line-height-relaxed);
+  }
+
+  .financing-partner-card__feature:last-child {
+    margin-bottom: 0;
+  }
+
+  .financing-partner-card__check {
+    flex-shrink: 0;
+    width: var(--spacing-5);
+    height: var(--spacing-5);
+    color: var(--color-success);
+    margin-top: 1px;
+  }
+
+  .financing-partner-card__cta {
+    margin-top: auto;
+  }
+
+  .financing-partners__disclaimer {
+    margin-top: var(--spacing-8);
+    padding: var(--spacing-4);
+    background-color: var(--color-background-subtle);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    text-align: center;
+  }
+
+  .financing-partners__disclaimer p {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  .financing-partners__disclaimer strong {
+    color: var(--color-text-primary);
+  }
+
+  /* =================================================================
+   * PAYMENT METHODS SECTION
+   * ================================================================= */
+
+  .payment-methods {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+  }
+
+  .payment-methods__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  .payment-methods__header {
+    text-align: center;
+    margin-bottom: var(--spacing-12);
+  }
+
+  .payment-methods__header-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .payment-methods__header-wrapper::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    margin-bottom: var(--spacing-3);
+    background: var(--color-accent);
+    border-radius: var(--radius-full);
+    box-shadow:
+      -12px 0 0 var(--color-primary),
+      12px 0 0 var(--color-accent-alt);
+    opacity: 0.8;
+  }
+
+  .payment-methods__header-wrapper::after {
+    content: '';
+    display: block;
+    width: 4rem;
+    height: 3px;
+    margin-top: var(--spacing-4);
+    background: linear-gradient(
+      90deg,
+      var(--color-primary) 0%,
+      var(--color-accent) 50%,
+      var(--color-accent-alt) 100%
+    );
+    border-radius: var(--radius-full);
+  }
+
+  .payment-methods__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4) 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .payment-methods__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-md);
+    color: var(--color-text-secondary);
+    max-width: 55ch;
+    margin: 0 auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .payment-methods__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+  }
+
+  /* Payment Method Card */
+  .payment-method-card {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-4);
+    padding: var(--spacing-4);
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    transition: border-color var(--duration-200) var(--ease-out);
+  }
+
+  .payment-method-card:hover {
+    border-color: var(--color-primary-200);
+  }
+
+  .payment-method-card__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: var(--spacing-10);
+    height: var(--spacing-10);
+    background-color: var(--color-primary-50);
+    border-radius: var(--radius-md);
+    color: var(--color-primary);
+  }
+
+  .payment-method-card__icon :global(svg) {
+    width: var(--spacing-5);
+    height: var(--spacing-5);
+  }
+
+  .payment-method-card__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-1) 0;
+  }
+
+  .payment-method-card__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0;
+  }
+
+  .payment-methods__security {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-4);
+    margin-top: var(--spacing-8);
+    padding: var(--spacing-5);
+    background-color: var(--color-success-light);
+    border: 1px solid var(--color-success-border);
+    border-radius: var(--radius-xl);
+  }
+
+  .payment-methods__security svg {
+    flex-shrink: 0;
+    color: var(--color-success);
+  }
+
+  .payment-methods__security-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+  }
+
+  .payment-methods__security-text strong {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-base);
+    color: var(--color-success-text);
+  }
+
+  .payment-methods__security-text p {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-success-text);
+    margin: 0;
+    opacity: 0.9;
+  }
+
+  /* =================================================================
+   * CTA SECTION
+   * ================================================================= */
+
+  .cta-section {
+    padding: var(--spacing-20) var(--spacing-4);
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-900) 0%,
+      var(--color-primary-700) 50%,
+      var(--color-primary-800) 100%
+    );
+  }
+
+  .cta-section__container {
+    max-width: var(--container-4xl);
+    margin: 0 auto;
+  }
+
+  .cta-section__content {
+    text-align: center;
+  }
+
+  .cta-section__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-inverse);
+    margin: 0 0 var(--spacing-4) 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .cta-section__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-primary-100);
+    max-width: 50ch;
+    margin: 0 auto var(--spacing-8);
+    line-height: var(--line-height-relaxed);
+  }
+
+  .cta-section__buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-4);
+    margin-bottom: var(--spacing-6);
+  }
+
+  .cta-section :global(.btn--primary) {
+    background-color: var(--color-background);
+    color: var(--color-primary-700);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .cta-section :global(.btn--primary:hover:not(.btn--disabled)) {
+    background-color: var(--color-primary-50);
+    color: var(--color-primary-800);
+    transform: translateY(-2px);
+  }
+
+  .cta-section :global(.btn--secondary) {
+    background-color: transparent;
+    color: var(--color-text-inverse);
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+
+  .cta-section :global(.btn--secondary:hover:not(.btn--disabled)) {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.8);
+  }
+
+  .cta-section__reassurance {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-primary-200);
+    margin: 0;
+    font-style: italic;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES - Tablet (640px+)
+   * ================================================================= */
+
+  @media screen and (min-width: 640px) {
+    .financing-hero {
+      padding: var(--spacing-20) var(--spacing-6) var(--spacing-24);
+    }
+
+    .financing-hero__title {
+      font-size: var(--font-size-4xl);
+    }
+
+    .financing-hero__cta-group {
+      flex-direction: row;
+      max-width: none;
+      width: auto;
+    }
+
+    .financing-hero__trust-points {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: var(--spacing-6);
+    }
+
+    .payment-plans__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .financing-partners__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .payment-methods__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .cta-section__buttons {
+      flex-direction: row;
+      justify-content: center;
+    }
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES - Tablet (768px+)
+   * ================================================================= */
+
+  @media screen and (min-width: 768px) {
+    .financing-hero__title {
+      font-size: var(--font-size-5xl);
+    }
+
+    .financing-hero__description {
+      font-size: var(--font-size-xl);
+    }
+
+    .payment-plans {
+      padding: var(--spacing-20) var(--spacing-6);
+    }
+
+    .payment-plans__heading {
+      font-size: var(--font-size-3xl);
+    }
+
+    .financing-partners {
+      padding: var(--spacing-20) var(--spacing-6);
+    }
+
+    .financing-partners__heading {
+      font-size: var(--font-size-3xl);
+    }
+
+    .payment-methods {
+      padding: var(--spacing-20) var(--spacing-6);
+    }
+
+    .payment-methods__heading {
+      font-size: var(--font-size-3xl);
+    }
+
+    .payment-methods__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .cta-section {
+      padding: var(--spacing-24) var(--spacing-6);
+    }
+
+    .cta-section__heading {
+      font-size: var(--font-size-4xl);
+    }
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES - Desktop (1024px+)
+   * ================================================================= */
+
+  @media screen and (min-width: 1024px) {
+    .financing-hero {
+      padding: var(--spacing-24) var(--spacing-8) var(--spacing-28);
+    }
+
+    .payment-plans__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .financing-partners__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    /* Make the popular card slightly larger */
+    .payment-plan-card--popular {
+      transform: scale(1.02);
+      z-index: 1;
+    }
+
+    .payment-plan-card--popular:hover {
+      transform: scale(1.05) translateY(-4px);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+
+  @media (prefers-reduced-motion: reduce) {
+    .payment-plan-card,
+    .financing-partner-card,
+    .payment-method-card {
+      transition: none;
+    }
+
+    .payment-plan-card:hover,
+    .payment-plan-card--popular:hover {
+      transform: none;
+    }
+
+    .cta-section :global(.btn:hover) {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE ADJUSTMENTS
+   * ================================================================= */
+
+  :global(html[data-theme="dark"]) .payment-plan-card {
+    background-color: var(--color-background-elevated);
+  }
+
+  :global(html[data-theme="dark"]) .financing-partner-card {
+    background-color: var(--color-background-elevated);
+  }
+
+  :global(html[data-theme="dark"]) .financing-partner-card__details {
+    background-color: var(--color-background-subtle);
+  }
+
+  :global(html[data-theme="dark"]) .payment-method-card {
+    background-color: var(--color-background-elevated);
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+
+  @media print {
+    .financing-hero {
+      background: none;
+      padding: var(--spacing-8) 0;
+    }
+
+    .financing-hero__cta-group {
+      display: none;
+    }
+
+    .payment-plans,
+    .financing-partners,
+    .payment-methods {
+      padding: var(--spacing-8) 0;
+    }
+
+    .payment-plan-card,
+    .financing-partner-card,
+    .payment-method-card {
+      box-shadow: none;
+      border: 1px solid var(--color-border);
+      page-break-inside: avoid;
+    }
+
+    .payment-plan-card__cta,
+    .financing-partner-card__cta {
+      display: none;
+    }
+
+    .payment-plan-card:hover,
+    .payment-plan-card--popular,
+    .payment-plan-card--popular:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .cta-section {
+      display: none;
+    }
+  }
+</style>

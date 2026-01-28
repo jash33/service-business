@@ -1,0 +1,965 @@
+---
+/**
+ * ChecklistDetail Component
+ * Displays the full checklist detail with all sections, items, and download options.
+ * Includes both free preview and gated full download functionality.
+ *
+ * Features:
+ * - Full checklist item display with sections
+ * - Interactive checkbox states for preview
+ * - Gated content form for full download
+ * - Direct preview download option
+ * - Print-friendly styling
+ * - Progress tracking
+ * - Related checklists
+ *
+ * @example
+ * ```astro
+ * <ChecklistDetail
+ *   checklist={checklistData}
+ *   relatedChecklists={relatedData}
+ * />
+ * ```
+ */
+
+import type { ServiceChecklist } from '../types/service-checklist';
+import { CATEGORY_LABELS, SERVICE_TYPE_LABELS } from '../types/service-checklist';
+import { getChecklistTotalItems } from '../config/service-checklists.config';
+import GatedContentForm from './GatedContentForm.astro';
+
+interface Props {
+  checklist: ServiceChecklist;
+  relatedChecklists?: ServiceChecklist[];
+  class?: string;
+}
+
+const { checklist, relatedChecklists = [], class: className = '' } = Astro.props;
+
+// Get labels
+const categoryLabel = CATEGORY_LABELS[checklist.category] || checklist.category;
+const serviceTypeLabel = SERVICE_TYPE_LABELS[checklist.serviceType] || checklist.serviceType;
+
+// Calculate total items
+const totalItems = getChecklistTotalItems(checklist);
+
+// Format date
+const formattedDate = new Date(checklist.publishedDate).toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+// Format download count
+const formattedDownloads = checklist.downloadCount
+  ? checklist.downloadCount >= 1000
+    ? `${(checklist.downloadCount / 1000).toFixed(1)}k`
+    : checklist.downloadCount.toString()
+  : null;
+
+// Build CSS classes
+const containerClasses = [
+  'checklist-detail',
+  className,
+].filter(Boolean).join(' ');
+---
+
+<div class={containerClasses}>
+  <!-- Header -->
+  <header class="checklist-detail__header">
+    <div class="checklist-detail__meta">
+      <span class="checklist-detail__category">{categoryLabel}</span>
+      <span class="checklist-detail__separator">|</span>
+      <span class="checklist-detail__service-type">{serviceTypeLabel}</span>
+    </div>
+
+    <h1 class="checklist-detail__title">{checklist.title}</h1>
+
+    <p class="checklist-detail__description">{checklist.description}</p>
+
+    <!-- Stats -->
+    <div class="checklist-detail__stats">
+      <span class="checklist-detail__stat">
+        <svg class="checklist-detail__stat-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M9 11l3 3L22 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        {totalItems} items
+      </span>
+      {checklist.estimatedTime && (
+        <span class="checklist-detail__stat">
+          <svg class="checklist-detail__stat-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+            <polyline points="12,6 12,12 16,14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          {checklist.estimatedTime}
+        </span>
+      )}
+      {checklist.fileSize && (
+        <span class="checklist-detail__stat">
+          <svg class="checklist-detail__stat-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2"/>
+            <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          {checklist.fileSize}
+        </span>
+      )}
+      {formattedDownloads && (
+        <span class="checklist-detail__stat">
+          <svg class="checklist-detail__stat-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2"/>
+            <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2"/>
+            <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          {formattedDownloads} downloads
+        </span>
+      )}
+      <span class="checklist-detail__stat">
+        <svg class="checklist-detail__stat-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+          <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2"/>
+          <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2"/>
+          <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        {formattedDate}
+      </span>
+    </div>
+
+    <!-- Tags -->
+    {checklist.tags.length > 0 && (
+      <ul class="checklist-detail__tags" aria-label="Checklist tags">
+        {checklist.tags.map((tag) => (
+          <li class="checklist-detail__tag">
+            <a href={`/service-checklists?tag=${tag.slug}`} class="checklist-detail__tag-link">
+              {tag.name}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+  </header>
+
+  <!-- Main Content Area -->
+  <div class="checklist-detail__body">
+    <!-- Checklist Sections -->
+    <div class="checklist-detail__content">
+      {checklist.longDescription && (
+        <div class="checklist-detail__intro" set:html={checklist.longDescription} />
+      )}
+
+      <!-- Progress bar -->
+      <div class="checklist-detail__progress" data-progress-container>
+        <div class="checklist-detail__progress-bar">
+          <div class="checklist-detail__progress-fill" data-progress-fill style="width: 0%"></div>
+        </div>
+        <span class="checklist-detail__progress-text" data-progress-text>0 of {totalItems} completed</span>
+      </div>
+
+      <!-- Sections -->
+      {checklist.sections.map((section, sectionIndex) => (
+        <section class="checklist-detail__section" data-section>
+          <h2 class="checklist-detail__section-title">
+            <span class="checklist-detail__section-number">{sectionIndex + 1}</span>
+            {section.title}
+          </h2>
+          {section.description && (
+            <p class="checklist-detail__section-description">{section.description}</p>
+          )}
+          <ul class="checklist-detail__items" role="list">
+            {section.items.map((item) => (
+              <li class="checklist-detail__item" data-item>
+                <label class="checklist-detail__item-label">
+                  <input
+                    type="checkbox"
+                    class="checklist-detail__item-checkbox"
+                    data-item-id={item.id}
+                  />
+                  <span class="checklist-detail__item-check">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <polyline points="20,6 9,17 4,12" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </span>
+                  <span class="checklist-detail__item-text">
+                    {item.text}
+                    {item.priority === 1 && (
+                      <span class="checklist-detail__item-priority checklist-detail__item-priority--high" title="High priority">!</span>
+                    )}
+                  </span>
+                </label>
+                {item.description && (
+                  <p class="checklist-detail__item-description">{item.description}</p>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+
+      <!-- Print button -->
+      <button type="button" class="checklist-detail__print-btn" onclick="window.print()">
+        <svg class="checklist-detail__print-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <polyline points="6,9 6,2 18,2 18,9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="6" y="14" width="12" height="8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Print This Checklist
+      </button>
+    </div>
+
+    <!-- Sidebar with download form -->
+    <aside class="checklist-detail__sidebar">
+      <div class="checklist-detail__download-section">
+        {checklist.isGated && checklist.gatedDownloadUrl ? (
+          <GatedContentForm
+            checklistId={checklist.id}
+            checklistTitle={checklist.title}
+            downloadUrl={checklist.gatedDownloadUrl}
+            fileSize={checklist.fileSize}
+            heading="Download Full PDF"
+            description="Get the complete checklist in a printable PDF format with bonus tips and best practices."
+          />
+        ) : checklist.downloadUrl ? (
+          <div class="checklist-detail__direct-download">
+            <div class="checklist-detail__download-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3 class="checklist-detail__download-title">Download PDF</h3>
+            <p class="checklist-detail__download-description">Get a printable PDF version of this checklist.</p>
+            {checklist.fileSize && (
+              <span class="checklist-detail__file-info">PDF ({checklist.fileSize})</span>
+            )}
+            <a href={checklist.downloadUrl} download class="checklist-detail__download-btn">
+              Download Now
+            </a>
+          </div>
+        ) : null}
+
+        {checklist.downloadUrl && checklist.isGated && (
+          <div class="checklist-detail__preview-download">
+            <p class="checklist-detail__preview-text">Or download a preview version:</p>
+            <a href={checklist.downloadUrl} download class="checklist-detail__preview-btn">
+              <svg class="checklist-detail__preview-btn-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2"/>
+                <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2"/>
+                <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              Preview PDF
+            </a>
+          </div>
+        )}
+      </div>
+
+      <!-- Related Checklists -->
+      {relatedChecklists.length > 0 && (
+        <div class="checklist-detail__related">
+          <h3 class="checklist-detail__related-title">Related Checklists</h3>
+          <ul class="checklist-detail__related-list">
+            {relatedChecklists.map((related) => (
+              <li class="checklist-detail__related-item">
+                <a href={`/service-checklists/${related.slug}`} class="checklist-detail__related-link">
+                  <span class="checklist-detail__related-name">{related.title}</span>
+                  <span class="checklist-detail__related-category">
+                    {CATEGORY_LABELS[related.category]}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </aside>
+  </div>
+</div>
+
+<script>
+  // Progress tracking
+  const progressContainer = document.querySelector('[data-progress-container]');
+  const progressFill = document.querySelector('[data-progress-fill]') as HTMLElement;
+  const progressText = document.querySelector('[data-progress-text]');
+  const checkboxes = document.querySelectorAll('.checklist-detail__item-checkbox') as NodeListOf<HTMLInputElement>;
+  const totalItems = checkboxes.length;
+
+  // Load saved progress from localStorage
+  const checklistId = window.location.pathname.split('/').pop();
+  const storageKey = `checklist-progress-${checklistId}`;
+  const savedProgress = JSON.parse(localStorage.getItem(storageKey) || '[]');
+
+  // Restore saved state
+  checkboxes.forEach((checkbox) => {
+    const itemId = checkbox.dataset.itemId;
+    if (savedProgress.includes(itemId)) {
+      checkbox.checked = true;
+      checkbox.closest('.checklist-detail__item')?.classList.add('checklist-detail__item--completed');
+    }
+  });
+
+  // Update progress display
+  function updateProgress() {
+    const completedItems = document.querySelectorAll('.checklist-detail__item-checkbox:checked').length;
+    const percentage = totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
+
+    if (progressFill) {
+      progressFill.style.width = `${percentage}%`;
+    }
+
+    if (progressText) {
+      progressText.textContent = `${completedItems} of ${totalItems} completed`;
+    }
+
+    // Save to localStorage
+    const checkedIds: string[] = [];
+    checkboxes.forEach((checkbox) => {
+      if (checkbox.checked) {
+        checkedIds.push(checkbox.dataset.itemId || '');
+      }
+    });
+    localStorage.setItem(storageKey, JSON.stringify(checkedIds));
+  }
+
+  // Initial update
+  updateProgress();
+
+  // Listen for changes
+  checkboxes.forEach((checkbox) => {
+    checkbox.addEventListener('change', () => {
+      const item = checkbox.closest('.checklist-detail__item');
+      if (checkbox.checked) {
+        item?.classList.add('checklist-detail__item--completed');
+      } else {
+        item?.classList.remove('checklist-detail__item--completed');
+      }
+      updateProgress();
+    });
+  });
+</script>
+
+<style>
+  /* =================================================================
+   * CHECKLIST DETAIL STYLES
+   * ================================================================= */
+
+  .checklist-detail {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* =================================================================
+   * HEADER
+   * ================================================================= */
+  .checklist-detail__header {
+    margin-bottom: var(--spacing-8);
+    padding-bottom: var(--spacing-6);
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .checklist-detail__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-3);
+  }
+
+  .checklist-detail__category,
+  .checklist-detail__service-type {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  .checklist-detail__separator {
+    color: var(--color-border);
+  }
+
+  .checklist-detail__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4) 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .checklist-detail__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--spacing-5) 0;
+    line-height: var(--line-height-relaxed);
+    max-width: 65ch;
+  }
+
+  .checklist-detail__stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-4);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .checklist-detail__stat {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+  }
+
+  .checklist-detail__stat-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  .checklist-detail__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .checklist-detail__tag-link {
+    display: inline-block;
+    padding: var(--spacing-1) var(--spacing-3);
+    background-color: var(--color-primary-50);
+    color: var(--color-primary-700);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-primary-100);
+    transition: all var(--duration-150) var(--ease-in-out);
+  }
+
+  .checklist-detail__tag-link:hover {
+    background-color: var(--color-primary-100);
+    border-color: var(--color-primary-200);
+  }
+
+  /* =================================================================
+   * BODY LAYOUT
+   * ================================================================= */
+  .checklist-detail__body {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: var(--spacing-8);
+  }
+
+  /* =================================================================
+   * CONTENT
+   * ================================================================= */
+  .checklist-detail__content {
+    min-width: 0;
+  }
+
+  .checklist-detail__intro {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin-bottom: var(--spacing-6);
+  }
+
+  .checklist-detail__intro p {
+    margin: 0 0 var(--spacing-4) 0;
+  }
+
+  /* =================================================================
+   * PROGRESS BAR
+   * ================================================================= */
+  .checklist-detail__progress {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+    padding: var(--spacing-4);
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-6);
+  }
+
+  .checklist-detail__progress-bar {
+    flex: 1;
+    height: 8px;
+    background-color: var(--color-border);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+  }
+
+  .checklist-detail__progress-fill {
+    height: 100%;
+    background-color: var(--color-success, #16a34a);
+    border-radius: var(--radius-full);
+    transition: width var(--duration-300) var(--ease-out);
+  }
+
+  .checklist-detail__progress-text {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+  }
+
+  /* =================================================================
+   * SECTIONS
+   * ================================================================= */
+  .checklist-detail__section {
+    margin-bottom: var(--spacing-8);
+  }
+
+  .checklist-detail__section-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-2) 0;
+  }
+
+  .checklist-detail__section-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    border-radius: var(--radius-full);
+  }
+
+  .checklist-detail__section-description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+    margin: 0 0 var(--spacing-4) 0;
+    padding-left: calc(32px + var(--spacing-3));
+  }
+
+  /* =================================================================
+   * ITEMS
+   * ================================================================= */
+  .checklist-detail__items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .checklist-detail__item {
+    padding: var(--spacing-3) var(--spacing-4);
+    margin-bottom: var(--spacing-2);
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-lg);
+    transition: all var(--duration-150) var(--ease-in-out);
+  }
+
+  .checklist-detail__item:hover {
+    border-color: var(--color-border);
+  }
+
+  .checklist-detail__item--completed {
+    background-color: var(--color-success-50, #f0fdf4);
+    border-color: var(--color-success-200, #bbf7d0);
+  }
+
+  .checklist-detail__item--completed .checklist-detail__item-text {
+    text-decoration: line-through;
+    color: var(--color-text-tertiary);
+  }
+
+  .checklist-detail__item-label {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-3);
+    cursor: pointer;
+  }
+
+  .checklist-detail__item-checkbox {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .checklist-detail__item-check {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background-color: var(--color-background-elevated);
+    transition: all var(--duration-150) var(--ease-in-out);
+  }
+
+  .checklist-detail__item-check svg {
+    width: 14px;
+    height: 14px;
+    opacity: 0;
+    color: var(--color-text-inverse);
+    transition: opacity var(--duration-150) var(--ease-in-out);
+  }
+
+  .checklist-detail__item-checkbox:checked + .checklist-detail__item-check {
+    background-color: var(--color-success, #16a34a);
+    border-color: var(--color-success, #16a34a);
+  }
+
+  .checklist-detail__item-checkbox:checked + .checklist-detail__item-check svg {
+    opacity: 1;
+  }
+
+  .checklist-detail__item-checkbox:focus-visible + .checklist-detail__item-check {
+    box-shadow: var(--focus-ring);
+  }
+
+  .checklist-detail__item-text {
+    flex: 1;
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-normal);
+    padding-top: 2px;
+  }
+
+  .checklist-detail__item-priority {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    margin-left: var(--spacing-2);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    border-radius: var(--radius-full);
+    vertical-align: middle;
+  }
+
+  .checklist-detail__item-priority--high {
+    background-color: var(--color-error-100, #fee2e2);
+    color: var(--color-error, #dc2626);
+  }
+
+  .checklist-detail__item-description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+    margin: var(--spacing-2) 0 0 calc(24px + var(--spacing-3));
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* =================================================================
+   * PRINT BUTTON
+   * ================================================================= */
+  .checklist-detail__print-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    width: 100%;
+    padding: var(--spacing-3) var(--spacing-4);
+    margin-top: var(--spacing-4);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    background-color: transparent;
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--duration-150) var(--ease-in-out);
+  }
+
+  .checklist-detail__print-btn:hover {
+    background-color: var(--color-background-muted);
+    border-style: solid;
+    color: var(--color-text-primary);
+  }
+
+  .checklist-detail__print-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* =================================================================
+   * SIDEBAR
+   * ================================================================= */
+  .checklist-detail__sidebar {
+    position: sticky;
+    top: var(--spacing-6);
+    align-self: start;
+  }
+
+  .checklist-detail__download-section {
+    margin-bottom: var(--spacing-6);
+  }
+
+  .checklist-detail__direct-download {
+    text-align: center;
+    padding: var(--spacing-6);
+    background: linear-gradient(135deg, var(--color-primary-50) 0%, var(--color-background-elevated) 100%);
+    border: 1px solid var(--color-primary-100);
+    border-radius: var(--radius-xl);
+  }
+
+  .checklist-detail__download-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background-color: var(--color-primary-100);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-3);
+  }
+
+  .checklist-detail__download-icon svg {
+    width: 24px;
+    height: 24px;
+    color: var(--color-primary-600);
+  }
+
+  .checklist-detail__download-title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-2) 0;
+  }
+
+  .checklist-detail__download-description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--spacing-3) 0;
+  }
+
+  .checklist-detail__file-info {
+    display: inline-block;
+    padding: var(--spacing-1) var(--spacing-3);
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-full);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .checklist-detail__download-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: var(--spacing-3) var(--spacing-5);
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-inverse);
+    background-color: var(--color-primary);
+    border: none;
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all var(--duration-150) var(--ease-in-out);
+  }
+
+  .checklist-detail__download-btn:hover {
+    background-color: var(--color-primary-600);
+    transform: translateY(-1px);
+  }
+
+  .checklist-detail__preview-download {
+    text-align: center;
+    padding-top: var(--spacing-4);
+    margin-top: var(--spacing-4);
+    border-top: 1px solid var(--color-border-light);
+  }
+
+  .checklist-detail__preview-text {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+    margin: 0 0 var(--spacing-2) 0;
+  }
+
+  .checklist-detail__preview-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color var(--duration-150) var(--ease-in-out);
+  }
+
+  .checklist-detail__preview-btn:hover {
+    color: var(--color-primary-600);
+    text-decoration: underline;
+  }
+
+  .checklist-detail__preview-btn-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* =================================================================
+   * RELATED CHECKLISTS
+   * ================================================================= */
+  .checklist-detail__related {
+    padding: var(--spacing-5);
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-xl);
+  }
+
+  .checklist-detail__related-title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4) 0;
+  }
+
+  .checklist-detail__related-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .checklist-detail__related-item {
+    margin-bottom: var(--spacing-3);
+  }
+
+  .checklist-detail__related-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .checklist-detail__related-link {
+    display: block;
+    padding: var(--spacing-3);
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition: all var(--duration-150) var(--ease-in-out);
+  }
+
+  .checklist-detail__related-link:hover {
+    border-color: var(--color-primary-200);
+    transform: translateX(4px);
+  }
+
+  .checklist-detail__related-name {
+    display: block;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-1);
+  }
+
+  .checklist-detail__related-category {
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  /* =================================================================
+   * RESPONSIVE
+   * ================================================================= */
+  @media screen and (max-width: 1024px) {
+    .checklist-detail__body {
+      grid-template-columns: 1fr;
+    }
+
+    .checklist-detail__sidebar {
+      position: static;
+      order: -1;
+      margin-bottom: var(--spacing-8);
+    }
+  }
+
+  @media screen and (max-width: 640px) {
+    .checklist-detail__title {
+      font-size: var(--font-size-2xl);
+    }
+
+    .checklist-detail__stats {
+      gap: var(--spacing-3);
+    }
+
+    .checklist-detail__section-title {
+      font-size: var(--font-size-lg);
+    }
+
+    .checklist-detail__progress {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--spacing-2);
+    }
+
+    .checklist-detail__progress-text {
+      text-align: center;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .checklist-detail__sidebar,
+    .checklist-detail__print-btn,
+    .checklist-detail__progress {
+      display: none !important;
+    }
+
+    .checklist-detail__body {
+      grid-template-columns: 1fr;
+    }
+
+    .checklist-detail__item {
+      break-inside: avoid;
+      border: 1px solid #ccc;
+    }
+
+    .checklist-detail__item-check {
+      border: 2px solid #333;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    .checklist-detail__section {
+      break-inside: avoid;
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .checklist-detail__item,
+    .checklist-detail__item-check,
+    .checklist-detail__progress-fill,
+    .checklist-detail__tag-link,
+    .checklist-detail__download-btn,
+    .checklist-detail__related-link {
+      transition: none;
+    }
+  }
+</style>

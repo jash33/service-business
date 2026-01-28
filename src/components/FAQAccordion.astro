@@ -13,6 +13,7 @@
  * - Responsive design for mobile, tablet, and desktop
  * - Visual indicators for expanded/collapsed states
  * - Screen reader friendly announcements
+ * - FAQPage schema markup for rich snippets in search results
  *
  * @example Basic usage
  * ```astro
@@ -29,11 +30,19 @@
  *   initialExpanded={0}
  * />
  * ```
+ *
+ * @example Disable schema markup (useful when multiple FAQ sections exist on a page)
+ * ```astro
+ * <FAQAccordion items={faqItems} includeSchema={false} />
+ * ```
  */
 
 import type { FAQAccordionProps, FAQItem } from '../types/faq';
 
-interface Props extends FAQAccordionProps {}
+interface Props extends FAQAccordionProps {
+  /** Whether to include FAQPage schema markup (default: true) */
+  includeSchema?: boolean;
+}
 
 const {
   items,
@@ -43,6 +52,7 @@ const {
   initialExpanded = null,
   id = 'faq',
   class: className = '',
+  includeSchema = true,
 } = Astro.props;
 
 // Generate unique IDs for each FAQ item for ARIA relationships
@@ -62,6 +72,29 @@ const sectionClasses = [
   'faq-section',
   className,
 ].filter(Boolean).join(' ');
+
+/**
+ * Generates FAQPage schema markup for rich snippets in search results
+ * @see https://schema.org/FAQPage
+ * @see https://developers.google.com/search/docs/appearance/structured-data/faqpage
+ */
+function generateFAQPageSchema(faqItems: FAQItem[]): object {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqItems.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  };
+}
+
+// Generate the FAQPage schema if enabled
+const faqPageSchema = includeSchema ? generateFAQPageSchema(items) : null;
 ---
 
 <section
@@ -139,6 +172,14 @@ const sectionClasses = [
     ></div>
   </div>
 </section>
+
+<!-- FAQPage Schema Markup for Rich Snippets -->
+{faqPageSchema && (
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify(faqPageSchema, null, 0)}
+  />
+)}
 
 <style>
   /* =================================================================

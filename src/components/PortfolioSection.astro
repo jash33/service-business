@@ -43,6 +43,7 @@
 import type { PortfolioSectionProps, Project, FilterOption } from '../types/portfolio';
 import { PROJECT_CATEGORIES } from '../types/portfolio';
 import ProjectCard from './ProjectCard.astro';
+import SkeletonCard from './SkeletonCard.astro';
 
 interface Props extends PortfolioSectionProps {}
 
@@ -56,6 +57,8 @@ const {
   enableFiltering = false,
   initialFilter = 'all',
   showFeaturedFirst = true,
+  showSkeletonLoading = false,
+  skeletonCount = 6,
 } = Astro.props;
 
 // Sort projects: featured first if enabled, then by date
@@ -105,6 +108,9 @@ const hasProjects = projects && projects.length > 0;
 // Generate unique ID for accessibility
 const filterId = `${id}-filters`;
 const gridId = `${id}-grid`;
+
+// Create array for skeleton iteration
+const skeletonItems = showSkeletonLoading ? Array.from({ length: skeletonCount }, (_, i) => i) : [];
 ---
 
 <section class={sectionClasses} id={id} aria-labelledby={`${id}-heading`}>
@@ -153,25 +159,40 @@ const gridId = `${id}-grid`;
         role={enableFiltering ? 'tabpanel' : undefined}
         aria-labelledby={enableFiltering ? filterId : undefined}
         aria-live={enableFiltering ? 'polite' : undefined}
+        data-skeleton-target={showSkeletonLoading ? 'true' : undefined}
       >
-        {sortedProjects.map((project) => (
-          <div
-            class="portfolio-section__item"
-            data-category={project.category}
-            data-visible={project.category === initialFilter || initialFilter === 'all' ? 'true' : 'false'}
-          >
-            <ProjectCard
-              id={project.id}
-              title={project.title}
-              description={project.description}
-              thumbnail={project.thumbnail}
-              technologies={project.technologies}
-              category={project.category}
-              links={project.links}
-              featured={project.featured}
-            />
+        {/* Skeleton Loading State */}
+        {showSkeletonLoading && (
+          <div class="portfolio-section__skeleton-container" data-skeleton-loading aria-hidden="true" role="presentation">
+            {skeletonItems.map((_, index) => (
+              <div class="portfolio-section__skeleton-item" style={`--skeleton-index: ${index};`}>
+                <SkeletonCard variant="project" />
+              </div>
+            ))}
           </div>
-        ))}
+        )}
+
+        {/* Actual Projects */}
+        <div class={`portfolio-section__projects ${showSkeletonLoading ? 'portfolio-section__projects--loading' : ''}`} data-projects-container>
+          {sortedProjects.map((project) => (
+            <div
+              class="portfolio-section__item"
+              data-category={project.category}
+              data-visible={project.category === initialFilter || initialFilter === 'all' ? 'true' : 'false'}
+            >
+              <ProjectCard
+                id={project.id}
+                title={project.title}
+                description={project.description}
+                thumbnail={project.thumbnail}
+                technologies={project.technologies}
+                category={project.category}
+                links={project.links}
+                featured={project.featured}
+              />
+            </div>
+          ))}
+        </div>
       </div>
     ) : (
       <!-- Empty State -->
@@ -196,6 +217,63 @@ const gridId = `${id}-grid`;
     </div>
   </div>
 </section>
+
+<!-- Client-side skeleton loading script -->
+{showSkeletonLoading && hasProjects && (
+  <script>
+    // Skeleton loading functionality
+    document.addEventListener('DOMContentLoaded', () => {
+      const grids = document.querySelectorAll('[data-skeleton-target="true"]');
+
+      grids.forEach((grid) => {
+        if (grid.getAttribute('data-loaded') === 'true') return;
+
+        const projectsContainer = grid.querySelector('[data-projects-container]');
+        if (!projectsContainer) {
+          grid.setAttribute('data-loaded', 'true');
+          return;
+        }
+
+        // Find all images in the projects container
+        const images = projectsContainer.querySelectorAll('img');
+        const imagePromises: Promise<void>[] = [];
+
+        images.forEach((img) => {
+          if (!img.complete) {
+            imagePromises.push(
+              new Promise((resolve) => {
+                img.addEventListener('load', () => resolve(), { once: true });
+                img.addEventListener('error', () => resolve(), { once: true });
+              })
+            );
+          }
+        });
+
+        if (imagePromises.length > 0) {
+          // Wait for all images to load
+          Promise.all(imagePromises).then(() => {
+            grid.setAttribute('data-loaded', 'true');
+          });
+        } else {
+          // No images to wait for, show content after a minimal delay
+          setTimeout(() => {
+            grid.setAttribute('data-loaded', 'true');
+          }, 100);
+        }
+      });
+    });
+
+    // Re-run on Astro page transitions
+    document.addEventListener('astro:page-load', () => {
+      const grids = document.querySelectorAll('[data-skeleton-target="true"]');
+      grids.forEach((grid) => {
+        if (grid.getAttribute('data-loaded') !== 'true') {
+          grid.setAttribute('data-loaded', 'true');
+        }
+      });
+    });
+  </script>
+)}
 
 <!-- Client-side filtering script -->
 {enableFiltering && hasProjects && (
@@ -457,6 +535,51 @@ const gridId = `${id}-grid`;
   /* 4-Column Grid */
   .portfolio-section__grid--four-cols {
     /* Mobile: 1 column (default above) */
+  }
+
+  /* =================================================================
+   * SKELETON LOADING STATE
+   * ================================================================= */
+  .portfolio-section__skeleton-container {
+    display: contents;
+  }
+
+  .portfolio-section__skeleton-item {
+    animation: skeletonFadeIn 0.3s ease-out backwards;
+    animation-delay: calc(var(--skeleton-index) * 0.05s);
+  }
+
+  @keyframes skeletonFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Hide skeleton when content is loaded */
+  .portfolio-section__grid[data-loaded="true"] .portfolio-section__skeleton-container {
+    display: none;
+  }
+
+  /* Projects container */
+  .portfolio-section__projects {
+    display: contents;
+  }
+
+  .portfolio-section__projects--loading {
+    opacity: 0;
+    position: absolute;
+    pointer-events: none;
+  }
+
+  .portfolio-section__grid[data-loaded="true"] .portfolio-section__projects--loading {
+    opacity: 1;
+    position: static;
+    pointer-events: auto;
   }
 
   /* Grid items with visibility control */

@@ -1,0 +1,12 @@
+{
+  "id": "schema-markup-service",
+  "category": "SEO",
+  "title": "Service Schema Markup for Individual Services",
+  "description": "Implement Service schema type for each service page with pricing, service area, and availability data. Improves service-specific search visibility.",
+  "status": "verified",
+  "priority": 2,
+  "complexity": "simple",
+  "createdAt": "2026-01-26T01:51:05.770Z",
+  "updatedAt": "2026-01-27T01:23:03.819Z",
+  "descriptionHistory": []
+}

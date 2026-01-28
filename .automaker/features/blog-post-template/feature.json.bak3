@@ -1,0 +1,14 @@
+{
+  "id": "blog-post-template",
+  "category": "Content",
+  "title": "Individual Blog Post Template",
+  "description": "Create a reusable blog post template with article schema markup, table of contents, social sharing, author bio, and related posts. Optimized for readability and SEO.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [
+    "blog-listing-page"
+  ],
+  "createdAt": "2026-01-26T01:51:05.725Z",
+  "updatedAt": "2026-01-26T01:51:05.725Z"
+}

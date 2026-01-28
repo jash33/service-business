@@ -1,0 +1,379 @@
+---
+/**
+ * ContentSkeleton Component
+ * A wrapper component that shows skeleton loading placeholders while content loads.
+ * Uses the IntersectionObserver API for lazy-loading behavior.
+ *
+ * Features:
+ * - Configurable number of skeleton items
+ * - Multiple skeleton types (card-project, card-blog, testimonial, text)
+ * - Automatic fade transition when content loads
+ * - Respects prefers-reduced-motion
+ * - Accessible with proper ARIA attributes and live regions
+ * - Works with Astro's static rendering and client-side hydration
+ *
+ * @example Basic usage with project cards
+ * ```astro
+ * <ContentSkeleton type="card-project" count={6}>
+ *   {projects.map(project => <ProjectCard {...project} />)}
+ * </ContentSkeleton>
+ * ```
+ *
+ * @example Blog cards with custom loading delay
+ * ```astro
+ * <ContentSkeleton type="card-blog" count={3} minLoadingTime={500}>
+ *   {articles.map(article => <BlogArticleCard {...article} />)}
+ * </ContentSkeleton>
+ * ```
+ *
+ * @example Testimonials grid
+ * ```astro
+ * <ContentSkeleton type="testimonial" count={4} columns={2}>
+ *   {testimonials.map(t => <TestimonialCard {...t} />)}
+ * </ContentSkeleton>
+ * ```
+ */
+
+import SkeletonCard from './SkeletonCard.astro';
+import SkeletonTestimonial from './SkeletonTestimonial.astro';
+
+interface Props {
+  /** Type of skeleton to display */
+  type?: 'card-project' | 'card-blog' | 'testimonial' | 'text';
+  /** Number of skeleton items to show */
+  count?: number;
+  /** Grid columns (1-4) */
+  columns?: 1 | 2 | 3 | 4;
+  /** Minimum loading time in milliseconds (for perceived smoothness) */
+  minLoadingTime?: number;
+  /** Additional CSS classes for the container */
+  class?: string;
+  /** ID for the section */
+  id?: string;
+  /** Whether to show skeletons initially (for SSR hydration scenarios) */
+  showSkeletons?: boolean;
+  /** ARIA label for screen readers */
+  ariaLabel?: string;
+}
+
+const {
+  type = 'card-project',
+  count = 3,
+  columns = 3,
+  minLoadingTime = 0,
+  class: className = '',
+  id,
+  showSkeletons = false,
+  ariaLabel = 'Content loading',
+} = Astro.props;
+
+// Generate unique ID for this instance
+const instanceId = id || `content-skeleton-${Math.random().toString(36).substring(2, 9)}`;
+
+// Build container classes
+const containerClasses = [
+  'content-skeleton',
+  `content-skeleton--${columns}-cols`,
+  className,
+].filter(Boolean).join(' ');
+
+// Create array for skeleton iteration
+const skeletonItems = Array.from({ length: count }, (_, i) => i);
+---
+
+<div
+  class={containerClasses}
+  id={instanceId}
+  data-content-skeleton
+  data-min-loading-time={minLoadingTime}
+  data-show-skeletons={showSkeletons ? 'true' : 'false'}
+  aria-live="polite"
+  aria-busy="true"
+>
+  <!-- Skeleton Loading State -->
+  <div
+    class="content-skeleton__loading"
+    role="status"
+    aria-label={ariaLabel}
+    data-skeleton-container
+  >
+    <span class="sr-only">Loading content...</span>
+    <div class="content-skeleton__grid">
+      {skeletonItems.map((_, index) => (
+        <div class="content-skeleton__item" style={`--skeleton-index: ${index};`}>
+          {type === 'card-project' && <SkeletonCard variant="project" />}
+          {type === 'card-blog' && <SkeletonCard variant="blog" />}
+          {type === 'testimonial' && <SkeletonTestimonial />}
+          {type === 'text' && (
+            <div class="content-skeleton__text">
+              <div class="skeleton content-skeleton__text-line"></div>
+              <div class="skeleton content-skeleton__text-line"></div>
+              <div class="skeleton content-skeleton__text-line content-skeleton__text-line--short"></div>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- Actual Content -->
+  <div class="content-skeleton__content" data-content-container>
+    <slot />
+  </div>
+</div>
+
+<style>
+  /* =================================================================
+   * CONTENT SKELETON WRAPPER STYLES
+   * =================================================================
+   */
+
+  .content-skeleton {
+    position: relative;
+    width: 100%;
+  }
+
+  /* =================================================================
+   * LOADING STATE
+   * ================================================================= */
+  .content-skeleton__loading {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    opacity: 1;
+    transition: opacity var(--duration-300) var(--ease-out);
+    pointer-events: none;
+  }
+
+  .content-skeleton[data-loaded="true"] .content-skeleton__loading {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .content-skeleton__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+  }
+
+  /* Column variants */
+  .content-skeleton--2-cols .content-skeleton__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .content-skeleton--3-cols .content-skeleton__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .content-skeleton--4-cols .content-skeleton__grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Staggered skeleton animation */
+  .content-skeleton__item {
+    animation: skeletonFadeIn 0.3s ease-out backwards;
+    animation-delay: calc(var(--skeleton-index) * 0.05s);
+  }
+
+  @keyframes skeletonFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* =================================================================
+   * CONTENT STATE
+   * ================================================================= */
+  .content-skeleton__content {
+    opacity: 0;
+    transition: opacity var(--duration-300) var(--ease-out);
+  }
+
+  .content-skeleton[data-loaded="true"] .content-skeleton__content {
+    opacity: 1;
+  }
+
+  /* When content is ready (no hydration needed), show immediately */
+  .content-skeleton[data-show-skeletons="false"] .content-skeleton__loading {
+    display: none;
+  }
+
+  .content-skeleton[data-show-skeletons="false"] .content-skeleton__content {
+    opacity: 1;
+  }
+
+  /* =================================================================
+   * TEXT SKELETON VARIANT
+   * ================================================================= */
+  .content-skeleton__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    padding: var(--spacing-4);
+  }
+
+  .content-skeleton__text-line {
+    width: 100%;
+    height: 16px;
+    border-radius: var(--radius-base);
+  }
+
+  .content-skeleton__text-line--short {
+    width: 70%;
+  }
+
+  /* Screen reader only text */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+  @media screen and (min-width: 768px) {
+    .content-skeleton--2-cols .content-skeleton__grid,
+    .content-skeleton--3-cols .content-skeleton__grid,
+    .content-skeleton--4-cols .content-skeleton__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-8);
+    }
+  }
+
+  @media screen and (min-width: 1024px) {
+    .content-skeleton--3-cols .content-skeleton__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .content-skeleton--4-cols .content-skeleton__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media screen and (min-width: 1280px) {
+    .content-skeleton--4-cols .content-skeleton__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .content-skeleton__loading,
+    .content-skeleton__content {
+      transition: none;
+    }
+
+    .content-skeleton__item {
+      animation: none;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .content-skeleton__loading {
+      display: none !important;
+    }
+
+    .content-skeleton__content {
+      opacity: 1 !important;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Content Skeleton Loading Handler
+   * Manages the transition from skeleton loading state to actual content.
+   */
+  function initContentSkeletons(): void {
+    const skeletons = document.querySelectorAll<HTMLElement>('[data-content-skeleton]');
+
+    skeletons.forEach((skeleton) => {
+      // Skip if already processed or skeletons should not be shown
+      if (skeleton.dataset.processed === 'true') return;
+      if (skeleton.dataset.showSkeletons === 'false') {
+        skeleton.dataset.loaded = 'true';
+        skeleton.setAttribute('aria-busy', 'false');
+        return;
+      }
+
+      skeleton.dataset.processed = 'true';
+
+      const minLoadingTime = parseInt(skeleton.dataset.minLoadingTime || '0', 10);
+      const contentContainer = skeleton.querySelector('[data-content-container]');
+      const startTime = performance.now();
+
+      // Function to show content
+      const showContent = () => {
+        const elapsed = performance.now() - startTime;
+        const remaining = Math.max(0, minLoadingTime - elapsed);
+
+        setTimeout(() => {
+          skeleton.dataset.loaded = 'true';
+          skeleton.setAttribute('aria-busy', 'false');
+        }, remaining);
+      };
+
+      // Check if content has images that need to load
+      if (contentContainer) {
+        const images = contentContainer.querySelectorAll('img');
+        const imagePromises: Promise<void>[] = [];
+
+        images.forEach((img) => {
+          if (!img.complete) {
+            imagePromises.push(
+              new Promise((resolve) => {
+                img.addEventListener('load', () => resolve(), { once: true });
+                img.addEventListener('error', () => resolve(), { once: true });
+              })
+            );
+          }
+        });
+
+        if (imagePromises.length > 0) {
+          // Wait for all images to load, then show content
+          Promise.all(imagePromises).then(showContent);
+        } else {
+          // No images to wait for, show content immediately (respecting min loading time)
+          showContent();
+        }
+      } else {
+        showContent();
+      }
+    });
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initContentSkeletons);
+  } else {
+    initContentSkeletons();
+  }
+
+  // Re-run on Astro page transitions
+  document.addEventListener('astro:page-load', () => {
+    // Reset processed state for elements that need re-initialization
+    document.querySelectorAll<HTMLElement>('[data-content-skeleton]').forEach((el) => {
+      if (el.dataset.loaded !== 'true') {
+        el.dataset.processed = 'false';
+      }
+    });
+    initContentSkeletons();
+  });
+</script>

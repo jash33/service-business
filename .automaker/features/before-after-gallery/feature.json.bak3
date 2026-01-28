@@ -1,0 +1,14 @@
+{
+  "id": "before-after-gallery",
+  "category": "Content",
+  "title": "Before/After Project Gallery",
+  "description": "Build an interactive before/after image slider gallery showcasing project transformations. Includes swipe gesture support, keyboard navigation, and optimized image loading.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "moderate",
+  "dependencies": [
+    "portfolio-page"
+  ],
+  "createdAt": "2026-01-26T01:51:05.716Z",
+  "updatedAt": "2026-01-26T01:51:05.716Z"
+}

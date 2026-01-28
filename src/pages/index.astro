@@ -3,14 +3,31 @@ import Layout from '../layouts/Layout.astro';
 import HeroSection from '../components/HeroSection.astro';
 import ServicesSection from '../components/ServicesSection.astro';
 import DifferentiatorsSection from '../components/DifferentiatorsSection.astro';
+import SocialProofCounterSection from '../components/SocialProofCounterSection.astro';
 import FeaturedProjectsPreview from '../components/FeaturedProjectsPreview.astro';
+import TestimonialsSection from '../components/TestimonialsSection.astro';
+import GoogleReviewsSection from '../components/GoogleReviewsSection.astro';
+import TrustBadgesSection from '../components/TrustBadgesSection.astro';
+import LicenseInsuranceSection from '../components/LicenseInsuranceSection.astro';
+import PartnerLogosSection from '../components/PartnerLogosSection.astro';
 import FAQAccordion from '../components/FAQAccordion.astro';
 import ContactCTA from '../components/ContactCTA.astro';
 import type { Service } from '../types/service';
 import type { Differentiator } from '../types/differentiator';
+import type { Testimonial } from '../types/testimonial';
 import { DEFAULT_FAQ_ITEMS } from '../types/faq';
 import { localBusinessSchema } from '../config/seo.config';
 import { FEATURED_PROJECTS, FEATURED_PROJECTS_CONFIG } from '../config/featured-projects.config';
+import { ACCREDITATION_BADGES, ACCREDITATION_BADGES_CONFIG } from '../config/accreditations.config';
+import { CREDENTIALS, LICENSE_INSURANCE_CONFIG } from '../config/license-insurance.config';
+import {
+	SAMPLE_GOOGLE_REVIEWS,
+	BUSINESS_RATING,
+	GOOGLE_REVIEWS_SECTION_CONFIG,
+	GOOGLE_REVIEWS_CONFIG,
+} from '../config/google-reviews.config';
+import { SOCIAL_PROOF_METRICS, SOCIAL_PROOF_COUNTER_CONFIG } from '../config/social-proof-counter.config';
+import { PARTNER_LOGOS, PARTNER_LOGOS_CONFIG } from '../config/partner-logos.config';
 
 /**
  * Homepage - Houston Web Services
@@ -115,6 +132,34 @@ const differentiators: Differentiator[] = [
 		icon: differentiatorIcons.personalizedService,
 	},
 ];
+
+// Customer testimonials - authentic quotes without star ratings
+const testimonials: Testimonial[] = [
+	{
+		id: 'testimonial-1',
+		name: 'Sarah Martinez',
+		location: 'Houston, TX',
+		quote: 'Working with Houston Web Services was a game-changer for our plumbing business. Our new website brings in more calls than ever, and the ongoing support means I never have to worry about technical issues.',
+		company: 'Martinez Plumbing',
+		title: 'Owner',
+	},
+	{
+		id: 'testimonial-2',
+		name: 'David Chen',
+		location: 'Sugar Land, TX',
+		quote: 'I was skeptical about investing in a new website, but the results speak for themselves. Our online bookings have tripled, and the site looks incredibly professional. Best decision I made for my business.',
+		company: 'Chen Family Dentistry',
+		title: 'DDS',
+	},
+	{
+		id: 'testimonial-3',
+		name: 'Amanda Rodriguez',
+		location: 'Katy, TX',
+		quote: 'The personalized attention we received was outstanding. They took the time to understand our brand and created a website that truly represents who we are. Our customers constantly compliment our online presence.',
+		company: 'Bella Vista Landscaping',
+		title: 'Co-Founder',
+	},
+];
 ---
 
 <Layout
@@ -164,6 +209,16 @@ const differentiators: Differentiator[] = [
 			differentiators={differentiators}
 		/>
 
+		<!-- Social Proof Counter Section -->
+		<SocialProofCounterSection
+			id={SOCIAL_PROOF_COUNTER_CONFIG.id}
+			heading={SOCIAL_PROOF_COUNTER_CONFIG.heading}
+			subheading={SOCIAL_PROOF_COUNTER_CONFIG.subheading}
+			metrics={SOCIAL_PROOF_METRICS}
+			columns={SOCIAL_PROOF_COUNTER_CONFIG.columns}
+			animationDuration={SOCIAL_PROOF_COUNTER_CONFIG.animationDuration}
+		/>
+
 		<!-- Featured Projects Preview Section -->
 		<FeaturedProjectsPreview
 			id={FEATURED_PROJECTS_CONFIG.id}
@@ -172,6 +227,56 @@ const differentiators: Differentiator[] = [
 			projects={FEATURED_PROJECTS}
 			viewAllText={FEATURED_PROJECTS_CONFIG.viewAllText}
 			viewAllHref={FEATURED_PROJECTS_CONFIG.viewAllHref}
+		/>
+
+		<!-- Testimonials Section -->
+		<TestimonialsSection
+			id="testimonials"
+			heading="What Our Clients Say"
+			subheading="Hear from Houston business owners who trust us with their online presence."
+			testimonials={testimonials}
+		/>
+
+		<!-- Google Reviews Section -->
+		<GoogleReviewsSection
+			id={GOOGLE_REVIEWS_SECTION_CONFIG.id}
+			heading={GOOGLE_REVIEWS_SECTION_CONFIG.heading}
+			subheading={GOOGLE_REVIEWS_SECTION_CONFIG.subheading}
+			reviews={SAMPLE_GOOGLE_REVIEWS}
+			businessRating={BUSINESS_RATING}
+			maxReviews={6}
+			showGoogleLink={GOOGLE_REVIEWS_SECTION_CONFIG.showGoogleLink}
+			googleReviewsUrl={GOOGLE_REVIEWS_CONFIG.googleBusinessUrl}
+		/>
+
+		<!-- Accreditation Badges Section -->
+		<TrustBadgesSection
+			id={ACCREDITATION_BADGES_CONFIG.id}
+			heading={ACCREDITATION_BADGES_CONFIG.heading}
+			subheading={ACCREDITATION_BADGES_CONFIG.subheading}
+			badges={ACCREDITATION_BADGES}
+			columns={ACCREDITATION_BADGES_CONFIG.columns}
+			layout={ACCREDITATION_BADGES_CONFIG.layout}
+		/>
+
+		<!-- License & Insurance Verification Section -->
+		<LicenseInsuranceSection
+			id={LICENSE_INSURANCE_CONFIG.id}
+			heading={LICENSE_INSURANCE_CONFIG.heading}
+			subheading={LICENSE_INSURANCE_CONFIG.subheading}
+			credentials={CREDENTIALS}
+			columns={LICENSE_INSURANCE_CONFIG.columns}
+		/>
+
+		<!-- Partner Logos Section -->
+		<PartnerLogosSection
+			id={PARTNER_LOGOS_CONFIG.id}
+			heading={PARTNER_LOGOS_CONFIG.heading}
+			subheading={PARTNER_LOGOS_CONFIG.subheading}
+			logos={PARTNER_LOGOS}
+			autoScroll={PARTNER_LOGOS_CONFIG.autoScroll}
+			scrollSpeed={PARTNER_LOGOS_CONFIG.scrollSpeed}
+			pauseOnHover={PARTNER_LOGOS_CONFIG.pauseOnHover}
 		/>
 
 		<!-- FAQ Section -->

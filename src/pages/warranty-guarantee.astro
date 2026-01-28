@@ -1,0 +1,1380 @@
+---
+/**
+ * Warranty & Guarantee Page - Houston Web Services
+ * A comprehensive page explaining service warranties, guarantees, and return policies.
+ * Builds customer confidence and reduces purchase hesitation.
+ *
+ * Sections:
+ * 1. Hero Section - Value proposition for peace of mind
+ * 2. Our Guarantees - Core promises to customers
+ * 3. Warranty Coverage - What's included in our warranty
+ * 4. Claim Process - How to request warranty service
+ * 5. FAQ - Warranty-related questions
+ * 6. CTA Section - Contact for questions
+ */
+
+import Layout from '../layouts/Layout.astro';
+import Button from '../components/Button.astro';
+import FAQAccordion from '../components/FAQAccordion.astro';
+import type { FAQItem } from '../types/faq';
+
+/**
+ * Guarantee data structure
+ */
+interface Guarantee {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  highlight?: string;
+}
+
+/**
+ * Warranty coverage item data structure
+ */
+interface WarrantyCoverage {
+  id: string;
+  category: string;
+  items: string[];
+  duration: string;
+  icon: string;
+}
+
+/**
+ * Claim process step data structure
+ */
+interface ClaimStep {
+  id: string;
+  step: number;
+  title: string;
+  description: string;
+  icon: string;
+}
+
+// Our core guarantees
+const guarantees: Guarantee[] = [
+  {
+    id: 'satisfaction-guarantee',
+    name: '100% Satisfaction Guarantee',
+    description: 'We\'re not happy until you\'re happy. If you\'re not completely satisfied with your website during the design phase, we\'ll revise it until it\'s exactly what you envisioned—at no extra cost.',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`,
+    highlight: 'Our Promise',
+  },
+  {
+    id: 'money-back-guarantee',
+    name: '30-Day Money-Back Guarantee',
+    description: 'Changed your mind before we start design work? No problem. Get a full refund of your deposit within the first 30 days if we haven\'t begun the design phase—no questions asked.',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.5 6.9c1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-2.1.5-3.5 1.92-3.5 3.84 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c2.1-.5 3.5-2 3.5-3.85 0-2.84-2.43-3.81-4.7-4.4-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85z"/></svg>`,
+  },
+  {
+    id: 'on-time-guarantee',
+    name: 'On-Time Delivery Guarantee',
+    description: 'We respect your timeline. If we miss our agreed-upon launch date for reasons within our control, you\'ll receive a 10% discount on your project—guaranteed.',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>`,
+  },
+  {
+    id: 'transparency-guarantee',
+    name: 'No Hidden Fees Guarantee',
+    description: 'The price we quote is the price you pay. We\'ll never surprise you with unexpected charges or fees. Any scope changes are discussed and approved by you before we proceed.',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>`,
+  },
+];
+
+// Warranty coverage details
+const warrantyCoverage: WarrantyCoverage[] = [
+  {
+    id: 'bug-fixes',
+    category: 'Bug Fixes & Technical Issues',
+    items: [
+      'Broken links and navigation errors',
+      'Display issues across browsers (Chrome, Safari, Firefox, Edge)',
+      'Mobile responsiveness problems',
+      'Contact form submission failures',
+      'Loading speed issues caused by our code',
+      'Security vulnerabilities in our implementation',
+    ],
+    duration: '90 Days',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20 8h-2.81c-.45-.78-1.07-1.45-1.82-1.96L17 4.41 15.59 3l-2.17 2.17C12.96 5.06 12.49 5 12 5c-.49 0-.96.06-1.41.17L8.41 3 7 4.41l1.62 1.63C7.88 6.55 7.26 7.22 6.81 8H4v2h2.09c-.05.33-.09.66-.09 1v1H4v2h2v1c0 .34.04.67.09 1H4v2h2.81c1.04 1.79 2.97 3 5.19 3s4.15-1.21 5.19-3H20v-2h-2.09c.05-.33.09-.66.09-1v-1h2v-2h-2v-1c0-.34-.04-.67-.09-1H20V8zm-6 8h-4v-2h4v2zm0-4h-4v-2h4v2z"/></svg>`,
+  },
+  {
+    id: 'content-updates',
+    category: 'Minor Content Updates',
+    items: [
+      'Text corrections and typo fixes',
+      'Image swaps (using existing image slots)',
+      'Business hours and contact info updates',
+      'Price updates on existing content',
+      'Adding/removing team member photos',
+    ],
+    duration: '30 Days',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>`,
+  },
+  {
+    id: 'performance',
+    category: 'Performance Optimization',
+    items: [
+      'Page speed improvements for issues we caused',
+      'Image optimization for photos we added',
+      'Core Web Vitals fixes',
+      'Database query optimization (if applicable)',
+    ],
+    duration: '60 Days',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM10 17l-3.5-3.5 1.41-1.41L10 14.17l4.59-4.59L16 11l-6 6z"/></svg>`,
+  },
+  {
+    id: 'security',
+    category: 'Security Updates',
+    items: [
+      'SSL certificate configuration issues',
+      'Plugin and theme security patches',
+      'Malware removal (if breach was due to our code)',
+      'Security hardening recommendations',
+    ],
+    duration: '90 Days',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>`,
+  },
+];
+
+// Claim process steps
+const claimSteps: ClaimStep[] = [
+  {
+    id: 'step-1',
+    step: 1,
+    title: 'Contact Us',
+    description: 'Reach out via email, phone, or our contact form. Describe the issue you\'re experiencing and include screenshots if possible.',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>`,
+  },
+  {
+    id: 'step-2',
+    step: 2,
+    title: 'Issue Review',
+    description: 'Our team reviews your request within 24 business hours. We\'ll confirm if it\'s covered under warranty and provide an estimated resolution time.',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>`,
+  },
+  {
+    id: 'step-3',
+    step: 3,
+    title: 'Resolution',
+    description: 'We fix the issue, typically within 2-5 business days for standard requests. Urgent issues are prioritized and addressed faster.',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/></svg>`,
+  },
+  {
+    id: 'step-4',
+    step: 4,
+    title: 'Verification',
+    description: 'We notify you when the fix is complete and ask you to verify. If you\'re satisfied, we close the ticket. If not, we keep working.',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>`,
+  },
+];
+
+// FAQ items for warranty
+const warrantyFAQs: FAQItem[] = [
+  {
+    id: 'faq-warranty-start',
+    question: 'When does my warranty coverage begin?',
+    answer: `Your warranty coverage begins on the day your website officially launches (goes live). We'll provide you with a written confirmation of your launch date and warranty start date for your records.`,
+    category: 'general',
+  },
+  {
+    id: 'faq-warranty-extend',
+    question: 'Can I extend my warranty coverage?',
+    answer: `Yes! Our monthly maintenance plans include ongoing warranty coverage for as long as you're subscribed. Starting at $49/month, you'll receive continuous bug fixes, security updates, and minor content changes—plus priority support.`,
+    category: 'services',
+  },
+  {
+    id: 'faq-whats-not-covered',
+    question: 'What is NOT covered under the warranty?',
+    answer: `<p>Our warranty does not cover:</p><ul><li><strong>Third-party issues:</strong> Problems caused by your hosting provider, domain registrar, or third-party plugins/themes you installed</li><li><strong>User modifications:</strong> Issues resulting from changes you or another developer made to the code</li><li><strong>New features:</strong> Requests for additional functionality not in the original scope</li><li><strong>Content creation:</strong> Writing new copy, creating graphics, or photography</li><li><strong>External factors:</strong> Downtime due to hosting outages, DDoS attacks, or other external events</li></ul>`,
+    category: 'general',
+  },
+  {
+    id: 'faq-response-time',
+    question: 'How quickly will you respond to warranty requests?',
+    answer: `We respond to all warranty requests within 24 business hours. For critical issues (site down, security breach), we prioritize and typically respond within 4 hours during business hours. Non-urgent requests are typically resolved within 2-5 business days.`,
+    category: 'process',
+  },
+  {
+    id: 'faq-refund-policy',
+    question: 'What is your refund policy?',
+    answer: `<p>Our refund policy is designed to be fair and transparent:</p><ul><li><strong>Before design begins:</strong> Full refund minus a $100 administrative fee</li><li><strong>During design phase:</strong> 50% refund of amounts paid</li><li><strong>After design approval:</strong> No refund, as development work has begun</li></ul><p>We're committed to your satisfaction and will work with you to address any concerns before considering refunds. The 30-Day Money-Back Guarantee applies only if no design work has started.</p>`,
+    category: 'pricing',
+  },
+  {
+    id: 'faq-dispute-resolution',
+    question: 'What if I disagree about whether something is covered?',
+    answer: `We believe in open communication. If there's a disagreement about coverage, we'll schedule a call to discuss the issue in detail. Our goal is always customer satisfaction, and we often go above and beyond our formal warranty terms to make things right. If we truly can't resolve the issue, we'll provide a written explanation of our decision.`,
+    category: 'process',
+  },
+  {
+    id: 'faq-ownership-warranty',
+    question: 'Does the warranty transfer if I sell my business?',
+    answer: `Yes, the warranty is tied to the website, not the owner. If you sell your business and the new owner continues using the website we built, the remaining warranty coverage transfers to them. Just let us know about the change so we can update our records.`,
+    category: 'general',
+  },
+];
+---
+
+<Layout
+  title="Warranty & Guarantee"
+  description="Learn about our service warranties, guarantees, and satisfaction policies. We stand behind our work with a 100% satisfaction guarantee, 30-day money-back guarantee, and comprehensive warranty coverage."
+  openGraph={{
+    type: 'website',
+  }}
+>
+  <main>
+    <!-- Hero Section -->
+    <section class="warranty-hero" aria-labelledby="warranty-hero-heading">
+      <div class="warranty-hero__container">
+        <div class="warranty-hero__content">
+          <div class="warranty-hero__badge">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true">
+              <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+            </svg>
+            <span>Your Investment is Protected</span>
+          </div>
+          <h1 id="warranty-hero-heading" class="warranty-hero__title">
+            Our Commitment to<br/>
+            <span class="warranty-hero__title-highlight">Your Peace of Mind</span>
+          </h1>
+          <p class="warranty-hero__description">
+            We stand behind every website we build. From our satisfaction guarantee to comprehensive warranty coverage, you can invest in your online presence with complete confidence.
+          </p>
+          <div class="warranty-hero__cta-group">
+            <Button
+              text="View Our Guarantees"
+              href="#guarantees"
+              variant="primary"
+              size="large"
+            />
+            <Button
+              text="Contact Us"
+              href="/contact"
+              variant="secondary"
+              size="large"
+            />
+          </div>
+          <div class="warranty-hero__trust-points">
+            <div class="warranty-hero__trust-item">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20" aria-hidden="true">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+              <span>100% Satisfaction Guarantee</span>
+            </div>
+            <div class="warranty-hero__trust-item">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20" aria-hidden="true">
+                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+              </svg>
+              <span>90-Day Warranty Coverage</span>
+            </div>
+            <div class="warranty-hero__trust-item">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20" aria-hidden="true">
+                <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+              </svg>
+              <span>30-Day Money-Back Guarantee</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Guarantees Section -->
+    <section id="guarantees" class="guarantees-section" aria-labelledby="guarantees-heading">
+      <div class="guarantees-section__container">
+        <header class="guarantees-section__header">
+          <div class="guarantees-section__header-wrapper">
+            <h2 id="guarantees-heading" class="guarantees-section__heading">
+              Our Guarantees
+            </h2>
+          </div>
+          <p class="guarantees-section__description">
+            We believe in our work so much that we back it with these iron-clad guarantees. Your success is our success.
+          </p>
+        </header>
+
+        <div class="guarantees-section__grid">
+          {guarantees.map((guarantee) => (
+            <article class={`guarantee-card ${guarantee.highlight ? 'guarantee-card--highlighted' : ''}`}>
+              {guarantee.highlight && (
+                <div class="guarantee-card__badge">{guarantee.highlight}</div>
+              )}
+              <div class="guarantee-card__icon" aria-hidden="true" set:html={guarantee.icon} />
+              <h3 class="guarantee-card__title">{guarantee.name}</h3>
+              <p class="guarantee-card__description">{guarantee.description}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Warranty Coverage Section -->
+    <section id="warranty-coverage" class="warranty-coverage" aria-labelledby="warranty-coverage-heading">
+      <div class="warranty-coverage__container">
+        <header class="warranty-coverage__header">
+          <div class="warranty-coverage__header-wrapper">
+            <h2 id="warranty-coverage-heading" class="warranty-coverage__heading">
+              Warranty Coverage
+            </h2>
+          </div>
+          <p class="warranty-coverage__description">
+            Every website we build comes with comprehensive warranty coverage. Here's what's included at no additional cost.
+          </p>
+        </header>
+
+        <div class="warranty-coverage__grid">
+          {warrantyCoverage.map((coverage) => (
+            <article class="coverage-card">
+              <div class="coverage-card__header">
+                <div class="coverage-card__icon" aria-hidden="true" set:html={coverage.icon} />
+                <div class="coverage-card__duration">{coverage.duration}</div>
+              </div>
+              <h3 class="coverage-card__title">{coverage.category}</h3>
+              <ul class="coverage-card__list">
+                {coverage.items.map((item) => (
+                  <li class="coverage-card__item">
+                    <svg class="coverage-card__check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                    </svg>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </article>
+          ))}
+        </div>
+
+        <div class="warranty-coverage__note">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24" aria-hidden="true">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+          </svg>
+          <p>
+            <strong>Need extended coverage?</strong> Our maintenance plans include ongoing warranty protection for as long as you're subscribed.
+            <a href="/contact?subject=maintenance">Learn about maintenance plans</a>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Claim Process Section -->
+    <section id="claim-process" class="claim-process" aria-labelledby="claim-process-heading">
+      <div class="claim-process__container">
+        <header class="claim-process__header">
+          <div class="claim-process__header-wrapper">
+            <h2 id="claim-process-heading" class="claim-process__heading">
+              How to Request Warranty Service
+            </h2>
+          </div>
+          <p class="claim-process__description">
+            If you encounter an issue covered by your warranty, here's how to get it resolved quickly.
+          </p>
+        </header>
+
+        <div class="claim-process__steps">
+          {claimSteps.map((step, index) => (
+            <div class="claim-step">
+              <div class="claim-step__connector" aria-hidden="true">
+                <div class="claim-step__number">{step.step}</div>
+                {index < claimSteps.length - 1 && <div class="claim-step__line"></div>}
+              </div>
+              <div class="claim-step__content">
+                <div class="claim-step__icon" aria-hidden="true" set:html={step.icon} />
+                <h3 class="claim-step__title">{step.title}</h3>
+                <p class="claim-step__description">{step.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div class="claim-process__cta">
+          <Button
+            text="Submit a Warranty Request"
+            href="/contact?subject=warranty"
+            variant="primary"
+            size="large"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <FAQAccordion
+      items={warrantyFAQs}
+      heading="Warranty & Guarantee FAQ"
+      subheading="Common questions about our warranties, guarantees, and policies."
+      id="warranty-faq"
+    />
+
+    <!-- CTA Section -->
+    <section class="cta-section" aria-labelledby="cta-heading">
+      <div class="cta-section__container">
+        <div class="cta-section__content">
+          <h2 id="cta-heading" class="cta-section__heading">
+            Questions About Our Guarantees?
+          </h2>
+          <p class="cta-section__description">
+            We're here to help. If you have any questions about our warranty coverage, guarantees, or policies, don't hesitate to reach out.
+          </p>
+          <div class="cta-section__buttons">
+            <Button
+              text="Contact Us Today"
+              href="/contact"
+              variant="primary"
+              size="large"
+            />
+            <Button
+              text="Call (713) 555-0123"
+              href="tel:+17135550123"
+              variant="secondary"
+              size="large"
+            />
+          </div>
+          <p class="cta-section__reassurance">
+            We're proud of our work and the protection we offer. Your trust means everything to us.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  /* =================================================================
+   * WARRANTY & GUARANTEE PAGE STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention
+   */
+
+  /* =================================================================
+   * HERO SECTION
+   * ================================================================= */
+
+  .warranty-hero {
+    position: relative;
+    padding: var(--spacing-16) var(--spacing-4) var(--spacing-20);
+    background: linear-gradient(
+      135deg,
+      var(--color-background) 0%,
+      var(--color-primary-50) 50%,
+      var(--color-background) 100%
+    );
+    overflow: hidden;
+  }
+
+  .warranty-hero__container {
+    max-width: var(--container-4xl);
+    margin: 0 auto;
+  }
+
+  .warranty-hero__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--spacing-5);
+  }
+
+  .warranty-hero__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-4);
+    background-color: var(--color-success-light);
+    border: 1px solid var(--color-success-border);
+    border-radius: var(--radius-full);
+    color: var(--color-success-text);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .warranty-hero__badge svg {
+    color: var(--color-success);
+  }
+
+  .warranty-hero__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-tight);
+    margin: 0;
+  }
+
+  .warranty-hero__title-highlight {
+    color: var(--color-primary);
+    display: block;
+  }
+
+  .warranty-hero__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    max-width: 55ch;
+    margin: 0;
+  }
+
+  .warranty-hero__cta-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    width: 100%;
+    max-width: 20rem;
+  }
+
+  .warranty-hero__trust-points {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    margin-top: var(--spacing-4);
+  }
+
+  .warranty-hero__trust-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .warranty-hero__trust-item svg {
+    color: var(--color-success);
+    flex-shrink: 0;
+  }
+
+  /* =================================================================
+   * GUARANTEES SECTION
+   * ================================================================= */
+
+  .guarantees-section {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+  }
+
+  .guarantees-section__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  .guarantees-section__header {
+    text-align: center;
+    margin-bottom: var(--spacing-12);
+  }
+
+  .guarantees-section__header-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .guarantees-section__header-wrapper::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    margin-bottom: var(--spacing-3);
+    background: var(--color-accent);
+    border-radius: var(--radius-full);
+    box-shadow:
+      -12px 0 0 var(--color-primary),
+      12px 0 0 var(--color-accent-alt);
+    opacity: 0.8;
+  }
+
+  .guarantees-section__header-wrapper::after {
+    content: '';
+    display: block;
+    width: 4rem;
+    height: 3px;
+    margin-top: var(--spacing-4);
+    background: linear-gradient(
+      90deg,
+      var(--color-primary) 0%,
+      var(--color-accent) 50%,
+      var(--color-accent-alt) 100%
+    );
+    border-radius: var(--radius-full);
+  }
+
+  .guarantees-section__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4) 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .guarantees-section__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-md);
+    color: var(--color-text-secondary);
+    max-width: 55ch;
+    margin: 0 auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .guarantees-section__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+  }
+
+  /* Guarantee Card */
+  .guarantee-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-6);
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    transition:
+      box-shadow var(--duration-300) var(--ease-out),
+      transform var(--duration-300) var(--ease-out),
+      border-color var(--duration-300) var(--ease-out);
+  }
+
+  .guarantee-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-4px);
+    border-color: var(--color-primary-200);
+  }
+
+  .guarantee-card--highlighted {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-md), var(--glow-primary-sm);
+  }
+
+  .guarantee-card--highlighted:hover {
+    box-shadow: var(--shadow-lg), var(--glow-primary-md);
+  }
+
+  .guarantee-card__badge {
+    position: absolute;
+    top: var(--spacing-4);
+    right: var(--spacing-4);
+    padding: var(--spacing-1) var(--spacing-3);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: var(--radius-full);
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  .guarantee-card__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--spacing-12);
+    height: var(--spacing-12);
+    margin-bottom: var(--spacing-4);
+    background-color: var(--color-primary-50);
+    border-radius: var(--radius-lg);
+    color: var(--color-primary);
+  }
+
+  .guarantee-card__icon :global(svg) {
+    width: var(--spacing-6);
+    height: var(--spacing-6);
+  }
+
+  .guarantee-card__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-2) 0;
+  }
+
+  .guarantee-card__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0;
+  }
+
+  /* =================================================================
+   * WARRANTY COVERAGE SECTION
+   * ================================================================= */
+
+  .warranty-coverage {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background);
+  }
+
+  .warranty-coverage__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  .warranty-coverage__header {
+    text-align: center;
+    margin-bottom: var(--spacing-12);
+  }
+
+  .warranty-coverage__header-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .warranty-coverage__header-wrapper::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    margin-bottom: var(--spacing-3);
+    background: var(--color-accent);
+    border-radius: var(--radius-full);
+    box-shadow:
+      -12px 0 0 var(--color-primary),
+      12px 0 0 var(--color-accent-alt);
+    opacity: 0.8;
+  }
+
+  .warranty-coverage__header-wrapper::after {
+    content: '';
+    display: block;
+    width: 4rem;
+    height: 3px;
+    margin-top: var(--spacing-4);
+    background: linear-gradient(
+      90deg,
+      var(--color-primary) 0%,
+      var(--color-accent) 50%,
+      var(--color-accent-alt) 100%
+    );
+    border-radius: var(--radius-full);
+  }
+
+  .warranty-coverage__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4) 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .warranty-coverage__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-md);
+    color: var(--color-text-secondary);
+    max-width: 55ch;
+    margin: 0 auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .warranty-coverage__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+  }
+
+  /* Coverage Card */
+  .coverage-card {
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-6);
+    background-color: var(--color-background-subtle);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    transition:
+      box-shadow var(--duration-300) var(--ease-out),
+      border-color var(--duration-300) var(--ease-out);
+  }
+
+  .coverage-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-primary-200);
+  }
+
+  .coverage-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-4);
+  }
+
+  .coverage-card__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--spacing-10);
+    height: var(--spacing-10);
+    background-color: var(--color-primary-50);
+    border-radius: var(--radius-md);
+    color: var(--color-primary);
+  }
+
+  .coverage-card__icon :global(svg) {
+    width: var(--spacing-5);
+    height: var(--spacing-5);
+  }
+
+  .coverage-card__duration {
+    padding: var(--spacing-1) var(--spacing-3);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+    background-color: var(--color-primary-50);
+    border-radius: var(--radius-full);
+  }
+
+  .coverage-card__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4) 0;
+  }
+
+  .coverage-card__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .coverage-card__item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-2);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-2);
+    line-height: var(--line-height-relaxed);
+  }
+
+  .coverage-card__item:last-child {
+    margin-bottom: 0;
+  }
+
+  .coverage-card__check {
+    flex-shrink: 0;
+    width: var(--spacing-5);
+    height: var(--spacing-5);
+    color: var(--color-success);
+    margin-top: 1px;
+  }
+
+  .warranty-coverage__note {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-4);
+    margin-top: var(--spacing-8);
+    padding: var(--spacing-5);
+    background-color: var(--color-primary-50);
+    border: 1px solid var(--color-primary-200);
+    border-radius: var(--radius-xl);
+  }
+
+  .warranty-coverage__note svg {
+    flex-shrink: 0;
+    color: var(--color-primary);
+  }
+
+  .warranty-coverage__note p {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .warranty-coverage__note strong {
+    color: var(--color-text-primary);
+  }
+
+  .warranty-coverage__note a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    transition: color var(--duration-150) var(--ease-out);
+  }
+
+  .warranty-coverage__note a:hover {
+    color: var(--color-primary-hover);
+  }
+
+  /* =================================================================
+   * CLAIM PROCESS SECTION
+   * ================================================================= */
+
+  .claim-process {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+  }
+
+  .claim-process__container {
+    max-width: var(--container-4xl);
+    margin: 0 auto;
+  }
+
+  .claim-process__header {
+    text-align: center;
+    margin-bottom: var(--spacing-12);
+  }
+
+  .claim-process__header-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .claim-process__header-wrapper::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    margin-bottom: var(--spacing-3);
+    background: var(--color-accent);
+    border-radius: var(--radius-full);
+    box-shadow:
+      -12px 0 0 var(--color-primary),
+      12px 0 0 var(--color-accent-alt);
+    opacity: 0.8;
+  }
+
+  .claim-process__header-wrapper::after {
+    content: '';
+    display: block;
+    width: 4rem;
+    height: 3px;
+    margin-top: var(--spacing-4);
+    background: linear-gradient(
+      90deg,
+      var(--color-primary) 0%,
+      var(--color-accent) 50%,
+      var(--color-accent-alt) 100%
+    );
+    border-radius: var(--radius-full);
+  }
+
+  .claim-process__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4) 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .claim-process__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-md);
+    color: var(--color-text-secondary);
+    max-width: 55ch;
+    margin: 0 auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .claim-process__steps {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-8);
+  }
+
+  /* Claim Step */
+  .claim-step {
+    display: flex;
+    gap: var(--spacing-4);
+  }
+
+  .claim-step__connector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .claim-step__number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--spacing-10);
+    height: var(--spacing-10);
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    border-radius: var(--radius-full);
+    box-shadow: var(--glow-primary-sm);
+  }
+
+  .claim-step__line {
+    width: 2px;
+    flex-grow: 1;
+    margin-top: var(--spacing-2);
+    background: linear-gradient(
+      180deg,
+      var(--color-primary) 0%,
+      var(--color-primary-200) 100%
+    );
+    border-radius: var(--radius-full);
+  }
+
+  .claim-step__content {
+    flex-grow: 1;
+    padding-bottom: var(--spacing-4);
+  }
+
+  .claim-step__icon {
+    display: none;
+  }
+
+  .claim-step__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-2) 0;
+  }
+
+  .claim-step__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0;
+  }
+
+  .claim-process__cta {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--spacing-8);
+  }
+
+  /* =================================================================
+   * CTA SECTION
+   * ================================================================= */
+
+  .cta-section {
+    padding: var(--spacing-20) var(--spacing-4);
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-900) 0%,
+      var(--color-primary-700) 50%,
+      var(--color-primary-800) 100%
+    );
+  }
+
+  .cta-section__container {
+    max-width: var(--container-4xl);
+    margin: 0 auto;
+  }
+
+  .cta-section__content {
+    text-align: center;
+  }
+
+  .cta-section__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-inverse);
+    margin: 0 0 var(--spacing-4) 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .cta-section__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-primary-100);
+    max-width: 50ch;
+    margin: 0 auto var(--spacing-8);
+    line-height: var(--line-height-relaxed);
+  }
+
+  .cta-section__buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-4);
+    margin-bottom: var(--spacing-6);
+  }
+
+  .cta-section :global(.btn--primary) {
+    background-color: var(--color-background);
+    color: var(--color-primary-700);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .cta-section :global(.btn--primary:hover:not(.btn--disabled)) {
+    background-color: var(--color-primary-50);
+    color: var(--color-primary-800);
+    transform: translateY(-2px);
+  }
+
+  .cta-section :global(.btn--secondary) {
+    background-color: transparent;
+    color: var(--color-text-inverse);
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+
+  .cta-section :global(.btn--secondary:hover:not(.btn--disabled)) {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.8);
+  }
+
+  .cta-section__reassurance {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-primary-200);
+    margin: 0;
+    font-style: italic;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES - Tablet (640px+)
+   * ================================================================= */
+
+  @media screen and (min-width: 640px) {
+    .warranty-hero {
+      padding: var(--spacing-20) var(--spacing-6) var(--spacing-24);
+    }
+
+    .warranty-hero__title {
+      font-size: var(--font-size-4xl);
+    }
+
+    .warranty-hero__cta-group {
+      flex-direction: row;
+      max-width: none;
+      width: auto;
+    }
+
+    .warranty-hero__trust-points {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: var(--spacing-6);
+    }
+
+    .guarantees-section__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .warranty-coverage__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .cta-section__buttons {
+      flex-direction: row;
+      justify-content: center;
+    }
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES - Tablet (768px+)
+   * ================================================================= */
+
+  @media screen and (min-width: 768px) {
+    .warranty-hero__title {
+      font-size: var(--font-size-5xl);
+    }
+
+    .warranty-hero__description {
+      font-size: var(--font-size-xl);
+    }
+
+    .guarantees-section {
+      padding: var(--spacing-20) var(--spacing-6);
+    }
+
+    .guarantees-section__heading {
+      font-size: var(--font-size-3xl);
+    }
+
+    .warranty-coverage {
+      padding: var(--spacing-20) var(--spacing-6);
+    }
+
+    .warranty-coverage__heading {
+      font-size: var(--font-size-3xl);
+    }
+
+    .claim-process {
+      padding: var(--spacing-20) var(--spacing-6);
+    }
+
+    .claim-process__heading {
+      font-size: var(--font-size-3xl);
+    }
+
+    .cta-section {
+      padding: var(--spacing-24) var(--spacing-6);
+    }
+
+    .cta-section__heading {
+      font-size: var(--font-size-4xl);
+    }
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES - Desktop (1024px+)
+   * ================================================================= */
+
+  @media screen and (min-width: 1024px) {
+    .warranty-hero {
+      padding: var(--spacing-24) var(--spacing-8) var(--spacing-28);
+    }
+
+    .guarantees-section__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .warranty-coverage__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .claim-process__steps {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: var(--spacing-4);
+    }
+
+    .claim-step {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      flex: 1;
+    }
+
+    .claim-step__connector {
+      flex-direction: row;
+      width: 100%;
+      margin-bottom: var(--spacing-4);
+    }
+
+    .claim-step__line {
+      width: auto;
+      height: 2px;
+      flex-grow: 1;
+      margin-top: 0;
+      margin-left: var(--spacing-2);
+      background: linear-gradient(
+        90deg,
+        var(--color-primary) 0%,
+        var(--color-primary-200) 100%
+      );
+    }
+
+    .claim-step__content {
+      padding-bottom: 0;
+    }
+
+    .claim-step__icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--spacing-12);
+      height: var(--spacing-12);
+      margin: 0 auto var(--spacing-3);
+      background-color: var(--color-background);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      color: var(--color-primary);
+    }
+
+    .claim-step__icon :global(svg) {
+      width: var(--spacing-6);
+      height: var(--spacing-6);
+    }
+
+    /* Make the highlighted card slightly larger */
+    .guarantee-card--highlighted {
+      transform: scale(1.02);
+      z-index: 1;
+    }
+
+    .guarantee-card--highlighted:hover {
+      transform: scale(1.05) translateY(-4px);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+
+  @media (prefers-reduced-motion: reduce) {
+    .guarantee-card,
+    .coverage-card {
+      transition: none;
+    }
+
+    .guarantee-card:hover,
+    .guarantee-card--highlighted:hover {
+      transform: none;
+    }
+
+    .cta-section :global(.btn:hover) {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE ADJUSTMENTS
+   * ================================================================= */
+
+  :global(html[data-theme="dark"]) .guarantee-card {
+    background-color: var(--color-background-elevated);
+  }
+
+  :global(html[data-theme="dark"]) .coverage-card {
+    background-color: var(--color-background-elevated);
+  }
+
+  :global(html[data-theme="dark"]) .claim-step__icon {
+    background-color: var(--color-background-elevated);
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+
+  @media print {
+    .warranty-hero {
+      background: none;
+      padding: var(--spacing-8) 0;
+    }
+
+    .warranty-hero__cta-group {
+      display: none;
+    }
+
+    .guarantees-section,
+    .warranty-coverage,
+    .claim-process {
+      padding: var(--spacing-8) 0;
+    }
+
+    .guarantee-card,
+    .coverage-card {
+      box-shadow: none;
+      border: 1px solid var(--color-border);
+      page-break-inside: avoid;
+    }
+
+    .guarantee-card:hover,
+    .guarantee-card--highlighted,
+    .guarantee-card--highlighted:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .cta-section {
+      display: none;
+    }
+
+    .claim-process__cta {
+      display: none;
+    }
+  }
+</style>

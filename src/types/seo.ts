@@ -303,7 +303,7 @@ export interface BreadcrumbSchema {
  * WebPage structured data
  */
 export interface WebPageSchema {
-  type: 'WebPage' | 'AboutPage' | 'ContactPage' | 'FAQPage' | 'CollectionPage';
+  type: 'WebPage' | 'AboutPage' | 'ContactPage' | 'CollectionPage';
   /** Page name */
   name: string;
   /** Page description */
@@ -317,6 +317,109 @@ export interface WebPageSchema {
 }
 
 /**
+ * FAQPage structured data for rich snippets
+ * @see https://schema.org/FAQPage
+ * @see https://developers.google.com/search/docs/appearance/structured-data/faqpage
+ */
+export interface FAQPageSchema {
+  type: 'FAQPage';
+  /** Array of FAQ items with questions and answers */
+  mainEntity: FAQQuestionSchema[];
+}
+
+/**
+ * Question structured data for FAQPage
+ * @see https://schema.org/Question
+ */
+export interface FAQQuestionSchema {
+  /** The question text */
+  question: string;
+  /** The answer text (can include HTML) */
+  answer: string;
+}
+
+// ============================================================================
+// Service Schema Types (for individual service pages)
+// ============================================================================
+
+/**
+ * Offer structured data for Service pricing
+ * @see https://schema.org/Offer
+ */
+export interface ServiceOfferSchema {
+  /** Price value (numeric or string like "499" or "49.99") */
+  price?: number | string;
+  /** Currency code (e.g., "USD") */
+  priceCurrency?: string;
+  /** Price specification description (e.g., "Starting at", "Per month") */
+  priceSpecification?: string;
+  /** Availability status */
+  availability?: 'InStock' | 'OutOfStock' | 'PreOrder' | 'OnlineOnly';
+  /** URL for this offer */
+  url?: string;
+  /** Valid from date (ISO 8601) */
+  validFrom?: string;
+  /** Valid through date (ISO 8601) */
+  validThrough?: string;
+}
+
+/**
+ * Service structured data for individual service pages
+ * Implements schema.org/Service for enhanced search visibility
+ * @see https://schema.org/Service
+ * @see https://developers.google.com/search/docs/appearance/structured-data/local-business
+ */
+export interface ServiceSchema {
+  type: 'Service';
+  /** Name of the service */
+  name: string;
+  /** Description of the service */
+  description?: string;
+  /** Service provider (typically the business) */
+  provider?: {
+    type: 'LocalBusiness' | 'Organization' | 'ProfessionalService';
+    name: string;
+    url?: string;
+    telephone?: string;
+    address?: PostalAddress;
+    priceRange?: PriceRange;
+  };
+  /** Geographic area where the service is available */
+  areaServed?: ServiceArea | ServiceArea[] | string | string[];
+  /** Service availability/hours */
+  hoursAvailable?: OpeningHoursSpecification[];
+  /** Pricing information for the service */
+  offers?: ServiceOfferSchema | ServiceOfferSchema[];
+  /** URL of the service page */
+  url?: string;
+  /** Image representing the service */
+  image?: string | string[];
+  /** Category/type of service */
+  serviceType?: string;
+  /** Service output description */
+  serviceOutput?: string;
+  /** Aggregate rating for the service */
+  aggregateRating?: AggregateRating;
+  /** Terms of service URL */
+  termsOfService?: string;
+  /** Brand offering the service */
+  brand?: string;
+  /** Intended audience for this service */
+  audience?: {
+    type: 'Audience' | 'BusinessAudience';
+    name?: string;
+    audienceType?: string;
+  };
+  /** Related services or items */
+  isRelatedTo?: string[];
+  /** Features of the service (benefits, included items) */
+  hasOfferCatalog?: {
+    name: string;
+    itemListElement: string[];
+  };
+}
+
+/**
  * Union type for all supported JSON-LD schema types
  */
 export type JsonLdSchema =
@@ -325,7 +428,9 @@ export type JsonLdSchema =
   | LocalBusinessSchema
   | ProductSchema
   | BreadcrumbSchema
-  | WebPageSchema;
+  | WebPageSchema
+  | FAQPageSchema
+  | ServiceSchema;
 
 /**
  * Custom meta tag definition

@@ -1,0 +1,1132 @@
+---
+/**
+ * ServiceComparisonTable Component
+ * An interactive comparison table for service packages and pricing tiers.
+ *
+ * Features:
+ * - Sticky headers for easy comparison while scrolling
+ * - Mobile-responsive card view that transforms the table layout
+ * - Highlighted differences between packages
+ * - Hover effects and interactive highlighting
+ * - Full accessibility support with proper ARIA attributes
+ * - Dark mode support
+ * - Reduced motion support
+ *
+ * @example Basic usage
+ * ```astro
+ * <ServiceComparisonTable
+ *   packages={[
+ *     { id: 'starter', name: 'Starter', price: '$499', priceNote: 'One-time', isPopular: false },
+ *     { id: 'professional', name: 'Professional', price: '$899', priceNote: 'One-time', isPopular: true },
+ *     { id: 'premium', name: 'Premium', price: '$1,499+', priceNote: 'Starting at', isPopular: false },
+ *   ]}
+ *   features={[
+ *     { name: 'Custom Design', starter: true, professional: true, premium: true },
+ *     { name: 'Number of Pages', starter: '1 page', professional: 'Up to 5', premium: 'Unlimited', highlight: true },
+ *     ...
+ *   ]}
+ * />
+ * ```
+ */
+
+export interface ComparisonPackage {
+  /** Unique identifier for the package */
+  id: string;
+  /** Display name of the package */
+  name: string;
+  /** Price display (e.g., "$499", "$1,499+") */
+  price: string;
+  /** Price note (e.g., "One-time", "Starting at") */
+  priceNote?: string;
+  /** Whether this package should be highlighted as popular/recommended */
+  isPopular?: boolean;
+  /** CTA button configuration */
+  cta?: {
+    text: string;
+    href: string;
+  };
+}
+
+export interface ComparisonFeature {
+  /** Feature name/label */
+  name: string;
+  /** Feature category for grouping (optional) */
+  category?: string;
+  /** Tooltip/description for the feature (optional) */
+  tooltip?: string;
+  /** Whether this feature row should be highlighted to show differences */
+  highlight?: boolean;
+  /** Feature values for each package - uses package ID as key */
+  [packageId: string]: string | boolean | undefined;
+}
+
+export interface ServiceComparisonTableProps {
+  /** Array of packages to compare */
+  packages: ComparisonPackage[];
+  /** Array of features to compare across packages */
+  features: ComparisonFeature[];
+  /** Section heading */
+  heading?: string;
+  /** Section subheading/description */
+  subheading?: string;
+  /** Additional CSS classes */
+  class?: string;
+}
+
+interface Props extends ServiceComparisonTableProps {}
+
+const {
+  packages,
+  features,
+  heading = 'Compare Packages',
+  subheading = 'See what\'s included in each package to find the right fit for your business.',
+  class: className = '',
+} = Astro.props;
+
+const sectionClasses = [
+  'comparison-section',
+  className,
+].filter(Boolean).join(' ');
+
+// Check icon SVG
+const checkIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>`;
+
+// X icon SVG
+const xIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>`;
+
+// Helper function to render feature value
+function getFeatureDisplay(value: string | boolean | undefined): { type: 'check' | 'x' | 'text'; content?: string } {
+  if (value === true) return { type: 'check' };
+  if (value === false || value === undefined) return { type: 'x' };
+  return { type: 'text', content: value };
+}
+
+// Group features by category if categories are provided
+const groupedFeatures = features.reduce((acc, feature) => {
+  const category = feature.category || 'Features';
+  if (!acc[category]) {
+    acc[category] = [];
+  }
+  acc[category].push(feature);
+  return acc;
+}, {} as Record<string, ComparisonFeature[]>);
+
+const hasCategories = Object.keys(groupedFeatures).length > 1 || (Object.keys(groupedFeatures).length === 1 && Object.keys(groupedFeatures)[0] !== 'Features');
+---
+
+<section class={sectionClasses} data-comparison-table>
+  <header class="comparison-section__header">
+    <div class="comparison-section__header-wrapper">
+      <h2 class="comparison-section__heading">{heading}</h2>
+    </div>
+    {subheading && <p class="comparison-section__subheading">{subheading}</p>}
+  </header>
+
+  <!-- Desktop Table View -->
+  <div class="comparison-table-wrapper" role="region" aria-label="Service package comparison table">
+    <table class="comparison-table">
+      <thead class="comparison-table__head">
+        <tr class="comparison-table__header-row">
+          <th scope="col" class="comparison-table__th comparison-table__th--feature">
+            <span class="comparison-table__feature-label">Features</span>
+          </th>
+          {packages.map((pkg) => (
+            <th scope="col" class={`comparison-table__th comparison-table__th--package ${pkg.isPopular ? 'comparison-table__th--popular' : ''}`}>
+              {pkg.isPopular && <span class="comparison-table__popular-badge">Most Popular</span>}
+              <span class="comparison-table__package-name">{pkg.name}</span>
+              <div class="comparison-table__price-wrapper">
+                {pkg.priceNote && <span class="comparison-table__price-note">{pkg.priceNote}</span>}
+                <span class="comparison-table__price">{pkg.price}</span>
+              </div>
+              {pkg.cta && (
+                <a href={pkg.cta.href} class={`comparison-table__cta ${pkg.isPopular ? 'comparison-table__cta--primary' : 'comparison-table__cta--secondary'}`}>
+                  {pkg.cta.text}
+                </a>
+              )}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody class="comparison-table__body">
+        {hasCategories ? (
+          Object.entries(groupedFeatures).map(([category, categoryFeatures]) => (
+            <>
+              <tr class="comparison-table__category-row">
+                <td colspan={packages.length + 1} class="comparison-table__category-cell">
+                  {category}
+                </td>
+              </tr>
+              {categoryFeatures.map((feature, index) => {
+                const isHighlighted = feature.highlight;
+                return (
+                  <tr class={`comparison-table__row ${isHighlighted ? 'comparison-table__row--highlight' : ''}`} style={`--row-index: ${index}`}>
+                    <th scope="row" class="comparison-table__td comparison-table__td--feature">
+                      <span class="comparison-table__feature-name">{feature.name}</span>
+                      {feature.tooltip && (
+                        <span class="comparison-table__tooltip" title={feature.tooltip}>
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
+                          </svg>
+                        </span>
+                      )}
+                    </th>
+                    {packages.map((pkg) => {
+                      const value = feature[pkg.id];
+                      const display = getFeatureDisplay(value);
+                      return (
+                        <td class={`comparison-table__td comparison-table__td--value ${pkg.isPopular ? 'comparison-table__td--popular' : ''}`}>
+                          {display.type === 'check' && (
+                            <span class="comparison-table__icon comparison-table__icon--check" set:html={checkIcon} />
+                          )}
+                          {display.type === 'x' && (
+                            <span class="comparison-table__icon comparison-table__icon--x" set:html={xIcon} />
+                          )}
+                          {display.type === 'text' && (
+                            <span class="comparison-table__value-text">{display.content}</span>
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
+            </>
+          ))
+        ) : (
+          features.map((feature, index) => {
+            const isHighlighted = feature.highlight;
+            return (
+              <tr class={`comparison-table__row ${isHighlighted ? 'comparison-table__row--highlight' : ''}`} style={`--row-index: ${index}`}>
+                <th scope="row" class="comparison-table__td comparison-table__td--feature">
+                  <span class="comparison-table__feature-name">{feature.name}</span>
+                  {feature.tooltip && (
+                    <span class="comparison-table__tooltip" title={feature.tooltip}>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
+                      </svg>
+                    </span>
+                  )}
+                </th>
+                {packages.map((pkg) => {
+                  const value = feature[pkg.id];
+                  const display = getFeatureDisplay(value);
+                  return (
+                    <td class={`comparison-table__td comparison-table__td--value ${pkg.isPopular ? 'comparison-table__td--popular' : ''}`}>
+                      {display.type === 'check' && (
+                        <span class="comparison-table__icon comparison-table__icon--check" set:html={checkIcon} />
+                      )}
+                      {display.type === 'x' && (
+                        <span class="comparison-table__icon comparison-table__icon--x" set:html={xIcon} />
+                      )}
+                      {display.type === 'text' && (
+                        <span class="comparison-table__value-text">{display.content}</span>
+                      )}
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })
+        )}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Mobile Card View -->
+  <div class="comparison-cards" role="list">
+    {packages.map((pkg, pkgIndex) => (
+      <article class={`comparison-card ${pkg.isPopular ? 'comparison-card--popular' : ''}`} role="listitem" style={`--card-index: ${pkgIndex}`}>
+        {pkg.isPopular && <div class="comparison-card__badge">Most Popular</div>}
+        <header class="comparison-card__header">
+          <h3 class="comparison-card__name">{pkg.name}</h3>
+          <div class="comparison-card__price-wrapper">
+            {pkg.priceNote && <span class="comparison-card__price-note">{pkg.priceNote}</span>}
+            <span class="comparison-card__price">{pkg.price}</span>
+          </div>
+        </header>
+
+        <div class="comparison-card__features">
+          {hasCategories ? (
+            Object.entries(groupedFeatures).map(([category, categoryFeatures]) => (
+              <div class="comparison-card__category">
+                <h4 class="comparison-card__category-title">{category}</h4>
+                <ul class="comparison-card__feature-list" role="list">
+                  {categoryFeatures.map((feature) => {
+                    const value = feature[pkg.id];
+                    const display = getFeatureDisplay(value);
+                    const isHighlighted = feature.highlight;
+                    return (
+                      <li class={`comparison-card__feature ${isHighlighted ? 'comparison-card__feature--highlight' : ''} ${display.type === 'x' ? 'comparison-card__feature--excluded' : ''}`}>
+                        <span class="comparison-card__feature-icon">
+                          {display.type === 'check' && <span class="comparison-card__icon comparison-card__icon--check" set:html={checkIcon} />}
+                          {display.type === 'x' && <span class="comparison-card__icon comparison-card__icon--x" set:html={xIcon} />}
+                          {display.type === 'text' && <span class="comparison-card__icon comparison-card__icon--check" set:html={checkIcon} />}
+                        </span>
+                        <span class="comparison-card__feature-content">
+                          <span class="comparison-card__feature-name">{feature.name}</span>
+                          {display.type === 'text' && (
+                            <span class="comparison-card__feature-value">{display.content}</span>
+                          )}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ))
+          ) : (
+            <ul class="comparison-card__feature-list" role="list">
+              {features.map((feature) => {
+                const value = feature[pkg.id];
+                const display = getFeatureDisplay(value);
+                const isHighlighted = feature.highlight;
+                return (
+                  <li class={`comparison-card__feature ${isHighlighted ? 'comparison-card__feature--highlight' : ''} ${display.type === 'x' ? 'comparison-card__feature--excluded' : ''}`}>
+                    <span class="comparison-card__feature-icon">
+                      {display.type === 'check' && <span class="comparison-card__icon comparison-card__icon--check" set:html={checkIcon} />}
+                      {display.type === 'x' && <span class="comparison-card__icon comparison-card__icon--x" set:html={xIcon} />}
+                      {display.type === 'text' && <span class="comparison-card__icon comparison-card__icon--check" set:html={checkIcon} />}
+                    </span>
+                    <span class="comparison-card__feature-content">
+                      <span class="comparison-card__feature-name">{feature.name}</span>
+                      {display.type === 'text' && (
+                        <span class="comparison-card__feature-value">{display.content}</span>
+                      )}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
+
+        {pkg.cta && (
+          <footer class="comparison-card__footer">
+            <a href={pkg.cta.href} class={`comparison-card__cta ${pkg.isPopular ? 'comparison-card__cta--primary' : 'comparison-card__cta--secondary'}`}>
+              {pkg.cta.text}
+            </a>
+          </footer>
+        )}
+      </article>
+    ))}
+  </div>
+</section>
+
+<style>
+  /* =================================================================
+   * SERVICE COMPARISON TABLE COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .comparison-section {
+    width: 100%;
+  }
+
+  /* Section Header */
+  .comparison-section__header {
+    text-align: center;
+    margin-bottom: var(--spacing-10);
+  }
+
+  .comparison-section__header-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Decorative dots */
+  .comparison-section__header-wrapper::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    margin-bottom: var(--spacing-3);
+    background: var(--color-accent);
+    border-radius: var(--radius-full);
+    box-shadow:
+      -12px 0 0 var(--color-primary),
+      12px 0 0 var(--color-accent-alt);
+    opacity: 0.8;
+  }
+
+  /* Animated accent line */
+  .comparison-section__header-wrapper::after {
+    content: '';
+    display: block;
+    width: 4rem;
+    height: 3px;
+    margin-top: var(--spacing-4);
+    background: linear-gradient(
+      90deg,
+      var(--color-primary) 0%,
+      var(--color-accent) 50%,
+      var(--color-accent-alt) 100%
+    );
+    background-size: 200% 100%;
+    border-radius: var(--radius-full);
+    animation: comparisonAccentShimmer 4s ease-in-out infinite;
+  }
+
+  @keyframes comparisonAccentShimmer {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  .comparison-section__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-3) 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .comparison-section__subheading {
+    font-family: var(--font-body);
+    font-size: var(--font-size-md);
+    color: var(--color-text-secondary);
+    margin: 0;
+    max-width: 60ch;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* =================================================================
+   * TABLE STYLES (Desktop)
+   * ================================================================= */
+
+  .comparison-table-wrapper {
+    display: none;
+    overflow-x: auto;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--color-border);
+    background-color: var(--color-background-elevated);
+    box-shadow: var(--shadow-md);
+    scroll-behavior: smooth;
+  }
+
+  .comparison-table {
+    width: 100%;
+    min-width: 700px;
+    border-collapse: collapse;
+    font-family: var(--font-body);
+  }
+
+  /* Sticky Header */
+  .comparison-table__head {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky, 200);
+    background-color: var(--color-background-elevated);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .comparison-table__header-row {
+    background-color: var(--color-background-muted);
+  }
+
+  .comparison-table__th {
+    padding: var(--spacing-6);
+    text-align: center;
+    vertical-align: bottom;
+    border-bottom: 2px solid var(--color-border);
+    position: relative;
+  }
+
+  .comparison-table__th--feature {
+    text-align: left;
+    width: 30%;
+    min-width: 180px;
+    background-color: var(--color-background-muted);
+    position: sticky;
+    left: 0;
+    z-index: 1;
+  }
+
+  .comparison-table__th--package {
+    width: 23.33%;
+    min-width: 150px;
+    padding-top: var(--spacing-8);
+  }
+
+  .comparison-table__th--popular {
+    background-color: var(--color-primary-50);
+    border-top: 3px solid var(--color-primary);
+  }
+
+  .comparison-table__feature-label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wider);
+  }
+
+  .comparison-table__popular-badge {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-600) 100%);
+    color: var(--color-text-inverse);
+    padding: var(--spacing-1) var(--spacing-3);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--letter-spacing-wide);
+    text-transform: uppercase;
+    white-space: nowrap;
+    box-shadow: var(--shadow-md);
+  }
+
+  .comparison-table__package-name {
+    display: block;
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-2);
+  }
+
+  .comparison-table__price-wrapper {
+    margin-bottom: var(--spacing-4);
+  }
+
+  .comparison-table__price-note {
+    display: block;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    margin-bottom: var(--spacing-1);
+  }
+
+  .comparison-table__price {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+  }
+
+  .comparison-table__th--popular .comparison-table__price {
+    color: var(--color-primary-700);
+  }
+
+  .comparison-table__cta {
+    display: inline-block;
+    padding: var(--spacing-2) var(--spacing-4);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    text-decoration: none;
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      transform var(--duration-150) var(--ease-in-out),
+      box-shadow var(--duration-150) var(--ease-in-out);
+  }
+
+  .comparison-table__cta--primary {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .comparison-table__cta--primary:hover {
+    background-color: var(--color-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .comparison-table__cta--secondary {
+    background-color: transparent;
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary-200);
+  }
+
+  .comparison-table__cta--secondary:hover {
+    background-color: var(--color-primary-50);
+    border-color: var(--color-primary);
+  }
+
+  /* Table Body */
+  .comparison-table__category-row {
+    background-color: var(--color-background-subtle);
+  }
+
+  .comparison-table__category-cell {
+    padding: var(--spacing-3) var(--spacing-6);
+    font-family: var(--font-heading);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wider);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .comparison-table__row {
+    transition: background-color var(--duration-150) var(--ease-in-out);
+    animation: fadeInRow 0.4s ease-out calc(var(--row-index) * 0.03s) backwards;
+  }
+
+  .comparison-table__row:hover {
+    background-color: var(--color-background-subtle);
+  }
+
+  .comparison-table__row--highlight {
+    background-color: var(--color-primary-50);
+  }
+
+  .comparison-table__row--highlight:hover {
+    background-color: var(--color-primary-100);
+  }
+
+  .comparison-table__td {
+    padding: var(--spacing-4) var(--spacing-6);
+    border-bottom: 1px solid var(--color-border-light);
+    vertical-align: middle;
+    text-align: center;
+  }
+
+  .comparison-table__row:last-child .comparison-table__td {
+    border-bottom: none;
+  }
+
+  .comparison-table__td--feature {
+    text-align: left;
+    background-color: var(--color-background-elevated);
+    position: sticky;
+    left: 0;
+    z-index: 1;
+  }
+
+  .comparison-table__row:hover .comparison-table__td--feature {
+    background-color: var(--color-background-subtle);
+  }
+
+  .comparison-table__row--highlight .comparison-table__td--feature {
+    background-color: var(--color-primary-50);
+  }
+
+  .comparison-table__row--highlight:hover .comparison-table__td--feature {
+    background-color: var(--color-primary-100);
+  }
+
+  .comparison-table__td--popular {
+    background-color: var(--color-primary-50);
+  }
+
+  .comparison-table__row:hover .comparison-table__td--popular {
+    background-color: var(--color-primary-100);
+  }
+
+  .comparison-table__feature-name {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+  }
+
+  .comparison-table__tooltip {
+    display: inline-flex;
+    align-items: center;
+    margin-left: var(--spacing-2);
+    color: var(--color-text-tertiary);
+    cursor: help;
+    vertical-align: middle;
+  }
+
+  .comparison-table__tooltip:hover {
+    color: var(--color-primary);
+  }
+
+  .comparison-table__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .comparison-table__icon :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+
+  .comparison-table__icon--check {
+    color: var(--color-success);
+  }
+
+  .comparison-table__icon--x {
+    color: var(--color-text-disabled);
+  }
+
+  .comparison-table__value-text {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+  }
+
+  /* =================================================================
+   * CARD STYLES (Mobile)
+   * ================================================================= */
+
+  .comparison-cards {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-6);
+  }
+
+  .comparison-card {
+    position: relative;
+    background-color: var(--color-background-elevated);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-6);
+    box-shadow: var(--shadow-sm);
+    animation: fadeInCard 0.4s ease-out calc(var(--card-index) * 0.15s) backwards;
+    transition:
+      box-shadow var(--duration-200) var(--ease-in-out),
+      border-color var(--duration-200) var(--ease-in-out),
+      transform var(--duration-200) var(--ease-in-out);
+  }
+
+  .comparison-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+  }
+
+  .comparison-card--popular {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-md), 0 0 0 1px var(--color-primary-200);
+  }
+
+  .comparison-card--popular:hover {
+    box-shadow: var(--shadow-xl), 0 0 0 1px var(--color-primary-300);
+  }
+
+  .comparison-card__badge {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-600) 100%);
+    color: var(--color-text-inverse);
+    padding: var(--spacing-1-5) var(--spacing-4);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--letter-spacing-wide);
+    text-transform: uppercase;
+    white-space: nowrap;
+    box-shadow: var(--shadow-md);
+  }
+
+  .comparison-card__header {
+    text-align: center;
+    padding-bottom: var(--spacing-5);
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: var(--spacing-5);
+  }
+
+  .comparison-card--popular .comparison-card__header {
+    padding-top: var(--spacing-4);
+  }
+
+  .comparison-card__name {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-3) 0;
+  }
+
+  .comparison-card__price-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-1);
+  }
+
+  .comparison-card__price-note {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+  }
+
+  .comparison-card__price {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+  }
+
+  .comparison-card--popular .comparison-card__price {
+    color: var(--color-primary-700);
+  }
+
+  .comparison-card__features {
+    margin-bottom: var(--spacing-6);
+  }
+
+  .comparison-card__category {
+    margin-bottom: var(--spacing-4);
+  }
+
+  .comparison-card__category:last-child {
+    margin-bottom: 0;
+  }
+
+  .comparison-card__category-title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wider);
+    margin: 0 0 var(--spacing-3) 0;
+    padding-bottom: var(--spacing-2);
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .comparison-card__feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+  }
+
+  .comparison-card__feature {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-3);
+    padding: var(--spacing-2);
+    border-radius: var(--radius-md);
+    transition: background-color var(--duration-150) var(--ease-in-out);
+  }
+
+  .comparison-card__feature:hover {
+    background-color: var(--color-background-subtle);
+  }
+
+  .comparison-card__feature--highlight {
+    background-color: var(--color-primary-50);
+  }
+
+  .comparison-card__feature--highlight:hover {
+    background-color: var(--color-primary-100);
+  }
+
+  .comparison-card__feature--excluded {
+    opacity: 0.6;
+  }
+
+  .comparison-card__feature-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: 2px;
+  }
+
+  .comparison-card__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  .comparison-card__icon :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+
+  .comparison-card__icon--check {
+    color: var(--color-success);
+  }
+
+  .comparison-card__icon--x {
+    color: var(--color-text-disabled);
+  }
+
+  .comparison-card__feature-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-0-5);
+  }
+
+  .comparison-card__feature-name {
+    font-size: var(--font-size-base);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-snug);
+  }
+
+  .comparison-card__feature--excluded .comparison-card__feature-name {
+    color: var(--color-text-tertiary);
+    text-decoration: line-through;
+  }
+
+  .comparison-card__feature-value {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+  }
+
+  .comparison-card__footer {
+    margin-top: auto;
+  }
+
+  .comparison-card__cta {
+    display: block;
+    width: 100%;
+    padding: var(--spacing-3) var(--spacing-4);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    text-align: center;
+    text-decoration: none;
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      transform var(--duration-150) var(--ease-in-out),
+      box-shadow var(--duration-150) var(--ease-in-out);
+  }
+
+  .comparison-card__cta--primary {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .comparison-card__cta--primary:hover {
+    background-color: var(--color-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .comparison-card__cta--secondary {
+    background-color: transparent;
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary-200);
+  }
+
+  .comparison-card__cta--secondary:hover {
+    background-color: var(--color-primary-50);
+    border-color: var(--color-primary);
+  }
+
+  /* =================================================================
+   * ANIMATIONS
+   * ================================================================= */
+
+  @keyframes fadeInRow {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeInCard {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  /* Tablet and up (768px) - Show table, hide cards */
+  @media screen and (min-width: 768px) {
+    .comparison-section__heading {
+      font-size: var(--font-size-3xl);
+    }
+
+    .comparison-table-wrapper {
+      display: block;
+    }
+
+    .comparison-cards {
+      display: none;
+    }
+  }
+
+  /* Desktop (1024px+) */
+  @media screen and (min-width: 1024px) {
+    .comparison-table__th {
+      padding: var(--spacing-8);
+    }
+
+    .comparison-table__th--package {
+      padding-top: var(--spacing-10);
+    }
+
+    .comparison-table__package-name {
+      font-size: var(--font-size-2xl);
+    }
+
+    .comparison-table__price {
+      font-size: var(--font-size-3xl);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+
+  @media (prefers-reduced-motion: reduce) {
+    .comparison-section__header-wrapper::after {
+      animation: none;
+    }
+
+    .comparison-table__row,
+    .comparison-card {
+      animation: none;
+      transition: none;
+    }
+
+    .comparison-table__cta:hover,
+    .comparison-card__cta:hover {
+      transform: none;
+    }
+
+    .comparison-card:hover {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+
+  @media (forced-colors: active) {
+    .comparison-table-wrapper,
+    .comparison-card {
+      border: 2px solid CanvasText;
+    }
+
+    .comparison-table__th {
+      border-bottom: 2px solid CanvasText;
+    }
+
+    .comparison-table__td {
+      border-bottom: 1px solid CanvasText;
+    }
+
+    .comparison-table__popular-badge,
+    .comparison-card__badge {
+      border: 1px solid CanvasText;
+    }
+
+    .comparison-table__th--popular {
+      border-top: 3px solid Highlight;
+    }
+
+    .comparison-card--popular {
+      border-color: Highlight;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE ADJUSTMENTS
+   * ================================================================= */
+
+  :global(html[data-theme="dark"]) .comparison-table__head {
+    background-color: var(--color-background-elevated);
+  }
+
+  :global(html[data-theme="dark"]) .comparison-table__header-row {
+    background-color: var(--color-background-muted);
+  }
+
+  :global(html[data-theme="dark"]) .comparison-table__th--feature,
+  :global(html[data-theme="dark"]) .comparison-table__td--feature {
+    background-color: var(--color-background-muted);
+  }
+
+  :global(html[data-theme="dark"]) .comparison-table__row:hover .comparison-table__td--feature {
+    background-color: var(--color-background-subtle);
+  }
+
+  :global(html[data-theme="dark"]) .comparison-table__th--popular,
+  :global(html[data-theme="dark"]) .comparison-table__td--popular {
+    background-color: rgba(54, 83, 149, 0.2);
+  }
+
+  :global(html[data-theme="dark"]) .comparison-table__row--highlight {
+    background-color: rgba(54, 83, 149, 0.15);
+  }
+
+  :global(html[data-theme="dark"]) .comparison-table__row--highlight .comparison-table__td--feature {
+    background-color: rgba(54, 83, 149, 0.15);
+  }
+
+  :global(html[data-theme="dark"]) .comparison-card__feature--highlight {
+    background-color: rgba(54, 83, 149, 0.2);
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+
+  @media print {
+    .comparison-table-wrapper {
+      display: block;
+      box-shadow: none;
+      overflow: visible;
+    }
+
+    .comparison-cards {
+      display: none;
+    }
+
+    .comparison-table {
+      min-width: 0;
+    }
+
+    .comparison-table__head {
+      position: relative;
+    }
+
+    .comparison-table__th--feature,
+    .comparison-table__td--feature {
+      position: relative;
+    }
+
+    .comparison-table__row,
+    .comparison-card {
+      animation: none;
+    }
+
+    .comparison-table__row:hover {
+      background-color: transparent;
+    }
+
+    .comparison-table__cta,
+    .comparison-card__cta {
+      display: none;
+    }
+
+    .comparison-table__popular-badge,
+    .comparison-card__badge {
+      background: var(--color-primary);
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+  }
+</style>

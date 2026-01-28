@@ -1,0 +1,12 @@
+{
+  "id": "schema-markup-faq",
+  "category": "SEO",
+  "title": "FAQ Schema Markup Enhancement",
+  "description": "Add FAQPage schema markup to FAQ accordion for rich snippet display in search results. Increases click-through rates with enhanced SERP visibility.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "createdAt": "2026-01-26T01:51:05.768Z",
+  "updatedAt": "2026-01-26T21:46:31.161Z",
+  "descriptionHistory": []
+}

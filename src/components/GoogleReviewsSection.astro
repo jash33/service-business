@@ -1,0 +1,502 @@
+---
+/**
+ * GoogleReviewsSection Component
+ * A responsive section displaying Google Business reviews in a grid layout.
+ * Designed to build trust and credibility with authentic customer reviews
+ * from Google, including star ratings and review excerpts.
+ *
+ * Features:
+ * - Responsive grid: 1 column (mobile) -> 2 columns (tablet) -> 3 columns (desktop)
+ * - Section heading and subheading
+ * - Overall business rating display
+ * - Individual review cards with star ratings
+ * - Link to all reviews on Google
+ * - Accessible with proper semantic structure
+ * - Loading/empty state handling
+ * - Smooth animations with reduced motion support
+ *
+ * @example Basic usage
+ * ```astro
+ * <GoogleReviewsSection
+ *   heading="What Our Customers Say on Google"
+ *   reviews={reviews}
+ * />
+ * ```
+ *
+ * @example With business rating and Google link
+ * ```astro
+ * <GoogleReviewsSection
+ *   heading="Google Reviews"
+ *   subheading="See what our customers are saying"
+ *   reviews={reviews}
+ *   businessRating={{
+ *     averageRating: 4.8,
+ *     totalReviews: 127,
+ *     googleBusinessUrl: 'https://g.page/your-business'
+ *   }}
+ *   showGoogleLink={true}
+ *   googleReviewsUrl="https://g.page/your-business/review"
+ * />
+ * ```
+ */
+
+import type { GoogleReviewsSectionProps, GoogleReview } from '../types/google-review';
+import ReviewCard from './ReviewCard.astro';
+
+interface Props extends GoogleReviewsSectionProps {}
+
+const {
+  heading = 'What Our Customers Say',
+  subheading,
+  reviews = [],
+  businessRating,
+  maxReviews = 6,
+  showGoogleLink = true,
+  googleReviewsUrl,
+  id = 'google-reviews',
+  class: className = '',
+} = Astro.props;
+
+// Build CSS classes
+const sectionClasses = [
+  'google-reviews-section',
+  className,
+].filter(Boolean).join(' ');
+
+// Limit reviews to maxReviews
+const displayReviews = reviews.slice(0, maxReviews);
+
+// Check if we have reviews to display
+const hasReviews = displayReviews && displayReviews.length > 0;
+
+// Generate star display for aggregate rating
+const fullStars = businessRating ? Math.floor(businessRating.averageRating) : 0;
+const hasHalfStar = businessRating ? businessRating.averageRating % 1 >= 0.5 : false;
+const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+---
+
+<section class={sectionClasses} id={id} aria-labelledby={`${id}-heading`}>
+  <div class="google-reviews-section__container">
+    <!-- Section Header -->
+    <header class="google-reviews-section__header section-heading--decorated">
+      <h2 id={`${id}-heading`} class="google-reviews-section__heading">{heading}</h2>
+      {subheading && (
+        <p class="google-reviews-section__subheading">{subheading}</p>
+      )}
+
+      <!-- Aggregate Rating Display -->
+      {businessRating && (
+        <div class="google-reviews-section__aggregate-rating">
+          <div class="google-reviews-section__rating-score">
+            <span class="google-reviews-section__rating-number">{businessRating.averageRating.toFixed(1)}</span>
+            <div class="google-reviews-section__rating-stars" aria-label={`${businessRating.averageRating} out of 5 stars`}>
+              {Array(fullStars).fill(null).map(() => (
+                <svg class="google-reviews-section__star google-reviews-section__star--filled" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                </svg>
+              ))}
+              {hasHalfStar && (
+                <svg class="google-reviews-section__star google-reviews-section__star--half" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="aggregate-half-star">
+                      <stop offset="50%" stop-color="currentColor"/>
+                      <stop offset="50%" stop-color="var(--color-border)"/>
+                    </linearGradient>
+                  </defs>
+                  <path fill="url(#aggregate-half-star)" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                </svg>
+              )}
+              {Array(emptyStars).fill(null).map(() => (
+                <svg class="google-reviews-section__star google-reviews-section__star--empty" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                </svg>
+              ))}
+            </div>
+          </div>
+          <p class="google-reviews-section__total-reviews">
+            Based on <strong>{businessRating.totalReviews}</strong> Google reviews
+          </p>
+        </div>
+      )}
+    </header>
+
+    <!-- Reviews Grid -->
+    {hasReviews ? (
+      <div class="google-reviews-section__grid">
+        {displayReviews.map((review) => (
+          <ReviewCard
+            id={review.id}
+            authorName={review.authorName}
+            profilePhotoUrl={review.profilePhotoUrl}
+            rating={review.rating}
+            text={review.text}
+            relativeTimeDescription={review.relativeTimeDescription}
+            time={review.time}
+            reviewUrl={review.reviewUrl}
+            maxTextLength={150}
+          />
+        ))}
+      </div>
+    ) : (
+      <!-- Empty State -->
+      <div class="google-reviews-section__empty" role="status" aria-live="polite">
+        <p class="google-reviews-section__empty-text">Reviews coming soon.</p>
+      </div>
+    )}
+
+    <!-- Link to Google Reviews -->
+    {showGoogleLink && googleReviewsUrl && (
+      <footer class="google-reviews-section__footer">
+        <a
+          href={googleReviewsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="google-reviews-section__google-link"
+        >
+          <svg class="google-reviews-section__google-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+          See all reviews on Google
+          <svg class="google-reviews-section__link-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+          </svg>
+        </a>
+      </footer>
+    )}
+  </div>
+</section>
+
+<style>
+  /* =================================================================
+   * GOOGLE REVIEWS SECTION COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .google-reviews-section {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+  }
+
+  .google-reviews-section__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  /* Section Header */
+  .google-reviews-section__header {
+    text-align: center;
+    margin-bottom: var(--spacing-12);
+  }
+
+  .google-reviews-section__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4);
+    line-height: var(--line-height-tight);
+  }
+
+  .google-reviews-section__subheading {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--spacing-6);
+    max-width: 40rem;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* Aggregate Rating */
+  .google-reviews-section__aggregate-rating {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-4) var(--spacing-6);
+    background-color: var(--color-background-elevated);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    max-width: fit-content;
+    margin: 0 auto;
+  }
+
+  .google-reviews-section__rating-score {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+  }
+
+  .google-reviews-section__rating-number {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    line-height: 1;
+  }
+
+  .google-reviews-section__rating-stars {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+  }
+
+  .google-reviews-section__star {
+    width: var(--spacing-6);
+    height: var(--spacing-6);
+    flex-shrink: 0;
+  }
+
+  .google-reviews-section__star--filled {
+    color: #FBBC05; /* Google yellow */
+  }
+
+  .google-reviews-section__star--half {
+    color: #FBBC05;
+  }
+
+  .google-reviews-section__star--empty {
+    color: var(--color-border);
+  }
+
+  .google-reviews-section__total-reviews {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  .google-reviews-section__total-reviews strong {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  /* Reviews Grid */
+  .google-reviews-section__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+  }
+
+  /* Empty State */
+  .google-reviews-section__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-16) var(--spacing-8);
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-xl);
+    border: 2px dashed var(--color-border);
+  }
+
+  .google-reviews-section__empty-text {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-tertiary);
+    margin: 0;
+    text-align: center;
+  }
+
+  /* Footer with Google Link */
+  .google-reviews-section__footer {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--spacing-10);
+  }
+
+  .google-reviews-section__google-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3) var(--spacing-6);
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    text-decoration: none;
+    box-shadow: var(--shadow-sm);
+    transition:
+      box-shadow var(--duration-200) var(--ease-out),
+      border-color var(--duration-200) var(--ease-out),
+      transform var(--duration-200) var(--ease-out);
+  }
+
+  .google-reviews-section__google-link:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-primary-300);
+    transform: translateY(-2px);
+  }
+
+  .google-reviews-section__google-link:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  .google-reviews-section__google-icon {
+    width: var(--spacing-5);
+    height: var(--spacing-5);
+    flex-shrink: 0;
+  }
+
+  .google-reviews-section__link-arrow {
+    width: var(--spacing-5);
+    height: var(--spacing-5);
+    flex-shrink: 0;
+    color: var(--color-text-tertiary);
+    transition: transform var(--duration-200) var(--ease-out);
+  }
+
+  .google-reviews-section__google-link:hover .google-reviews-section__link-arrow {
+    transform: translateX(4px);
+    color: var(--color-primary);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * =================================================================
+   */
+
+  /* Tablet (768px) - 2 columns */
+  @media screen and (min-width: 768px) {
+    .google-reviews-section {
+      padding: var(--spacing-20) var(--spacing-8);
+    }
+
+    .google-reviews-section__header {
+      margin-bottom: var(--spacing-16);
+    }
+
+    .google-reviews-section__heading {
+      font-size: var(--font-size-4xl);
+    }
+
+    .google-reviews-section__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-8);
+    }
+
+    .google-reviews-section__aggregate-rating {
+      flex-direction: row;
+      gap: var(--spacing-4);
+      padding: var(--spacing-4) var(--spacing-8);
+    }
+  }
+
+  /* Desktop (1024px) - 3 columns */
+  @media screen and (min-width: 1024px) {
+    .google-reviews-section__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* Large Desktop (1280px) */
+  @media screen and (min-width: 1280px) {
+    .google-reviews-section {
+      padding: var(--spacing-24) var(--spacing-8);
+    }
+  }
+
+  /* =================================================================
+   * ANIMATION - Staggered card appearance
+   * =================================================================
+   */
+  .google-reviews-section__grid > :global(*) {
+    animation: fadeSlideUp 0.5s ease-out backwards;
+  }
+
+  .google-reviews-section__grid > :global(*:nth-child(1)) {
+    animation-delay: 0.1s;
+  }
+
+  .google-reviews-section__grid > :global(*:nth-child(2)) {
+    animation-delay: 0.2s;
+  }
+
+  .google-reviews-section__grid > :global(*:nth-child(3)) {
+    animation-delay: 0.3s;
+  }
+
+  .google-reviews-section__grid > :global(*:nth-child(4)) {
+    animation-delay: 0.4s;
+  }
+
+  .google-reviews-section__grid > :global(*:nth-child(5)) {
+    animation-delay: 0.5s;
+  }
+
+  .google-reviews-section__grid > :global(*:nth-child(6)) {
+    animation-delay: 0.6s;
+  }
+
+  @keyframes fadeSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * =================================================================
+   */
+  @media (prefers-reduced-motion: reduce) {
+    .google-reviews-section__grid > :global(*) {
+      animation: none;
+    }
+
+    .google-reviews-section__google-link,
+    .google-reviews-section__link-arrow {
+      transition: none;
+    }
+
+    .google-reviews-section__google-link:hover {
+      transform: none;
+    }
+
+    .google-reviews-section__google-link:hover .google-reviews-section__link-arrow {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * =================================================================
+   */
+  @media print {
+    .google-reviews-section {
+      padding: var(--spacing-8) 0;
+      background-color: transparent;
+    }
+
+    .google-reviews-section__grid {
+      gap: var(--spacing-4);
+    }
+
+    .google-reviews-section__grid > :global(*) {
+      animation: none;
+    }
+
+    .google-reviews-section__google-link {
+      display: none;
+    }
+
+    .google-reviews-section__aggregate-rating {
+      box-shadow: none;
+      border: 1px solid var(--color-border);
+    }
+  }
+</style>

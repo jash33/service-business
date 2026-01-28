@@ -1,0 +1,12 @@
+{
+  "id": "exit-intent-popup",
+  "category": "Marketing",
+  "title": "Exit Intent Lead Capture Popup",
+  "description": "Implement exit-intent detection popup offering special discount or free consultation. Includes dismissal tracking and frequency capping to avoid annoyance.",
+  "status": "in_progress",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [],
+  "createdAt": "2026-01-26T01:51:05.765Z",
+  "updatedAt": "2026-01-26T14:09:15.944Z"
+}

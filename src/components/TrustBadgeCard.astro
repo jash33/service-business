@@ -1,0 +1,553 @@
+---
+/**
+ * TrustBadgeCard Component
+ * A card component for displaying a single trust badge, certification, license,
+ * insurance badge, or award. Helps establish credibility and professionalism.
+ *
+ * Features:
+ * - Icon/logo display with accent background
+ * - Clear credential title and optional description
+ * - Issuer attribution
+ * - Optional verification link
+ * - Hover animations for enhanced interactivity
+ * - Accessible with proper semantics
+ * - Touch-friendly target sizes on mobile
+ *
+ * @example Basic usage with icon
+ * ```astro
+ * <TrustBadgeCard
+ *   id="bbb-accredited"
+ *   title="BBB Accredited"
+ *   issuer="Better Business Bureau"
+ *   icon="<svg>...</svg>"
+ * />
+ * ```
+ *
+ * @example With image and verification link
+ * ```astro
+ * <TrustBadgeCard
+ *   id="licensed-insured"
+ *   title="Licensed & Insured"
+ *   description="Fully bonded and insured for your protection"
+ *   imageUrl="/images/badges/licensed.png"
+ *   imageAlt="Licensed and Insured Badge"
+ *   verificationUrl="https://verify.example.com/123"
+ *   category="license"
+ * />
+ * ```
+ *
+ * @example Award badge
+ * ```astro
+ * <TrustBadgeCard
+ *   id="best-of-2024"
+ *   title="Best of Houston 2024"
+ *   issuer="Houston Business Journal"
+ *   year="2024"
+ *   category="award"
+ *   icon="<svg>...</svg>"
+ * />
+ * ```
+ */
+
+import type { TrustBadgeCardProps } from '../types/trust-badge';
+
+interface Props extends TrustBadgeCardProps {}
+
+const {
+  id,
+  title,
+  description,
+  icon,
+  imageUrl,
+  imageAlt,
+  issuer,
+  year,
+  verificationUrl,
+  category = 'certification',
+  class: className = '',
+} = Astro.props;
+
+// Build CSS classes
+const cardClasses = [
+  'trust-badge-card',
+  `trust-badge-card--${category}`,
+  className,
+].filter(Boolean).join(' ');
+
+// Determine if we should render as a link
+const isClickable = !!verificationUrl;
+const Tag = isClickable ? 'a' : 'article';
+const linkProps = isClickable ? { href: verificationUrl, target: '_blank', rel: 'noopener noreferrer' } : {};
+---
+
+<Tag class={cardClasses} id={`trust-badge-${id}`} {...linkProps}>
+  <!-- Badge Icon/Image -->
+  <div class="trust-badge-card__visual" aria-hidden="true">
+    {imageUrl ? (
+      <img
+        src={imageUrl}
+        alt={imageAlt || ''}
+        class="trust-badge-card__image"
+        loading="lazy"
+        decoding="async"
+      />
+    ) : icon ? (
+      <div class="trust-badge-card__icon">
+        <Fragment set:html={icon} />
+      </div>
+    ) : (
+      <div class="trust-badge-card__icon trust-badge-card__icon--default">
+        <!-- Default shield icon for badges without custom icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="m9 12 2 2 4-4"/>
+        </svg>
+      </div>
+    )}
+  </div>
+
+  <!-- Badge Content -->
+  <div class="trust-badge-card__content">
+    <h3 class="trust-badge-card__title">{title}</h3>
+
+    {description && (
+      <p class="trust-badge-card__description">{description}</p>
+    )}
+
+    {(issuer || year) && (
+      <p class="trust-badge-card__meta">
+        {issuer && <span class="trust-badge-card__issuer">{issuer}</span>}
+        {issuer && year && <span class="trust-badge-card__separator" aria-hidden="true">&bull;</span>}
+        {year && <span class="trust-badge-card__year">{year}</span>}
+      </p>
+    )}
+  </div>
+
+  <!-- Verification indicator for clickable badges -->
+  {isClickable && (
+    <div class="trust-badge-card__verify" aria-label="Click to verify">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+        <polyline points="15 3 21 3 21 9"/>
+        <line x1="10" y1="14" x2="21" y2="3"/>
+      </svg>
+      <span class="trust-badge-card__verify-text">Verify</span>
+    </div>
+  )}
+</Tag>
+
+<style>
+  /* =================================================================
+   * TRUST BADGE CARD COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .trust-badge-card {
+    /* Layout */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--spacing-3);
+
+    /* Box model */
+    padding: var(--spacing-5);
+
+    /* Positioning for pseudo-elements */
+    position: relative;
+
+    /* Visual */
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+
+    /* Overflow for shine effect */
+    overflow: hidden;
+
+    /* Animation */
+    transition:
+      box-shadow var(--duration-300) var(--ease-out),
+      transform var(--duration-300) var(--ease-out),
+      border-color var(--duration-300) var(--ease-out);
+  }
+
+  /* Link-specific styles */
+  a.trust-badge-card {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  a.trust-badge-card:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  /* Shine sweep effect - diagonal sweep across card on hover */
+  .trust-badge-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.12) 50%,
+      transparent 100%
+    );
+    transform: skewX(-20deg);
+    transition: left var(--duration-700) var(--ease-out);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .trust-badge-card:hover {
+    box-shadow: var(--shadow-lg), var(--glow-card-hover);
+    transform: translateY(-4px);
+    border-color: var(--color-primary-300);
+  }
+
+  .trust-badge-card:hover::after {
+    left: 150%;
+  }
+
+  /* Visual Container (Icon/Image) */
+  .trust-badge-card__visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--spacing-14);
+    height: var(--spacing-14);
+    position: relative;
+    z-index: 2;
+  }
+
+  .trust-badge-card__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-50) 0%,
+      var(--color-primary-100) 100%
+    );
+    border-radius: var(--radius-full);
+    color: var(--color-primary);
+    transition:
+      background var(--duration-300) var(--ease-out),
+      transform var(--duration-300) var(--ease-spring-soft),
+      box-shadow var(--duration-300) var(--ease-out);
+  }
+
+  .trust-badge-card__icon :global(svg) {
+    width: var(--spacing-7);
+    height: var(--spacing-7);
+    transition: transform var(--duration-300) var(--ease-spring-soft);
+  }
+
+  .trust-badge-card:hover .trust-badge-card__icon {
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-100) 0%,
+      var(--color-primary-200) 100%
+    );
+    transform: scale(1.08);
+    box-shadow: var(--glow-primary-sm);
+  }
+
+  .trust-badge-card:hover .trust-badge-card__icon :global(svg) {
+    transform: scale(1.05);
+  }
+
+  /* Image styles */
+  .trust-badge-card__image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform var(--duration-300) var(--ease-spring-soft);
+  }
+
+  .trust-badge-card:hover .trust-badge-card__image {
+    transform: scale(1.05);
+  }
+
+  /* Content Area */
+  .trust-badge-card__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    flex: 1;
+    position: relative;
+    z-index: 2;
+  }
+
+  .trust-badge-card__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: var(--line-height-tight);
+    transition: color var(--duration-200) var(--ease-out);
+  }
+
+  .trust-badge-card:hover .trust-badge-card__title {
+    color: var(--color-primary);
+  }
+
+  .trust-badge-card__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0;
+    transition: color var(--duration-200) var(--ease-out);
+  }
+
+  .trust-badge-card:hover .trust-badge-card__description {
+    color: var(--color-text-primary);
+  }
+
+  .trust-badge-card__meta {
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-1);
+    flex-wrap: wrap;
+  }
+
+  .trust-badge-card__separator {
+    color: var(--color-text-disabled);
+  }
+
+  /* Verification indicator */
+  .trust-badge-card__verify {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    font-size: var(--font-size-xs);
+    color: var(--color-primary);
+    opacity: 0;
+    transform: translateY(4px);
+    transition:
+      opacity var(--duration-200) var(--ease-out),
+      transform var(--duration-200) var(--ease-out);
+    position: relative;
+    z-index: 2;
+  }
+
+  .trust-badge-card__verify svg {
+    width: var(--spacing-3);
+    height: var(--spacing-3);
+  }
+
+  .trust-badge-card:hover .trust-badge-card__verify {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* =================================================================
+   * CATEGORY VARIANTS
+   * =================================================================
+   */
+
+  /* Award category - gold accent */
+  .trust-badge-card--award .trust-badge-card__icon {
+    background: linear-gradient(
+      135deg,
+      #fef3c7 0%,
+      #fde68a 100%
+    );
+    color: #b45309;
+  }
+
+  .trust-badge-card--award:hover .trust-badge-card__icon {
+    background: linear-gradient(
+      135deg,
+      #fde68a 0%,
+      #fcd34d 100%
+    );
+  }
+
+  /* Insurance category - green accent */
+  .trust-badge-card--insurance .trust-badge-card__icon {
+    background: linear-gradient(
+      135deg,
+      #dcfce7 0%,
+      #bbf7d0 100%
+    );
+    color: #15803d;
+  }
+
+  .trust-badge-card--insurance:hover .trust-badge-card__icon {
+    background: linear-gradient(
+      135deg,
+      #bbf7d0 0%,
+      #86efac 100%
+    );
+  }
+
+  /* License category - blue accent */
+  .trust-badge-card--license .trust-badge-card__icon {
+    background: linear-gradient(
+      135deg,
+      #dbeafe 0%,
+      #bfdbfe 100%
+    );
+    color: #1d4ed8;
+  }
+
+  .trust-badge-card--license:hover .trust-badge-card__icon {
+    background: linear-gradient(
+      135deg,
+      #bfdbfe 0%,
+      #93c5fd 100%
+    );
+  }
+
+  /* Membership category - purple accent */
+  .trust-badge-card--membership .trust-badge-card__icon {
+    background: linear-gradient(
+      135deg,
+      #ede9fe 0%,
+      #ddd6fe 100%
+    );
+    color: #7c3aed;
+  }
+
+  .trust-badge-card--membership:hover .trust-badge-card__icon {
+    background: linear-gradient(
+      135deg,
+      #ddd6fe 0%,
+      #c4b5fd 100%
+    );
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * =================================================================
+   */
+
+  /* Tablet and up (768px) */
+  @media screen and (min-width: 768px) {
+    .trust-badge-card {
+      padding: var(--spacing-6);
+      gap: var(--spacing-4);
+    }
+
+    .trust-badge-card__visual {
+      width: var(--spacing-16);
+      height: var(--spacing-16);
+    }
+
+    .trust-badge-card__icon :global(svg) {
+      width: var(--spacing-8);
+      height: var(--spacing-8);
+    }
+
+    .trust-badge-card__title {
+      font-size: var(--font-size-lg);
+    }
+
+    .trust-badge-card__description {
+      font-size: var(--font-size-base);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * =================================================================
+   */
+  @media (prefers-reduced-motion: reduce) {
+    .trust-badge-card,
+    .trust-badge-card__icon,
+    .trust-badge-card__image,
+    .trust-badge-card__title,
+    .trust-badge-card__description,
+    .trust-badge-card__verify,
+    .trust-badge-card__icon :global(svg) {
+      transition: none;
+    }
+
+    .trust-badge-card::after {
+      display: none;
+    }
+
+    .trust-badge-card:hover {
+      transform: none;
+      /* Keep subtle visual feedback without motion */
+      box-shadow: var(--shadow-lg);
+    }
+
+    .trust-badge-card:hover .trust-badge-card__icon {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .trust-badge-card:hover .trust-badge-card__image {
+      transform: none;
+    }
+
+    .trust-badge-card:hover .trust-badge-card__icon :global(svg) {
+      transform: none;
+    }
+
+    .trust-badge-card__verify {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * Windows High Contrast support
+   * =================================================================
+   */
+  @media (forced-colors: active) {
+    .trust-badge-card {
+      border: 2px solid CanvasText;
+    }
+
+    .trust-badge-card__icon {
+      border: 1px solid CanvasText;
+    }
+
+    a.trust-badge-card:focus-visible {
+      outline: 3px solid Highlight;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * =================================================================
+   */
+  @media print {
+    .trust-badge-card {
+      box-shadow: none;
+      border: 1px solid var(--color-border);
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .trust-badge-card:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .trust-badge-card__verify {
+      display: none;
+    }
+  }
+</style>

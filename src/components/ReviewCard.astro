@@ -1,0 +1,503 @@
+---
+/**
+ * ReviewCard Component
+ * A card component for displaying a single Google Business review
+ * with star rating, text excerpt, and reviewer information.
+ *
+ * Features:
+ * - Star rating display (1-5 stars)
+ * - Reviewer name and profile photo
+ * - Review text with optional truncation
+ * - Relative time display
+ * - Link to full review on Google
+ * - Hover animations for enhanced interactivity
+ * - Accessible with proper semantic structure
+ * - Touch-friendly target sizes on mobile
+ *
+ * @example Basic usage
+ * ```astro
+ * <ReviewCard
+ *   id="review-1"
+ *   authorName="John Smith"
+ *   rating={5}
+ *   text="Excellent service! Highly recommended."
+ *   relativeTimeDescription="2 weeks ago"
+ *   time={1704067200}
+ * />
+ * ```
+ *
+ * @example With truncation
+ * ```astro
+ * <ReviewCard
+ *   id="review-2"
+ *   authorName="Jane Doe"
+ *   rating={4}
+ *   text="Very long review text here..."
+ *   relativeTimeDescription="1 month ago"
+ *   time={1701388800}
+ *   maxTextLength={100}
+ * />
+ * ```
+ */
+
+import type { ReviewCardProps } from '../types/google-review';
+
+interface Props extends ReviewCardProps {}
+
+const {
+  id,
+  authorName,
+  profilePhotoUrl,
+  rating,
+  text,
+  relativeTimeDescription,
+  time,
+  reviewUrl,
+  showFullText = false,
+  maxTextLength = 150,
+  class: className = '',
+} = Astro.props;
+
+// Build CSS classes
+const cardClasses = [
+  'review-card',
+  className,
+].filter(Boolean).join(' ');
+
+// Truncate text if needed
+const shouldTruncate = !showFullText && text.length > maxTextLength;
+const displayText = shouldTruncate
+  ? text.substring(0, maxTextLength).trim() + '...'
+  : text;
+
+// Generate star display
+const fullStars = Math.floor(rating);
+const hasHalfStar = rating % 1 >= 0.5;
+const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+// Default profile image placeholder
+const displayPhotoUrl = profilePhotoUrl || '/images/default-avatar.svg';
+---
+
+<article class={cardClasses} id={`review-${id}`}>
+  <!-- Google Icon Badge -->
+  <div class="review-card__google-badge" aria-hidden="true">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+    </svg>
+  </div>
+
+  <!-- Header with Author Info and Rating -->
+  <header class="review-card__header">
+    <!-- Author Photo -->
+    <div class="review-card__author-photo">
+      <img
+        src={displayPhotoUrl}
+        alt={`${authorName}'s profile photo`}
+        loading="lazy"
+        width="48"
+        height="48"
+      />
+    </div>
+
+    <!-- Author Details -->
+    <div class="review-card__author-info">
+      <span class="review-card__author-name">{authorName}</span>
+      <time class="review-card__time" datetime={time ? new Date(time * 1000).toISOString() : undefined}>
+        {relativeTimeDescription}
+      </time>
+    </div>
+  </header>
+
+  <!-- Star Rating -->
+  <div class="review-card__rating" aria-label={`${rating} out of 5 stars`}>
+    {Array(fullStars).fill(null).map(() => (
+      <svg class="review-card__star review-card__star--filled" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+      </svg>
+    ))}
+    {hasHalfStar && (
+      <svg class="review-card__star review-card__star--half" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+        <defs>
+          <linearGradient id={`half-star-${id}`}>
+            <stop offset="50%" stop-color="currentColor"/>
+            <stop offset="50%" stop-color="var(--color-border)"/>
+          </linearGradient>
+        </defs>
+        <path fill={`url(#half-star-${id})`} d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+      </svg>
+    )}
+    {Array(emptyStars).fill(null).map(() => (
+      <svg class="review-card__star review-card__star--empty" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+      </svg>
+    ))}
+  </div>
+
+  <!-- Review Text -->
+  <blockquote class="review-card__text">
+    <p class="review-card__text-content">{displayText}</p>
+  </blockquote>
+
+  <!-- Footer with Link to Full Review -->
+  {reviewUrl && (
+    <footer class="review-card__footer">
+      <a
+        href={reviewUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="review-card__link"
+        aria-label={`Read full review by ${authorName} on Google`}
+      >
+        Read full review
+        <svg class="review-card__link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+        </svg>
+      </a>
+    </footer>
+  )}
+</article>
+
+<style>
+  /* =================================================================
+   * REVIEW CARD COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .review-card {
+    /* Layout */
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+
+    /* Box model */
+    padding: var(--spacing-6);
+
+    /* Positioning for pseudo-elements */
+    position: relative;
+
+    /* Visual */
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+
+    /* Overflow for shine effect */
+    overflow: hidden;
+
+    /* Animation */
+    transition:
+      box-shadow var(--duration-300) var(--ease-out),
+      transform var(--duration-300) var(--ease-out),
+      border-color var(--duration-300) var(--ease-out);
+  }
+
+  /* Shine sweep effect - diagonal sweep across card on hover */
+  .review-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      transparent 100%
+    );
+    transform: skewX(-20deg);
+    transition: left var(--duration-700) var(--ease-out);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .review-card:hover {
+    box-shadow: var(--shadow-lg), var(--glow-card-hover);
+    transform: translateY(-6px);
+    border-color: var(--color-primary-300);
+  }
+
+  .review-card:hover::after {
+    left: 150%;
+  }
+
+  /* Google Badge */
+  .review-card__google-badge {
+    position: absolute;
+    top: var(--spacing-4);
+    right: var(--spacing-4);
+    width: var(--spacing-6);
+    height: var(--spacing-6);
+    z-index: 2;
+    opacity: 0.7;
+    transition: opacity var(--duration-200) var(--ease-out);
+  }
+
+  .review-card:hover .review-card__google-badge {
+    opacity: 1;
+  }
+
+  .review-card__google-badge svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Header */
+  .review-card__header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    position: relative;
+    z-index: 2;
+  }
+
+  .review-card__author-photo {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    background-color: var(--color-background-muted);
+    border: 2px solid var(--color-border);
+  }
+
+  .review-card__author-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .review-card__author-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    min-width: 0;
+  }
+
+  .review-card__author-name {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-tight);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color var(--duration-200) var(--ease-out);
+  }
+
+  .review-card:hover .review-card__author-name {
+    color: var(--color-primary);
+  }
+
+  .review-card__time {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+    line-height: var(--line-height-normal);
+  }
+
+  /* Star Rating */
+  .review-card__rating {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    position: relative;
+    z-index: 2;
+  }
+
+  .review-card__star {
+    width: var(--spacing-5);
+    height: var(--spacing-5);
+    flex-shrink: 0;
+  }
+
+  .review-card__star--filled {
+    color: #FBBC05; /* Google yellow */
+  }
+
+  .review-card__star--half {
+    color: #FBBC05;
+  }
+
+  .review-card__star--empty {
+    color: var(--color-border);
+  }
+
+  /* Review Text */
+  .review-card__text {
+    margin: 0;
+    padding: 0;
+    flex: 1;
+    position: relative;
+    z-index: 2;
+  }
+
+  .review-card__text-content {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0;
+    transition: color var(--duration-200) var(--ease-out);
+  }
+
+  .review-card:hover .review-card__text-content {
+    color: var(--color-text-primary);
+  }
+
+  /* Footer / Link */
+  .review-card__footer {
+    position: relative;
+    z-index: 2;
+    padding-top: var(--spacing-3);
+    border-top: 1px solid var(--color-border);
+    margin-top: auto;
+  }
+
+  .review-card__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color var(--duration-200) var(--ease-out);
+  }
+
+  .review-card__link:hover {
+    color: var(--color-primary-dark);
+    text-decoration: underline;
+  }
+
+  .review-card__link:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  .review-card__link-icon {
+    width: var(--spacing-4);
+    height: var(--spacing-4);
+    transition: transform var(--duration-200) var(--ease-out);
+  }
+
+  .review-card__link:hover .review-card__link-icon {
+    transform: translateX(2px);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * =================================================================
+   */
+
+  /* Tablet and up (768px) */
+  @media screen and (min-width: 768px) {
+    .review-card {
+      padding: var(--spacing-8);
+      gap: var(--spacing-4);
+    }
+
+    .review-card__author-photo {
+      width: 56px;
+      height: 56px;
+    }
+
+    .review-card__author-name {
+      font-size: var(--font-size-lg);
+    }
+
+    .review-card__star {
+      width: var(--spacing-6);
+      height: var(--spacing-6);
+    }
+
+    .review-card__text-content {
+      font-size: var(--font-size-base);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * =================================================================
+   */
+  @media (prefers-reduced-motion: reduce) {
+    .review-card,
+    .review-card__author-name,
+    .review-card__text-content,
+    .review-card__google-badge,
+    .review-card__link,
+    .review-card__link-icon {
+      transition: none;
+    }
+
+    .review-card::after {
+      display: none;
+    }
+
+    .review-card:hover {
+      transform: none;
+      /* Keep subtle visual feedback without motion */
+      box-shadow: var(--shadow-lg);
+    }
+
+    .review-card__link:hover .review-card__link-icon {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * Windows High Contrast support
+   * =================================================================
+   */
+  @media (forced-colors: active) {
+    .review-card {
+      border: 2px solid CanvasText;
+    }
+
+    .review-card__author-photo {
+      border: 1px solid CanvasText;
+    }
+
+    .review-card__footer {
+      border-top: 1px solid CanvasText;
+    }
+
+    .review-card__star--filled,
+    .review-card__star--half {
+      color: CanvasText;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * =================================================================
+   */
+  @media print {
+    .review-card {
+      box-shadow: none;
+      border: 1px solid var(--color-border);
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .review-card:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .review-card__google-badge {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,529 @@
+---
+/**
+ * ResourceCard Component
+ * A card component for displaying a single downloadable resource with thumbnail,
+ * title, description, category, tags, and download button.
+ *
+ * Features:
+ * - Thumbnail image with lazy loading
+ * - Category and format badges
+ * - File size and format display
+ * - Download button with hover effects
+ * - Featured resource highlighting
+ * - Accessible with proper heading hierarchy
+ * - Touch-friendly target sizes on mobile (44x44px minimum)
+ * - Reduced motion support
+ *
+ * @example Basic usage
+ * ```astro
+ * <ResourceCard
+ *   id="resource-1"
+ *   title="SEO Guide"
+ *   description="Learn SEO basics..."
+ *   featuredImage={{ src: '/resources/seo.svg', alt: 'SEO Guide' }}
+ *   category="guides"
+ *   tags={[{ slug: 'seo', name: 'SEO' }]}
+ *   downloadUrl="/resources/seo-guide.pdf"
+ *   format="pdf"
+ *   fileSize="2.5 MB"
+ *   publishedDate="2024-01-15"
+ *   slug="seo-guide"
+ * />
+ * ```
+ */
+
+import type { ResourceCardProps } from '../types/resources';
+import { FORMAT_LABELS } from '../types/resources';
+
+interface Props extends ResourceCardProps {}
+
+const {
+  id,
+  title,
+  description,
+  featuredImage,
+  category,
+  tags = [],
+  downloadUrl,
+  format,
+  fileSize,
+  publishedDate,
+  featured = false,
+  slug,
+  downloadCount,
+  class: className = '',
+} = Astro.props;
+
+// Build CSS classes
+const cardClasses = [
+  'resource-card',
+  featured && 'resource-card--featured',
+  className,
+].filter(Boolean).join(' ');
+
+// Format the publication date
+const formattedDate = new Date(publishedDate).toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+});
+
+// Format category for display
+const categoryLabel = category
+  .split('-')
+  .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+  .join(' ');
+
+// Format label
+const formatLabel = FORMAT_LABELS[format] || format.toUpperCase();
+
+// Format download count
+const formattedDownloads = downloadCount
+  ? downloadCount >= 1000
+    ? `${(downloadCount / 1000).toFixed(1)}k`
+    : downloadCount.toString()
+  : null;
+---
+
+<article class={cardClasses} id={`resource-${id}`} data-resource-card>
+  <!-- Image Container -->
+  <div class="resource-card__image-container">
+    <img
+      src={featuredImage.src}
+      alt={featuredImage.alt}
+      width={featuredImage.width || 400}
+      height={featuredImage.height || 300}
+      loading="lazy"
+      decoding="async"
+      class="resource-card__image"
+    />
+
+    <!-- Featured badge -->
+    {featured && (
+      <span class="resource-card__badge resource-card__badge--featured" aria-label="Featured resource">
+        Featured
+      </span>
+    )}
+
+    <!-- Format badge -->
+    <span class="resource-card__badge resource-card__badge--format">
+      {formatLabel}
+    </span>
+  </div>
+
+  <!-- Content -->
+  <div class="resource-card__content">
+    <!-- Category -->
+    <span class="resource-card__category">{categoryLabel}</span>
+
+    <h3 class="resource-card__title">{title}</h3>
+
+    <p class="resource-card__description">{description}</p>
+
+    <!-- Tags -->
+    {tags.length > 0 && (
+      <ul class="resource-card__tags" aria-label="Resource tags">
+        {tags.slice(0, 3).map((tag) => (
+          <li class="resource-card__tag">
+            <a href={`/resources?tag=${tag.slug}`} class="resource-card__tag-link">
+              {tag.name}
+            </a>
+          </li>
+        ))}
+        {tags.length > 3 && (
+          <li class="resource-card__tag resource-card__tag--more">
+            +{tags.length - 3} more
+          </li>
+        )}
+      </ul>
+    )}
+  </div>
+
+  <!-- Footer with download info -->
+  <div class="resource-card__footer">
+    <div class="resource-card__meta">
+      <span class="resource-card__file-info">
+        <svg class="resource-card__icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        {fileSize}
+      </span>
+      {formattedDownloads && (
+        <span class="resource-card__downloads">
+          <svg class="resource-card__icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          {formattedDownloads} downloads
+        </span>
+      )}
+    </div>
+    <a
+      href={downloadUrl}
+      class="resource-card__download-btn"
+      download
+      aria-label={`Download ${title}`}
+      data-title={title}
+      data-category={category}
+      data-format={format}
+    >
+      <svg class="resource-card__download-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Download
+    </a>
+  </div>
+</article>
+
+<style>
+  /* =================================================================
+   * RESOURCE CARD COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .resource-card {
+    /* Layout */
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    /* Positioning for pseudo-elements */
+    position: relative;
+
+    /* Visual */
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+
+    /* Animation */
+    transition:
+      box-shadow var(--duration-300) var(--ease-out),
+      transform var(--duration-300) var(--ease-out),
+      border-color var(--duration-300) var(--ease-out);
+  }
+
+  .resource-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+    border-color: var(--color-primary-200);
+  }
+
+  .resource-card--featured {
+    border-color: var(--color-primary-300);
+  }
+
+  .resource-card--featured:hover {
+    border-color: var(--color-primary-400);
+    box-shadow: var(--shadow-xl), var(--shadow-primary);
+  }
+
+  /* =================================================================
+   * IMAGE CONTAINER
+   * ================================================================= */
+  .resource-card__image-container {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background-color: var(--color-background-muted);
+  }
+
+  .resource-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--duration-300) var(--ease-out);
+  }
+
+  .resource-card:hover .resource-card__image {
+    transform: scale(1.05);
+  }
+
+  /* =================================================================
+   * BADGES
+   * ================================================================= */
+  .resource-card__badge {
+    position: absolute;
+    padding: var(--spacing-1) var(--spacing-2);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+    border-radius: var(--radius-md);
+    z-index: 3;
+  }
+
+  .resource-card__badge--featured {
+    top: var(--spacing-3);
+    left: var(--spacing-3);
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  .resource-card__badge--format {
+    bottom: var(--spacing-3);
+    right: var(--spacing-3);
+    background-color: var(--color-background-elevated);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+  }
+
+  /* =================================================================
+   * CONTENT AREA
+   * ================================================================= */
+  .resource-card__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    padding: var(--spacing-5);
+    flex: 1;
+  }
+
+  .resource-card__category {
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  .resource-card__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .resource-card__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* =================================================================
+   * TAGS
+   * ================================================================= */
+  .resource-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+    margin: var(--spacing-2) 0 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .resource-card__tag {
+    display: inline-block;
+  }
+
+  .resource-card__tag-link {
+    display: inline-block;
+    padding: var(--spacing-1) var(--spacing-2);
+    background-color: var(--color-primary-50);
+    color: var(--color-primary-700);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-primary-100);
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      border-color var(--duration-150) var(--ease-in-out),
+      color var(--duration-150) var(--ease-in-out);
+  }
+
+  .resource-card__tag-link:hover {
+    background-color: var(--color-primary-100);
+    border-color: var(--color-primary-200);
+    color: var(--color-primary-800);
+  }
+
+  .resource-card__tag-link:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .resource-card__tag--more {
+    padding: var(--spacing-1) var(--spacing-2);
+    color: var(--color-text-tertiary);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+  }
+
+  /* =================================================================
+   * FOOTER
+   * ================================================================= */
+  .resource-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-3);
+    padding: var(--spacing-4) var(--spacing-5);
+    border-top: 1px solid var(--color-border-light);
+    margin-top: auto;
+  }
+
+  .resource-card__meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+  }
+
+  .resource-card__file-info,
+  .resource-card__downloads {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  .resource-card__icon {
+    width: var(--spacing-4);
+    height: var(--spacing-4);
+    flex-shrink: 0;
+  }
+
+  .resource-card__download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-4);
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    text-decoration: none;
+    border-radius: var(--radius-lg);
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      transform var(--duration-150) var(--ease-in-out),
+      box-shadow var(--duration-150) var(--ease-in-out);
+  }
+
+  .resource-card__download-btn:hover {
+    background-color: var(--color-primary-600);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .resource-card__download-btn:active {
+    transform: translateY(0);
+  }
+
+  .resource-card__download-btn:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .resource-card__download-icon {
+    width: var(--spacing-4);
+    height: var(--spacing-4);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+  @media screen and (max-width: 767px) {
+    .resource-card__content {
+      padding: var(--spacing-4);
+    }
+
+    .resource-card__footer {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--spacing-3);
+      padding: var(--spacing-3) var(--spacing-4);
+    }
+
+    .resource-card__meta {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    .resource-card__download-btn {
+      justify-content: center;
+      min-height: 44px;
+    }
+  }
+
+  @media screen and (min-width: 768px) {
+    .resource-card__content {
+      padding: var(--spacing-5);
+    }
+
+    .resource-card__title {
+      font-size: var(--font-size-lg);
+    }
+
+    .resource-card__footer {
+      padding: var(--spacing-4) var(--spacing-5);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .resource-card,
+    .resource-card__image,
+    .resource-card__tag-link,
+    .resource-card__download-btn {
+      transition: none;
+    }
+
+    .resource-card:hover {
+      transform: none;
+    }
+
+    .resource-card:hover .resource-card__image {
+      transform: none;
+    }
+
+    .resource-card__download-btn:hover {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+  @media (forced-colors: active) {
+    .resource-card {
+      border: 2px solid currentColor;
+    }
+
+    .resource-card__badge {
+      border: 1px solid currentColor;
+    }
+
+    .resource-card__tag-link {
+      border: 1px solid currentColor;
+    }
+
+    .resource-card__download-btn {
+      border: 2px solid currentColor;
+    }
+  }
+</style>
