@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"C:/Users/James/Repos/service-business\" remote get-url origin)",
+      "Bash(xargs perl:*)"
+    ]
+  }
+}

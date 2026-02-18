@@ -113,7 +113,7 @@ const hasToc = article.tableOfContents && article.tableOfContents.length > 0;
     <!-- Article Header -->
     <header class="blog-post__header">
       <div class="blog-post__meta">
-        <a href={`/blog?category=${article.category}`} class="blog-post__category">
+        <a href={`/service-business/blog?category=${article.category}`} class="blog-post__category">
           {categoryLabel}
         </a>
         <span class="blog-post__meta-separator" aria-hidden="true">·</span>
@@ -196,7 +196,7 @@ const hasToc = article.tableOfContents && article.tableOfContents.length > 0;
         ) : (
           <div class="blog-post__placeholder">
             <p>This article's full content is coming soon. Check back later for the complete post!</p>
-            <p>In the meantime, you can browse our other articles on the <a href="/blog">blog page</a>.</p>
+            <p>In the meantime, you can browse our other articles on the <a href="/service-business/blog">blog page</a>.</p>
           </div>
         )}
       </div>
@@ -211,7 +211,7 @@ const hasToc = article.tableOfContents && article.tableOfContents.length > 0;
           <ul class="blog-post__tags-list">
             {article.tags.map((tag) => (
               <li class="blog-post__tag">
-                <a href={`/blog?tag=${tag.slug}`} class="blog-post__tag-link">
+                <a href={`/service-business/blog?tag=${tag.slug}`} class="blog-post__tag-link">
                   {tag.name}
                 </a>
               </li>

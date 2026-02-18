@@ -129,7 +129,7 @@ const containerClasses = [
       <ul class="checklist-detail__tags" aria-label="Checklist tags">
         {checklist.tags.map((tag) => (
           <li class="checklist-detail__tag">
-            <a href={`/service-checklists?tag=${tag.slug}`} class="checklist-detail__tag-link">
+            <a href={`/service-business/service-checklists?tag=${tag.slug}`} class="checklist-detail__tag-link">
               {tag.name}
             </a>
           </li>
@@ -259,7 +259,7 @@ const containerClasses = [
           <ul class="checklist-detail__related-list">
             {relatedChecklists.map((related) => (
               <li class="checklist-detail__related-item">
-                <a href={`/service-checklists/${related.slug}`} class="checklist-detail__related-link">
+                <a href={`/service-business/service-checklists/${related.slug}`} class="checklist-detail__related-link">
                   <span class="checklist-detail__related-name">{related.title}</span>
                   <span class="checklist-detail__related-category">
                     {CATEGORY_LABELS[related.category]}

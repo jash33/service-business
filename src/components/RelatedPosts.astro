@@ -65,7 +65,7 @@ function formatCategory(category: string): string {
   <div class="related-posts__grid">
     {displayPosts.map((post) => (
       <article class="related-post">
-        <a href={`/blog/${post.slug}`} class="related-post__image-link">
+        <a href={`/service-business/blog/${post.slug}`} class="related-post__image-link">
           <div class="related-post__image-container">
             <img
               src={post.featuredImage.src}
@@ -87,7 +87,7 @@ function formatCategory(category: string): string {
           </div>
 
           <h3 class="related-post__title">
-            <a href={`/blog/${post.slug}`} class="related-post__title-link">
+            <a href={`/service-business/blog/${post.slug}`} class="related-post__title-link">
               {post.title}
             </a>
           </h3>
@@ -97,7 +97,7 @@ function formatCategory(category: string): string {
   </div>
 
   <div class="related-posts__footer">
-    <a href="/blog" class="related-posts__view-all">
+    <a href="/service-business/blog" class="related-posts__view-all">
       View All Articles
       <svg class="related-posts__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
         <path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/>

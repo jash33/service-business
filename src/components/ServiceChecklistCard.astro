@@ -188,7 +188,7 @@ const detailUrl = `/service-checklists/${slug}`;
       <ul class="checklist-card__tags" aria-label="Checklist tags">
         {tags.slice(0, 3).map((tag) => (
           <li class="checklist-card__tag">
-            <a href={`/service-checklists?tag=${tag.slug}`} class="checklist-card__tag-link">
+            <a href={`/service-business/service-checklists?tag=${tag.slug}`} class="checklist-card__tag-link">
               {tag.name}
             </a>
           </li>

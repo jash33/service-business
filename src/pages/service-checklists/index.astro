@@ -219,7 +219,7 @@ const hasActiveFilters = categoryParam !== 'all' || serviceTypeParam !== 'all' |
               <div class="checklists-filter__tags">
                 {tagsWithCounts.map((tag) => (
                   <a
-                    href={`/service-checklists?tag=${tag.value}`}
+                    href={`/service-business/service-checklists?tag=${tag.value}`}
                     class:list={[
                       'checklists-filter__tag',
                       { 'checklists-filter__tag--active': tagParam === tag.value }
@@ -234,7 +234,7 @@ const hasActiveFilters = categoryParam !== 'all' || serviceTypeParam !== 'all' |
 
           <!-- Clear Filters -->
           {hasActiveFilters && (
-            <a href="/service-checklists" class="checklists-filter__clear">
+            <a href="/service-business/service-checklists" class="checklists-filter__clear">
               <svg class="checklists-filter__clear-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -285,7 +285,7 @@ const hasActiveFilters = categoryParam !== 'all' || serviceTypeParam !== 'all' |
             </svg>
             <h3 class="checklists-listing__empty-title">No checklists found</h3>
             <p class="checklists-listing__empty-text">
-              Try adjusting your filters or <a href="/service-checklists">view all checklists</a>.
+              Try adjusting your filters or <a href="/service-business/service-checklists">view all checklists</a>.
             </p>
           </div>
         )}

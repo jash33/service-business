@@ -29,22 +29,22 @@ const { currentPath = '/' } = Astro.props;
 // Navigation links configuration
 // Configure: Add or update navigation links as needed for your business
 const navLinks = [
-  { href: '/', label: 'Home' },
-  { href: '/services', label: 'Services' },
-  { href: '/about', label: 'About' },
-  { href: '/contact', label: 'Contact' },
+  { href: '/service-business/', label: 'Home' },
+  { href: '/service-business/services', label: 'Services' },
+  { href: '/service-business/about', label: 'About' },
+  { href: '/service-business/contact', label: 'Contact' },
 ];
 
 // CTA link (separate from nav for special styling)
 // Configure: Update CTA href and label for your business
-const ctaLink = { href: '/contact', label: 'Get Started' };
+const ctaLink = { href: '/service-business/contact', label: 'Get Started' };
 ---
 
 <header class="header" role="banner">
   <div class="header__container">
     <!-- Logo/Brand -->
     <!-- Configure: Update logo text and aria-label with your business name -->
-    <a href="/" class="header__logo" aria-label="Go to homepage">
+    <a href="/service-business/" class="header__logo" aria-label="Go to homepage">
       <span class="header__logo-text">Logo</span>
     </a>
 
