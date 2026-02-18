@@ -27,28 +27,25 @@ interface Props {
 const { currentPath = '/' } = Astro.props;
 
 // Navigation links configuration
+// Configure: Add or update navigation links as needed for your business
 const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/services', label: 'Services' },
-  { href: '/financing', label: 'Financing' },
-  { href: '/service-areas', label: 'Service Areas' },
-  { href: '/portfolio', label: 'Portfolio' },
-  { href: '/resources', label: 'Resources' },
-  { href: '/vendors', label: 'Vendors' },
-  { href: '/team', label: 'Team' },
   { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' },
 ];
 
-// CTA link for quote request (separate from nav for special styling)
-const ctaLink = { href: '/service-request', label: 'Get Quote' };
+// CTA link (separate from nav for special styling)
+// Configure: Update CTA href and label for your business
+const ctaLink = { href: '/contact', label: 'Get Started' };
 ---
 
 <header class="header" role="banner">
   <div class="header__container">
     <!-- Logo/Brand -->
-    <a href="/" class="header__logo" aria-label="Houston Web Services - Go to homepage">
-      <span class="header__logo-text">HWS</span>
+    <!-- Configure: Update logo text and aria-label with your business name -->
+    <a href="/" class="header__logo" aria-label="Go to homepage">
+      <span class="header__logo-text">Logo</span>
     </a>
 
     <!-- Desktop Navigation -->

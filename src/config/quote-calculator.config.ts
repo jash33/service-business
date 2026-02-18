@@ -1,6 +1,9 @@
 /**
  * Instant Quote Calculator Configuration
  * Defines pricing options, categories, and calculation logic for the quote calculator.
+ *
+ * TODO: Configure this file with your business-specific pricing options.
+ * Add your service categories and options to the CATEGORIES and CALCULATOR_OPTIONS arrays below.
  */
 
 import type {
@@ -25,319 +28,41 @@ export const PRICE_VARIANCE = 0.15; // 15% variance
 
 /**
  * Category configurations
+ *
+ * TODO: Define your service categories here.
+ * Each category groups related pricing options together.
+ *
+ * Example:
+ * {
+ *   id: 'projectType',
+ *   title: 'Project Type',
+ *   description: 'What type of project are you looking for?',
+ *   selectionType: 'single',
+ *   required: true,
+ *   order: 1,
+ * }
  */
 export const CATEGORIES: CategoryConfig[] = [
-  {
-    id: 'projectType',
-    title: 'Project Type',
-    description: 'What type of project are you looking for?',
-    selectionType: 'single',
-    required: true,
-    order: 1,
-  },
-  {
-    id: 'siteSize',
-    title: 'Website Size',
-    description: 'How many pages do you need?',
-    selectionType: 'single',
-    required: true,
-    order: 2,
-  },
-  {
-    id: 'features',
-    title: 'Key Features',
-    description: 'Select the features you need',
-    selectionType: 'multiple',
-    required: false,
-    order: 3,
-  },
-  {
-    id: 'addons',
-    title: 'Additional Services',
-    description: 'Enhance your project with these add-ons',
-    selectionType: 'multiple',
-    required: false,
-    order: 4,
-  },
-  {
-    id: 'timeline',
-    title: 'Timeline',
-    description: 'When do you need your project completed?',
-    selectionType: 'single',
-    required: false,
-    order: 5,
-  },
+  // TODO: Add your service categories
 ];
 
 /**
  * All calculator options
+ *
+ * TODO: Define your pricing options here.
+ * Each option belongs to a category and has a price.
+ *
+ * Example:
+ * {
+ *   id: 'basic-service',
+ *   label: 'Basic Service',
+ *   category: 'projectType',
+ *   price: 500,
+ *   description: 'Our standard service package',
+ * }
  */
 export const CALCULATOR_OPTIONS: CalculatorOption[] = [
-  // Project Types
-  {
-    id: 'new-website',
-    label: 'New Website',
-    category: 'projectType',
-    price: 800,
-    description: 'A brand new website built from scratch',
-  },
-  {
-    id: 'website-redesign',
-    label: 'Website Redesign',
-    category: 'projectType',
-    price: 600,
-    description: 'Refresh your existing website with a new look',
-  },
-  {
-    id: 'landing-page',
-    label: 'Landing Page',
-    category: 'projectType',
-    price: 400,
-    description: 'Single high-converting landing page',
-  },
-  {
-    id: 'ecommerce',
-    label: 'E-Commerce Store',
-    category: 'projectType',
-    price: 1500,
-    description: 'Online store with product catalog and checkout',
-    relatedOptions: ['payment-integration', 'product-catalog'],
-  },
-
-  // Site Sizes
-  {
-    id: 'size-small',
-    label: '1-5 Pages',
-    category: 'siteSize',
-    price: 0,
-    description: 'Perfect for simple business sites',
-  },
-  {
-    id: 'size-medium',
-    label: '6-10 Pages',
-    category: 'siteSize',
-    price: 400,
-    description: 'Great for growing businesses',
-  },
-  {
-    id: 'size-large',
-    label: '11-20 Pages',
-    category: 'siteSize',
-    price: 800,
-    description: 'Comprehensive business websites',
-  },
-  {
-    id: 'size-enterprise',
-    label: '20+ Pages',
-    category: 'siteSize',
-    price: 1500,
-    description: 'Large-scale enterprise solutions',
-  },
-
-  // Features
-  {
-    id: 'contact-form',
-    label: 'Contact Form',
-    category: 'features',
-    price: 0,
-    description: 'Standard contact form with email notifications',
-    defaultSelected: true,
-  },
-  {
-    id: 'responsive-design',
-    label: 'Mobile Responsive',
-    category: 'features',
-    price: 0,
-    description: 'Looks great on all devices',
-    defaultSelected: true,
-  },
-  {
-    id: 'seo-basics',
-    label: 'Basic SEO',
-    category: 'features',
-    price: 0,
-    description: 'Search engine optimization fundamentals',
-    defaultSelected: true,
-  },
-  {
-    id: 'custom-graphics',
-    label: 'Custom Graphics',
-    category: 'features',
-    price: 200,
-    description: 'Custom icons, illustrations, and graphics',
-  },
-  {
-    id: 'blog',
-    label: 'Blog Section',
-    category: 'features',
-    price: 300,
-    description: 'Blog with categories and search',
-  },
-  {
-    id: 'gallery',
-    label: 'Photo Gallery',
-    category: 'features',
-    price: 150,
-    description: 'Beautiful image gallery with lightbox',
-  },
-  {
-    id: 'testimonials',
-    label: 'Testimonials Section',
-    category: 'features',
-    price: 100,
-    description: 'Showcase customer reviews',
-  },
-  {
-    id: 'booking-calendar',
-    label: 'Booking Calendar',
-    category: 'features',
-    price: 400,
-    description: 'Online appointment scheduling',
-  },
-  {
-    id: 'payment-integration',
-    label: 'Payment Integration',
-    category: 'features',
-    price: 350,
-    description: 'Accept payments via Stripe/PayPal',
-  },
-  {
-    id: 'product-catalog',
-    label: 'Product Catalog',
-    category: 'features',
-    price: 500,
-    description: 'Display products with filtering',
-  },
-  {
-    id: 'newsletter',
-    label: 'Newsletter Signup',
-    category: 'features',
-    price: 100,
-    description: 'Email list building integration',
-  },
-  {
-    id: 'social-integration',
-    label: 'Social Media Integration',
-    category: 'features',
-    price: 100,
-    description: 'Connect your social profiles',
-  },
-  {
-    id: 'analytics',
-    label: 'Analytics Setup',
-    category: 'features',
-    price: 100,
-    description: 'Google Analytics configuration',
-  },
-  {
-    id: 'live-chat',
-    label: 'Live Chat Widget',
-    category: 'features',
-    price: 150,
-    description: 'Real-time customer support chat',
-  },
-
-  // Add-ons
-  {
-    id: 'logo-design',
-    label: 'Logo Design',
-    category: 'addons',
-    price: 300,
-    description: 'Professional logo design package',
-  },
-  {
-    id: 'copywriting',
-    label: 'Website Copywriting',
-    category: 'addons',
-    price: 400,
-    description: 'Professional content writing',
-  },
-  {
-    id: 'seo-advanced',
-    label: 'Advanced SEO Package',
-    category: 'addons',
-    price: 500,
-    description: 'Comprehensive SEO optimization',
-  },
-  {
-    id: 'hosting-annual',
-    label: 'Annual Hosting',
-    category: 'addons',
-    price: 300,
-    description: 'One year of managed hosting',
-  },
-  {
-    id: 'maintenance-monthly',
-    label: 'Monthly Maintenance',
-    category: 'addons',
-    price: 100,
-    description: 'Ongoing updates and support (per month)',
-    quantity: true,
-    maxQuantity: 12,
-    defaultQuantity: 1,
-  },
-  {
-    id: 'training-session',
-    label: 'Training Session',
-    category: 'addons',
-    price: 150,
-    description: '1-hour training on managing your site',
-    quantity: true,
-    maxQuantity: 4,
-    defaultQuantity: 1,
-  },
-  {
-    id: 'ssl-certificate',
-    label: 'SSL Certificate',
-    category: 'addons',
-    price: 0,
-    description: 'Secure HTTPS for your site (included)',
-    defaultSelected: true,
-  },
-  {
-    id: 'domain-setup',
-    label: 'Domain Setup',
-    category: 'addons',
-    price: 50,
-    description: 'Domain registration and configuration',
-  },
-  {
-    id: 'email-setup',
-    label: 'Business Email Setup',
-    category: 'addons',
-    price: 100,
-    description: 'Professional email configuration',
-  },
-
-  // Timeline options
-  {
-    id: 'timeline-standard',
-    label: 'Standard (4-6 weeks)',
-    category: 'timeline',
-    price: 0,
-    description: 'Normal project timeline',
-  },
-  {
-    id: 'timeline-rush',
-    label: 'Rush (2-3 weeks)',
-    category: 'timeline',
-    price: 500,
-    description: '25% expedited timeline fee',
-  },
-  {
-    id: 'timeline-urgent',
-    label: 'Urgent (1-2 weeks)',
-    category: 'timeline',
-    price: 1000,
-    description: '50% expedited timeline fee',
-  },
-  {
-    id: 'timeline-flexible',
-    label: 'Flexible Timeline',
-    category: 'timeline',
-    price: -100,
-    description: 'Small discount for flexible scheduling',
-  },
+  // TODO: Add your pricing options
 ];
 
 /**
@@ -468,7 +193,7 @@ export function calculateQuote(selections: CalculatorSelections): CalculatorResu
   const isComplete = !!(selections.projectType && selections.siteSize);
 
   if (!isComplete) {
-    notes.push('Please select a project type and site size for an accurate quote.');
+    notes.push('Please select required options for an accurate quote.');
   }
 
   return {
@@ -510,7 +235,7 @@ export function getDefaultSelections(): CalculatorSelections {
     siteSize: null,
     features: defaultFeatures,
     addons: defaultAddons,
-    timeline: 'timeline-standard',
+    timeline: null,
     quantities,
   };
 }
@@ -534,7 +259,7 @@ export function generateQuoteSummary(
   if (selections.siteSize) {
     const option = getOptionById(selections.siteSize);
     if (option) {
-      lines.push(`Website Size: ${option.label}`);
+      lines.push(`Size: ${option.label}`);
     }
   }
 

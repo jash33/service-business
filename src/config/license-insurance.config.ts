@@ -51,85 +51,20 @@ const credentialIcons = {
  * Remove or modify sample data as needed.
  */
 export const CREDENTIALS: LicenseInsuranceCredential[] = [
-  // Business License Example
-  {
-    id: 'business-license-houston',
-    title: 'City of Houston Business License',
-    type: 'license',
-    description: 'Authorized to conduct business within the City of Houston municipal limits.',
-    icon: credentialIcons.businessLicense,
-    credentialNumber: 'BL-2024-XXXXX',
-    issuer: 'City of Houston',
-    jurisdiction: 'Houston, TX',
-    issueDate: '2024-01-15',
-    expirationDate: '2025-01-14',
-    verificationStatus: 'verified',
-    verificationUrl: 'https://www.houstontx.gov/adminservices/license_verify.html',
-  },
-
-  // General Liability Insurance
-  {
-    id: 'general-liability',
-    title: 'General Liability Insurance',
-    type: 'insurance',
-    description: 'Comprehensive coverage protecting against third-party claims for bodily injury and property damage.',
-    icon: credentialIcons.liabilityInsurance,
-    credentialNumber: 'GL-XXXXX-2024',
-    issuer: 'State Farm Insurance',
-    coverageAmount: '$1,000,000 per occurrence',
-    expirationDate: '2025-06-30',
-    verificationStatus: 'verified',
-    verificationUrl: '#', // Replace with actual certificate verification link
-    notes: '$2,000,000 aggregate coverage',
-  },
-
-  // Professional Liability / E&O Insurance
-  {
-    id: 'professional-liability',
-    title: 'Professional Liability (E&O) Insurance',
-    type: 'insurance',
-    description: 'Errors and omissions coverage protecting against claims of negligence or inadequate work.',
-    icon: credentialIcons.professionalLiability,
-    credentialNumber: 'PL-XXXXX-2024',
-    issuer: 'Hartford Insurance',
-    coverageAmount: '$500,000 per claim',
-    expirationDate: '2025-06-30',
-    verificationStatus: 'verified',
-    verificationUrl: '#', // Replace with actual certificate verification link
-    notes: '$1,000,000 aggregate coverage',
-  },
-
-  // Workers Compensation (if applicable)
-  // Uncomment if you have employees
+  // Add your business credentials here. Example:
   // {
-  //   id: 'workers-comp',
-  //   title: "Workers' Compensation Insurance",
-  //   type: 'insurance',
-  //   description: 'Coverage for employee injuries occurring during work-related activities.',
-  //   icon: credentialIcons.workersComp,
-  //   credentialNumber: 'WC-XXXXX-2024',
-  //   issuer: 'Texas Mutual Insurance',
-  //   jurisdiction: 'Texas',
-  //   expirationDate: '2025-06-30',
+  //   id: 'business-license',
+  //   title: 'Business License',
+  //   type: 'license',
+  //   description: 'Description of your license.',
+  //   icon: credentialIcons.businessLicense,
+  //   credentialNumber: 'YOUR-LICENSE-NUMBER',
+  //   issuer: 'Issuing Authority',
+  //   jurisdiction: 'Your City, State',
+  //   issueDate: 'YYYY-MM-DD',
+  //   expirationDate: 'YYYY-MM-DD',
   //   verificationStatus: 'verified',
-  //   verificationUrl: '#',
-  // },
-
-  // Surety Bond (if applicable for your industry)
-  // Uncomment if you maintain a surety bond
-  // {
-  //   id: 'surety-bond',
-  //   title: 'Surety Bond',
-  //   type: 'bonding',
-  //   description: 'Financial guarantee bond protecting clients against contractor non-performance.',
-  //   icon: credentialIcons.suretyBond,
-  //   credentialNumber: 'SB-XXXXX-2024',
-  //   issuer: 'Liberty Mutual Surety',
-  //   coverageAmount: '$25,000',
-  //   jurisdiction: 'Texas',
-  //   expirationDate: '2025-12-31',
-  //   verificationStatus: 'verified',
-  //   verificationUrl: '#',
+  //   verificationUrl: 'https://verification-url.example.com',
   // },
 ];
 

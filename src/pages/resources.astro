@@ -101,10 +101,10 @@ const tagsWithCounts: ResourceFilterOption[] = allTags.map(tag => ({
 
 // SEO
 const pageTitle = categoryParam !== 'all'
-  ? `${RESOURCE_CATEGORIES.find(c => c.value === categoryParam)?.label || 'Resources'} | Houston Web Services Resource Library`
+  ? `${RESOURCE_CATEGORIES.find(c => c.value === categoryParam)?.label || 'Resources'} | Resource Library`
   : tagParam
-    ? `Resources tagged "${allTags.find(t => t.slug === tagParam)?.name || tagParam}" | Houston Web Services`
-    : 'Resource Library | Free Guides, Templates & Tools | Houston Web Services';
+    ? `Resources tagged "${allTags.find(t => t.slug === tagParam)?.name || tagParam}" | Resource Library`
+    : 'Resource Library | Free Guides, Templates & Tools';
 const pageDescription = 'Download free guides, templates, spec sheets, and educational resources to help your business succeed online. SEO guides, website checklists, brand templates, and more.';
 
 // Build base URL for pagination

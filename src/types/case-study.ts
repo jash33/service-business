@@ -264,11 +264,11 @@ export interface CustomerQuoteProps {
  */
 export const CASE_STUDY_CATEGORIES = [
   { label: 'All Case Studies', value: 'all' },
-  { label: 'Website Design', value: 'website' },
-  { label: 'Web Applications', value: 'web-app' },
-  { label: 'E-Commerce', value: 'ecommerce' },
-  { label: 'Redesigns', value: 'redesign' },
-  { label: 'Custom Development', value: 'custom-development' },
+  { label: 'Residential', value: 'residential' },
+  { label: 'Commercial', value: 'commercial' },
+  { label: 'Renovation', value: 'renovation' },
+  { label: 'Maintenance', value: 'maintenance' },
+  { label: 'Custom', value: 'custom' },
 ];
 
 /**

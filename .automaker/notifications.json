@@ -494,6 +494,17 @@
       "dismissed": false,
       "featureId": "feature-1769572722114-7ctaadhka",
       "projectPath": "C:\\Users\\James\\Repos\\service-business"
+    },
+    {
+      "id": "5056f17f-b9cb-4c0f-9d3c-d69edbd57e7d",
+      "type": "feature_waiting_approval",
+      "title": "Feature Ready for Review",
+      "message": "\"feature-1769891787659-27coisoek\" is ready for your review and approval.",
+      "createdAt": "2026-01-31T21:29:29.700Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769891787659-27coisoek",
+      "projectPath": "C:\\Users\\James\\Repos\\service-business"
     }
   ]
 }

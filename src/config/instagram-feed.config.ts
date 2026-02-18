@@ -81,29 +81,29 @@ export const instagramFeedConfig: InstagramFeedConfig = {
  */
 export const instagramFeedContent = {
   default: {
-    title: 'Follow Us on Instagram',
-    subtitle: 'See our latest work, behind-the-scenes moments, and design inspiration.',
+    title: '',
+    subtitle: '',
   },
   cta: {
-    text: 'Follow @' + (INSTAGRAM_USERNAME || 'instagram'),
+    text: '',
     icon: 'instagram',
   },
   fallback: {
-    title: 'Follow Us on Instagram',
-    message: 'Check out our Instagram for the latest updates, behind-the-scenes content, and design inspiration.',
-    buttonText: 'Visit Our Instagram',
+    title: '',
+    message: '',
+    buttonText: '',
   },
   loading: {
-    text: 'Loading Instagram feed...',
+    text: '',
   },
   error: {
-    title: 'Unable to Load Instagram Feed',
-    message: 'The Instagram feed could not be loaded. Please visit our profile directly.',
-    buttonText: 'Visit Instagram Profile',
+    title: '',
+    message: '',
+    buttonText: '',
   },
   empty: {
-    title: 'No Posts Yet',
-    message: 'Check back soon for our latest Instagram content.',
+    title: '',
+    message: '',
   },
 };
 
@@ -189,9 +189,9 @@ export function getPlaceholderPosts(count: number = 6): InstagramPost[] {
       mediaType: 'IMAGE',
       mediaUrl: `https://picsum.photos/seed/instagram${i}/600/600`,
       permalink: getInstagramProfileUrl(),
-      caption: `Sample post ${i} - This is placeholder content for development.`,
+      caption: `Sample post ${i}`,
       timestamp: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
-      username: INSTAGRAM_USERNAME || 'instagram',
+      username: INSTAGRAM_USERNAME || '',
     });
   }
 

@@ -2,6 +2,53 @@
   "version": 1,
   "events": [
     {
+      "id": "evt-1769894969734-2802ffc3",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-31T21:29:29.734Z",
+      "featureName": "",
+      "featureId": "feature-1769891787659-27coisoek"
+    },
+    {
+      "id": "evt-1769894832253-95c3721f",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-31T21:27:12.253Z",
+      "featureName": "",
+      "featureId": "feature-1769891787659-27coisoek"
+    },
+    {
+      "id": "evt-1769892595925-e7c3b263",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-31T20:49:55.925Z",
+      "featureName": "",
+      "featureId": "feature-1769891787659-27coisoek"
+    },
+    {
+      "id": "evt-1769891787670-bf6eb864",
+      "trigger": "feature_created",
+      "timestamp": "2026-01-31T20:36:27.671Z",
+      "featureId": "feature-1769891787659-27coisoek"
+    },
+    {
+      "id": "evt-1769807017954-30723d0b",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-30T21:03:37.954Z",
+      "featureName": "Remove template-specific web design content and features",
+      "featureId": "feature-1769787187430-4jkclz2v0"
+    },
+    {
+      "id": "evt-1769790529847-aae1ea6a",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-30T16:28:49.847Z",
+      "featureName": "",
+      "featureId": "feature-1769787187430-4jkclz2v0"
+    },
+    {
+      "id": "evt-1769787187444-01ef2b40",
+      "trigger": "feature_created",
+      "timestamp": "2026-01-30T15:33:07.444Z",
+      "featureId": "feature-1769787187430-4jkclz2v0"
+    },
+    {
       "id": "evt-1769572755705-238441a5",
       "trigger": "feature_success",
       "timestamp": "2026-01-28T03:59:15.705Z",
@@ -6946,55 +6993,6 @@
       "id": "evt-1769451214104-ac52c78a",
       "trigger": "feature_error",
       "timestamp": "2026-01-26T18:13:34.104Z",
-      "featureName": "Interactive Price Quote Calculator",
-      "featureId": "instant-quote-calculator"
-    },
-    {
-      "id": "evt-1769451206553-83ad3dd1",
-      "trigger": "feature_error",
-      "timestamp": "2026-01-26T18:13:26.553Z",
-      "featureName": "Interactive Price Quote Calculator",
-      "featureId": "instant-quote-calculator"
-    },
-    {
-      "id": "evt-1769451199245-0af8e3ac",
-      "trigger": "feature_error",
-      "timestamp": "2026-01-26T18:13:19.245Z",
-      "featureName": "Interactive Price Quote Calculator",
-      "featureId": "instant-quote-calculator"
-    },
-    {
-      "id": "evt-1769451192066-52e8dfd4",
-      "trigger": "feature_error",
-      "timestamp": "2026-01-26T18:13:12.066Z",
-      "featureName": "Interactive Price Quote Calculator",
-      "featureId": "instant-quote-calculator"
-    },
-    {
-      "id": "evt-1769451184986-4f4e5494",
-      "trigger": "feature_error",
-      "timestamp": "2026-01-26T18:13:04.986Z",
-      "featureName": "Interactive Price Quote Calculator",
-      "featureId": "instant-quote-calculator"
-    },
-    {
-      "id": "evt-1769451177710-c58a42d7",
-      "trigger": "feature_error",
-      "timestamp": "2026-01-26T18:12:57.710Z",
-      "featureName": "Interactive Price Quote Calculator",
-      "featureId": "instant-quote-calculator"
-    },
-    {
-      "id": "evt-1769451171333-75181525",
-      "trigger": "feature_error",
-      "timestamp": "2026-01-26T18:12:51.333Z",
-      "featureName": "Interactive Price Quote Calculator",
-      "featureId": "instant-quote-calculator"
-    },
-    {
-      "id": "evt-1769451163301-7f960717",
-      "trigger": "feature_error",
-      "timestamp": "2026-01-26T18:12:43.301Z",
       "featureName": "Interactive Price Quote Calculator",
       "featureId": "instant-quote-calculator"
     }

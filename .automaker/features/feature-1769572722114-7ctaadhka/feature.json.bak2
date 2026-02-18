@@ -1,7 +1,7 @@
 {
   "category": "Uncategorized",
   "description": "change the default dev port to 3002",
-  "title": "",
+  "title": "Update default development port to 3002",
   "images": [],
   "imagePaths": [],
   "textFilePaths": [],
@@ -15,7 +15,7 @@
   "requirePlanApproval": false,
   "dependencies": [],
   "workMode": "current",
-  "titleGenerating": "change the default dev port to 3002",
+  "titleGenerating": false,
   "status": "in_progress",
   "id": "feature-1769572722114-7ctaadhka",
   "descriptionHistory": [

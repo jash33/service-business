@@ -12,7 +12,7 @@ export interface Testimonial {
   id: string;
   /** Customer's full name */
   name: string;
-  /** Customer's location (e.g., "Houston, TX") */
+  /** Customer's location (e.g., "Your City, ST") */
   location: string;
   /** The testimonial quote text */
   quote: string;

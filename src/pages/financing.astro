@@ -1,6 +1,6 @@
 ---
 /**
- * Financing Options Page - Houston Web Services
+ * Financing Options Page
  * A comprehensive page detailing available payment plans, financing partners,
  * and accepted payment methods to help customers understand affordability options.
  *
@@ -61,7 +61,7 @@ const paymentPlans: PaymentPlan[] = [
   {
     id: 'full-payment',
     name: 'Pay in Full',
-    description: 'Save 10% when you pay the full project amount upfront. Best for businesses ready to invest in their online presence.',
+    description: 'Save 10% when you pay the full project amount upfront. Best for businesses ready to invest in quality services.',
     features: [
       '10% discount on total project cost',
       'Priority project scheduling',
@@ -90,16 +90,16 @@ const paymentPlans: PaymentPlan[] = [
     description: 'Pay as we progress through key project milestones. Great for larger projects with extended timelines.',
     features: [
       '25% deposit to start',
-      '25% after design approval',
-      '25% after development',
-      '25% upon launch',
+      '25% at first milestone',
+      '25% at second milestone',
+      '25% upon completion',
     ],
     icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6z"/></svg>`,
   },
   {
     id: 'monthly-payment',
     name: 'Monthly Plan',
-    description: 'Spread your investment over 3-6 months with affordable monthly payments. Makes premium web design accessible.',
+    description: 'Spread your investment over 3-6 months with affordable monthly payments. Makes professional services accessible.',
     features: [
       'Spread cost over 3-6 months',
       'Low monthly payments',
@@ -225,7 +225,7 @@ const financingFAQs: FAQItem[] = [
   {
     id: 'faq-financing-refund',
     question: 'What is your refund policy?',
-    answer: `<p>Our refund policy depends on project progress:</p><ul><li><strong>Before design begins:</strong> Full refund minus a $100 administrative fee</li><li><strong>During design phase:</strong> 50% refund of amounts paid</li><li><strong>After design approval:</strong> No refund, as development work has begun</li></ul><p>We're committed to your satisfaction and will work with you to address any concerns before considering refunds.</p>`,
+    answer: `<p>Our refund policy depends on project progress:</p><ul><li><strong>Before work begins:</strong> Full refund minus a $100 administrative fee</li><li><strong>During initial phase:</strong> 50% refund of amounts paid</li><li><strong>After project milestone approval:</strong> No refund, as significant work has begun</li></ul><p>We're committed to your satisfaction and will work with you to address any concerns before considering refunds.</p>`,
     category: 'pricing',
   },
   {
@@ -245,7 +245,7 @@ const financingFAQs: FAQItem[] = [
 
 <Layout
   title="Financing Options"
-  description="Flexible payment plans and financing options for your website project. Learn about our 50/50 split, monthly payments, and third-party financing through Affirm and PayPal. No credit check required for most options."
+  description="Flexible payment plans and financing options for your next project. Learn about our 50/50 split, monthly payments, and third-party financing through Affirm and PayPal. No credit check required for most options."
   openGraph={{
     type: 'website',
   }}
@@ -266,7 +266,7 @@ const financingFAQs: FAQItem[] = [
             <span class="financing-hero__title-highlight">Invest in Your Business</span>
           </h1>
           <p class="financing-hero__description">
-            Don't let budget concerns hold back your business growth. We offer flexible payment plans and financing options to make professional web design accessible for businesses of all sizes.
+            Don't let budget concerns hold back your business growth. We offer flexible payment plans and financing options to make professional services accessible for businesses of all sizes.
           </p>
           <div class="financing-hero__cta-group">
             <Button
@@ -487,8 +487,8 @@ const financingFAQs: FAQItem[] = [
               size="large"
             />
             <Button
-              text="Call (713) 555-0123"
-              href="tel:+17135550123"
+              text="Call Us Today"
+              href="/contact"
               variant="secondary"
               size="large"
             />

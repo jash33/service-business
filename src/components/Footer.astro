@@ -45,16 +45,23 @@ interface Props {
   showNewsletter?: boolean;
 }
 
-// Default service areas based on the seo.config.ts
-const defaultServiceAreas = [
-  'Houston',
-  'Greater Houston Area',
-];
+// Default service areas derived from localBusiness areaServed config
+// Falls back to empty array when no areas are configured
+import { localBusinessSchema } from '../config/seo.config';
+function resolveServiceAreas(): string[] {
+  const areas = localBusinessSchema.areaServed;
+  if (!areas) return [];
+  const areaList = Array.isArray(areas) ? areas : [areas];
+  return areaList
+    .map((area) => (typeof area === 'string' ? area : area.name ?? area.addressLocality ?? ''))
+    .filter((name) => name.length > 0);
+}
+const defaultServiceAreas: string[] = resolveServiceAreas();
 
 const {
   phone = seoConfig.organization?.contactPoint?.telephone,
   email = seoConfig.organization?.contactPoint?.email,
-  companyName = seoConfig.siteName,
+  companyName = seoConfig.siteName || 'Our Company',
   socialLinks = [],
   serviceAreas = defaultServiceAreas,
   showNewsletter = newsletterConfig.showInFooter && isNewsletterConfigured(),
@@ -127,15 +134,17 @@ const platformNames: Record<SocialPlatform, string> = {
         </address>
       </section>
 
-      <!-- Service Areas Section -->
-      <section class="footer__section footer__service-areas" aria-labelledby="footer-areas-heading">
-        <h2 id="footer-areas-heading" class="footer__heading">Service Areas</h2>
-        <ul class="footer__areas-list" role="list">
-          {serviceAreas.map((area) => (
-            <li class="footer__area-item">{area}</li>
-          ))}
-        </ul>
-      </section>
+      <!-- Service Areas Section (conditionally rendered when areas are configured) -->
+      {serviceAreas && serviceAreas.length > 0 && (
+        <section class="footer__section footer__service-areas" aria-labelledby="footer-areas-heading">
+          <h2 id="footer-areas-heading" class="footer__heading">Service Areas</h2>
+          <ul class="footer__areas-list" role="list">
+            {serviceAreas.map((area) => (
+              <li class="footer__area-item">{area}</li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <!-- Social Media Section (conditionally rendered) -->
       {socialLinks && socialLinks.length > 0 && (

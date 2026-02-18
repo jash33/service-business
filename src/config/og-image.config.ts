@@ -32,13 +32,13 @@ export interface OGImageConfig {
 
 /**
  * Default OG Image Configuration
- * Matches the Houston Web Services brand identity
+ * TODO: Update with your brand identity
  */
 export const ogImageConfig: OGImageConfig = {
   width: 1200,
   height: 630,
-  brandName: 'Houston Web Services',
-  brandTagline: 'Professional Web Design for Local Businesses',
+  brandName: '', // TODO: Set your business name
+  brandTagline: '', // TODO: Set your business tagline
   primaryColor: '#1a365d', // Navy blue - matches theme color
   secondaryColor: '#2c5282', // Lighter navy
   accentColor: '#ed8936', // Orange accent
@@ -46,7 +46,7 @@ export const ogImageConfig: OGImageConfig = {
   lightTextColor: '#e2e8f0',
   titleFont: 'Inter',
   bodyFont: 'Inter',
-  websiteUrl: 'houstonwebservices.com',
+  websiteUrl: '', // TODO: Set your domain (e.g., example.com)
 };
 
 /**
@@ -71,13 +71,13 @@ export interface PageOGConfig {
  */
 export const pageOGConfigs: Record<string, PageOGConfig> = {
   '/': {
-    title: 'Houston Web Services',
-    subtitle: 'Professional Web Design & Development for Small Businesses',
-    category: 'Web Services',
+    title: '', // TODO: Set your business name
+    subtitle: '', // TODO: Set your business tagline
+    category: 'Home',
   },
   '/about': {
     title: 'About Us',
-    subtitle: 'Meet the Team Behind Houston Web Services',
+    subtitle: 'Meet the Team Behind Our Business',
     category: 'About',
   },
   '/contact': {
@@ -87,37 +87,13 @@ export const pageOGConfigs: Record<string, PageOGConfig> = {
   },
   '/portfolio': {
     title: 'Our Portfolio',
-    subtitle: 'Showcasing Our Best Work for Houston Businesses',
+    subtitle: 'Showcasing Our Best Work for Local Businesses',
     category: 'Portfolio',
   },
   '/services': {
     title: 'Our Services',
-    subtitle: 'Comprehensive Web Solutions for Your Business',
+    subtitle: 'Comprehensive Professional Solutions for Your Business',
     category: 'Services',
-  },
-  '/services/website-design': {
-    title: 'Website Design',
-    subtitle: 'Custom, Responsive Websites That Convert',
-    category: 'Service',
-    icon: 'design',
-  },
-  '/services/maintenance': {
-    title: 'Website Maintenance',
-    subtitle: 'Keep Your Site Secure & Up-to-Date',
-    category: 'Service',
-    icon: 'maintenance',
-  },
-  '/services/hosting': {
-    title: 'Web Hosting',
-    subtitle: 'Fast, Reliable Hosting for Your Business',
-    category: 'Service',
-    icon: 'hosting',
-  },
-  '/services/seo': {
-    title: 'SEO Services',
-    subtitle: 'Get Found by More Customers Online',
-    category: 'Service',
-    icon: 'seo',
   },
   '/blog': {
     title: 'Blog',
@@ -131,12 +107,12 @@ export const pageOGConfigs: Record<string, PageOGConfig> = {
   },
   '/financing': {
     title: 'Financing Options',
-    subtitle: 'Affordable Payment Plans for Your Website',
+    subtitle: 'Affordable Payment Plans for Your Project',
     category: 'Financing',
   },
   '/service-areas': {
     title: 'Service Areas',
-    subtitle: 'Serving Houston & Surrounding Communities',
+    subtitle: 'Serving Your Community & Surrounding Areas',
     category: 'Service Areas',
   },
   '/service-request': {
@@ -163,9 +139,9 @@ export function getPageOGConfig(
 
   // Get pre-defined config or create default
   const baseConfig = pageOGConfigs[normalizedPath] || {
-    title: 'Houston Web Services',
-    subtitle: 'Professional Web Design for Local Businesses',
-    category: 'Web Services',
+    title: '', // TODO: Set your business name as fallback
+    subtitle: '', // TODO: Set your business tagline as fallback
+    category: 'Services',
   };
 
   // Merge with overrides
@@ -185,7 +161,7 @@ export function getOGImageFilename(path: string): string {
     return 'og-home.png';
   }
 
-  // Convert path to filename: /services/website-design -> services-website-design.png
+  // Convert path to filename: /service-areas -> service-areas.png
   const filename = path
     .replace(/^\//, '')
     .replace(/\/$/, '')

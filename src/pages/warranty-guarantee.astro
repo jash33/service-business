@@ -1,7 +1,7 @@
 ---
 /**
- * Warranty & Guarantee Page - Houston Web Services
- * A comprehensive page explaining service warranties, guarantees, and return policies.
+ * Warranty & Guarantee Page
+ * A comprehensive page explaining service warranties, guarantees, and satisfaction policies.
  * Builds customer confidence and reduces purchase hesitation.
  *
  * Sections:
@@ -56,20 +56,20 @@ const guarantees: Guarantee[] = [
   {
     id: 'satisfaction-guarantee',
     name: '100% Satisfaction Guarantee',
-    description: 'We\'re not happy until you\'re happy. If you\'re not completely satisfied with your website during the design phase, we\'ll revise it until it\'s exactly what you envisioned—at no extra cost.',
+    description: 'We\'re not happy until you\'re happy. If you\'re not completely satisfied with our work, we\'ll revise it until it meets your expectations—at no extra cost.',
     icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`,
     highlight: 'Our Promise',
   },
   {
     id: 'money-back-guarantee',
     name: '30-Day Money-Back Guarantee',
-    description: 'Changed your mind before we start design work? No problem. Get a full refund of your deposit within the first 30 days if we haven\'t begun the design phase—no questions asked.',
+    description: 'Changed your mind before we begin work? No problem. Get a full refund of your deposit within the first 30 days if we haven\'t started your project—no questions asked.',
     icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.5 6.9c1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-2.1.5-3.5 1.92-3.5 3.84 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c2.1-.5 3.5-2 3.5-3.85 0-2.84-2.43-3.81-4.7-4.4-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85z"/></svg>`,
   },
   {
     id: 'on-time-guarantee',
     name: 'On-Time Delivery Guarantee',
-    description: 'We respect your timeline. If we miss our agreed-upon launch date for reasons within our control, you\'ll receive a 10% discount on your project—guaranteed.',
+    description: 'We respect your timeline. If we miss our agreed-upon completion date for reasons within our control, you\'ll receive a 10% discount on your project—guaranteed.',
     icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>`,
   },
   {
@@ -86,49 +86,49 @@ const warrantyCoverage: WarrantyCoverage[] = [
     id: 'bug-fixes',
     category: 'Bug Fixes & Technical Issues',
     items: [
-      'Broken links and navigation errors',
-      'Display issues across browsers (Chrome, Safari, Firefox, Edge)',
-      'Mobile responsiveness problems',
-      'Contact form submission failures',
-      'Loading speed issues caused by our code',
-      'Security vulnerabilities in our implementation',
+      'Defects in workmanship or materials',
+      'Issues arising from our installation or setup',
+      'Functionality problems caused by our work',
+      'Errors in our deliverables or documentation',
+      'Performance issues resulting from our service',
+      'Safety concerns related to our implementation',
     ],
     duration: '90 Days',
     icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20 8h-2.81c-.45-.78-1.07-1.45-1.82-1.96L17 4.41 15.59 3l-2.17 2.17C12.96 5.06 12.49 5 12 5c-.49 0-.96.06-1.41.17L8.41 3 7 4.41l1.62 1.63C7.88 6.55 7.26 7.22 6.81 8H4v2h2.09c-.05.33-.09.66-.09 1v1H4v2h2v1c0 .34.04.67.09 1H4v2h2.81c1.04 1.79 2.97 3 5.19 3s4.15-1.21 5.19-3H20v-2h-2.09c.05-.33.09-.66.09-1v-1h2v-2h-2v-1c0-.34-.04-.67-.09-1H20V8zm-6 8h-4v-2h4v2zm0-4h-4v-2h4v2z"/></svg>`,
   },
   {
     id: 'content-updates',
-    category: 'Minor Content Updates',
+    category: 'Minor Adjustments',
     items: [
-      'Text corrections and typo fixes',
-      'Image swaps (using existing image slots)',
-      'Business hours and contact info updates',
-      'Price updates on existing content',
-      'Adding/removing team member photos',
+      'Small corrections to completed work',
+      'Minor adjustments within original scope',
+      'Documentation or paperwork corrections',
+      'Contact and scheduling updates',
+      'Cosmetic touch-ups to finished work',
     ],
     duration: '30 Days',
     icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>`,
   },
   {
     id: 'performance',
-    category: 'Performance Optimization',
+    category: 'Quality Assurance',
     items: [
-      'Page speed improvements for issues we caused',
-      'Image optimization for photos we added',
-      'Core Web Vitals fixes',
-      'Database query optimization (if applicable)',
+      'Re-inspection of completed work',
+      'Performance improvements for issues we caused',
+      'Adjustments to meet original specifications',
+      'Follow-up service visits if needed',
     ],
     duration: '60 Days',
     icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM10 17l-3.5-3.5 1.41-1.41L10 14.17l4.59-4.59L16 11l-6 6z"/></svg>`,
   },
   {
     id: 'security',
-    category: 'Security Updates',
+    category: 'Safety & Compliance',
     items: [
-      'SSL certificate configuration issues',
-      'Plugin and theme security patches',
-      'Malware removal (if breach was due to our code)',
-      'Security hardening recommendations',
+      'Safety concerns related to our work',
+      'Compliance issues with applicable standards',
+      'Code or regulation adherence corrections',
+      'Updated safety recommendations',
     ],
     duration: '90 Days',
     icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>`,
@@ -172,31 +172,31 @@ const warrantyFAQs: FAQItem[] = [
   {
     id: 'faq-warranty-start',
     question: 'When does my warranty coverage begin?',
-    answer: `Your warranty coverage begins on the day your website officially launches (goes live). We'll provide you with a written confirmation of your launch date and warranty start date for your records.`,
+    answer: `Your warranty coverage begins on the day your project is officially completed and signed off. We'll provide you with a written confirmation of your completion date and warranty start date for your records.`,
     category: 'general',
   },
   {
     id: 'faq-warranty-extend',
     question: 'Can I extend my warranty coverage?',
-    answer: `Yes! Our monthly maintenance plans include ongoing warranty coverage for as long as you're subscribed. Starting at $49/month, you'll receive continuous bug fixes, security updates, and minor content changes—plus priority support.`,
+    answer: `Yes! Our ongoing maintenance plans include extended warranty coverage for as long as you're subscribed. You'll receive continuous support, routine check-ups, and minor adjustments—plus priority service.`,
     category: 'services',
   },
   {
     id: 'faq-whats-not-covered',
     question: 'What is NOT covered under the warranty?',
-    answer: `<p>Our warranty does not cover:</p><ul><li><strong>Third-party issues:</strong> Problems caused by your hosting provider, domain registrar, or third-party plugins/themes you installed</li><li><strong>User modifications:</strong> Issues resulting from changes you or another developer made to the code</li><li><strong>New features:</strong> Requests for additional functionality not in the original scope</li><li><strong>Content creation:</strong> Writing new copy, creating graphics, or photography</li><li><strong>External factors:</strong> Downtime due to hosting outages, DDoS attacks, or other external events</li></ul>`,
+    answer: `<p>Our warranty does not cover:</p><ul><li><strong>Third-party issues:</strong> Problems caused by other contractors, vendors, or third-party products</li><li><strong>Customer modifications:</strong> Issues resulting from changes you or another provider made after project completion</li><li><strong>New work:</strong> Requests for additional services or features not in the original scope</li><li><strong>Normal wear and tear:</strong> Deterioration from regular use over time</li><li><strong>External factors:</strong> Damage due to weather, accidents, misuse, or other events beyond our control</li></ul>`,
     category: 'general',
   },
   {
     id: 'faq-response-time',
     question: 'How quickly will you respond to warranty requests?',
-    answer: `We respond to all warranty requests within 24 business hours. For critical issues (site down, security breach), we prioritize and typically respond within 4 hours during business hours. Non-urgent requests are typically resolved within 2-5 business days.`,
+    answer: `We respond to all warranty requests within 24 business hours. For urgent issues, we prioritize and typically respond within 4 hours during business hours. Non-urgent requests are typically resolved within 2-5 business days.`,
     category: 'process',
   },
   {
     id: 'faq-refund-policy',
     question: 'What is your refund policy?',
-    answer: `<p>Our refund policy is designed to be fair and transparent:</p><ul><li><strong>Before design begins:</strong> Full refund minus a $100 administrative fee</li><li><strong>During design phase:</strong> 50% refund of amounts paid</li><li><strong>After design approval:</strong> No refund, as development work has begun</li></ul><p>We're committed to your satisfaction and will work with you to address any concerns before considering refunds. The 30-Day Money-Back Guarantee applies only if no design work has started.</p>`,
+    answer: `<p>Our refund policy is designed to be fair and transparent:</p><ul><li><strong>Before work begins:</strong> Full refund minus a small administrative fee</li><li><strong>During project execution:</strong> Partial refund based on work completed</li><li><strong>After project completion:</strong> No refund, as services have been delivered</li></ul><p>We're committed to your satisfaction and will work with you to address any concerns before considering refunds. The 30-Day Money-Back Guarantee applies only if work has not yet started.</p>`,
     category: 'pricing',
   },
   {
@@ -208,7 +208,7 @@ const warrantyFAQs: FAQItem[] = [
   {
     id: 'faq-ownership-warranty',
     question: 'Does the warranty transfer if I sell my business?',
-    answer: `Yes, the warranty is tied to the website, not the owner. If you sell your business and the new owner continues using the website we built, the remaining warranty coverage transfers to them. Just let us know about the change so we can update our records.`,
+    answer: `Yes, the warranty is tied to the work performed, not the owner. If you sell your business or property where our work was completed, the remaining warranty coverage transfers to the new owner. Just let us know about the change so we can update our records.`,
     category: 'general',
   },
 ];
@@ -216,7 +216,7 @@ const warrantyFAQs: FAQItem[] = [
 
 <Layout
   title="Warranty & Guarantee"
-  description="Learn about our service warranties, guarantees, and satisfaction policies. We stand behind our work with a 100% satisfaction guarantee, 30-day money-back guarantee, and comprehensive warranty coverage."
+  description="Learn about our warranties, guarantees, and satisfaction policies. We stand behind every project with a 100% satisfaction guarantee, 30-day money-back guarantee, and comprehensive warranty coverage."
   openGraph={{
     type: 'website',
   }}
@@ -237,7 +237,7 @@ const warrantyFAQs: FAQItem[] = [
             <span class="warranty-hero__title-highlight">Your Peace of Mind</span>
           </h1>
           <p class="warranty-hero__description">
-            We stand behind every website we build. From our satisfaction guarantee to comprehensive warranty coverage, you can invest in your online presence with complete confidence.
+            We stand behind every project we complete. From our satisfaction guarantee to comprehensive warranty coverage, you can invest in our services with complete confidence.
           </p>
           <div class="warranty-hero__cta-group">
             <Button
@@ -316,7 +316,7 @@ const warrantyFAQs: FAQItem[] = [
             </h2>
           </div>
           <p class="warranty-coverage__description">
-            Every website we build comes with comprehensive warranty coverage. Here's what's included at no additional cost.
+            Every project we complete comes with comprehensive warranty coverage. Here's what's included at no additional cost.
           </p>
         </header>
 
@@ -348,7 +348,7 @@ const warrantyFAQs: FAQItem[] = [
           </svg>
           <p>
             <strong>Need extended coverage?</strong> Our maintenance plans include ongoing warranty protection for as long as you're subscribed.
-            <a href="/contact?subject=maintenance">Learn about maintenance plans</a>
+            <a href="/contact?subject=maintenance">Learn about our maintenance plans</a>
           </p>
         </div>
       </div>
@@ -421,8 +421,8 @@ const warrantyFAQs: FAQItem[] = [
               size="large"
             />
             <Button
-              text="Call (713) 555-0123"
-              href="tel:+17135550123"
+              text="Call Us Today"
+              href="/contact"
               variant="secondary"
               size="large"
             />

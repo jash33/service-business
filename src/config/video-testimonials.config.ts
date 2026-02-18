@@ -24,74 +24,7 @@ import type { VideoTestimonial } from '../types/video-testimonial';
  * Video testimonials to display on the website
  * These feature real customer testimonials in video format for maximum authenticity
  */
-export const VIDEO_TESTIMONIALS: VideoTestimonial[] = [
-  {
-    id: 'smith-construction',
-    name: 'Robert Smith',
-    location: 'Houston, TX',
-    quote: 'They transformed our entire online presence. We went from zero web traffic to getting multiple inquiries every week. The team was professional, responsive, and delivered beyond expectations.',
-    company: 'Smith Construction LLC',
-    title: 'Owner',
-    videoProvider: 'youtube',
-    videoId: 'jNQXAC9IVRw', // First YouTube video ever - placeholder
-    duration: 98,
-  },
-  {
-    id: 'garcia-dental',
-    name: 'Dr. Maria Garcia',
-    location: 'Sugar Land, TX',
-    quote: 'Our new website has completely changed how patients find us. The booking system works flawlessly and we have seen a 200% increase in new patient appointments since launch.',
-    company: 'Garcia Family Dentistry',
-    title: 'DDS, Practice Owner',
-    videoProvider: 'youtube',
-    videoId: 'dQw4w9WgXcQ', // Placeholder video ID
-    duration: 127,
-  },
-  {
-    id: 'johnson-law',
-    name: 'Michael Johnson',
-    location: 'The Woodlands, TX',
-    quote: 'The team understood exactly what our law firm needed. A clean, professional site that conveys trust and expertise. Client feedback has been overwhelmingly positive.',
-    company: 'Johnson & Associates',
-    title: 'Managing Partner',
-    videoProvider: 'youtube',
-    videoId: '9bZkp7q19f0', // Placeholder video ID
-    duration: 145,
-  },
-  {
-    id: 'chen-restaurant',
-    name: 'Jennifer Chen',
-    location: 'Katy, TX',
-    quote: 'Our restaurant website now showcases our food beautifully. The online ordering integration was seamless and has significantly boosted our takeout business.',
-    company: "Chen's Kitchen",
-    title: 'Owner',
-    videoProvider: 'youtube',
-    videoId: 'uelHwf8o7_U', // Placeholder video ID
-    duration: 83,
-  },
-  {
-    id: 'williams-hvac',
-    name: 'David Williams',
-    location: 'Pearland, TX',
-    quote: 'As an HVAC company, we needed a site that generated leads. The service request forms and emergency contact features have been game-changers for our business.',
-    company: 'Williams Heating & Air',
-    title: 'President',
-    videoProvider: 'youtube',
-    videoId: 'LXb3EKWsInQ', // Placeholder video ID
-    duration: 156,
-  },
-  {
-    id: 'patel-realty',
-    name: 'Aisha Patel',
-    location: 'Richmond, TX',
-    quote: 'The property listing system they built is incredible. My clients love browsing homes on the site, and the virtual tour integration sets us apart from competitors.',
-    company: 'Patel Realty Group',
-    title: 'Broker',
-    videoProvider: 'youtube',
-    videoId: 'OPf0YbXqDm0', // Placeholder video ID
-    duration: 112,
-  },
-];
+export const VIDEO_TESTIMONIALS: VideoTestimonial[] = [];
 
 /**
  * Section configuration for the video testimonials section

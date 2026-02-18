@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769807017954-30723d0b",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-30T21:03:37.954Z",
+  "projectPath": "C:\\Users\\James\\Repos\\service-business",
+  "projectName": "service-business",
+  "featureId": "feature-1769787187430-4jkclz2v0",
+  "featureName": "Remove template-specific web design content and features",
+  "error": "Operation was cancelled",
+  "errorType": "cancellation"
+}

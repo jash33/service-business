@@ -1,6 +1,6 @@
 ---
 /**
- * Portfolio Page - Houston Web Services
+ * Portfolio Page
  * Showcases completed projects with filtering capabilities.
  */
 
@@ -13,371 +13,28 @@ import type { Project } from '../types/portfolio';
 import type { BeforeAfterComparison } from '../types/before-after';
 
 /**
- * Sample portfolio projects
- * These showcase different project types, technologies, and categories
+ * Before/After transformations
+ * Replace with real project transformation data
  */
-/**
- * Before/After transformations showcasing dramatic improvements
- */
-const transformations: BeforeAfterComparison[] = [
-  {
-    id: 'dental-transformation',
-    title: 'Houston Family Dental Care',
-    description: 'Complete website redesign transforming an outdated site into a modern, conversion-focused platform with online booking.',
-    beforeImage: {
-      src: '/portfolio/dental-care-before.svg',
-      alt: 'Houston Family Dental original website with outdated design',
-      width: 800,
-      height: 600,
-    },
-    afterImage: {
-      src: '/portfolio/dental-care-after.svg',
-      alt: 'Houston Family Dental redesigned website with modern design',
-      width: 800,
-      height: 600,
-    },
-    category: 'redesign',
-    clientName: 'Dr. Sarah Mitchell',
-  },
-  {
-    id: 'florist-transformation',
-    title: 'Houston Florist & Gifts',
-    description: 'E-commerce overhaul with new brand identity, streamlined shopping experience, and subscription service integration.',
-    beforeImage: {
-      src: '/portfolio/florist-before.svg',
-      alt: 'Houston Florist original website with dated pink design',
-      width: 800,
-      height: 600,
-    },
-    afterImage: {
-      src: '/portfolio/florist-after.svg',
-      alt: 'Houston Florist modern e-commerce website',
-      width: 800,
-      height: 600,
-    },
-    category: 'ecommerce',
-    clientName: 'Maria Santos',
-  },
-  {
-    id: 'law-firm-transformation',
-    title: 'Houston Law Group',
-    description: 'Professional rebrand with focus on trust signals, case results showcase, and lead generation optimization.',
-    beforeImage: {
-      src: '/portfolio/law-firm-before.svg',
-      alt: 'Houston Law Group original website with traditional design',
-      width: 800,
-      height: 600,
-    },
-    afterImage: {
-      src: '/portfolio/law-firm-after.svg',
-      alt: 'Houston Law Group modern professional website',
-      width: 800,
-      height: 600,
-    },
-    category: 'redesign',
-    clientName: 'Partner James Morrison',
-  },
-];
+const transformations: BeforeAfterComparison[] = [];
 
 /**
- * Sample portfolio projects
- * These showcase different project types, technologies, and categories
+ * Portfolio projects
+ * Replace with real project data
  */
-const projects: Project[] = [
-  {
-    id: 'houston-energy-consulting',
-    title: 'Houston Energy Consulting',
-    description: 'A professional website for a Houston-based energy consulting firm featuring a modern design, custom CMS integration, and lead generation forms that increased client inquiries by 150%.',
-    thumbnail: {
-      src: '/portfolio/energy-consulting.svg',
-      alt: 'Houston Energy Consulting website homepage showing professional dark blue design with energy industry imagery',
-      width: 600,
-      height: 400,
-    },
-    technologies: [
-      { name: 'Astro', category: 'frontend' },
-      { name: 'TypeScript', category: 'frontend' },
-      { name: 'Tailwind CSS', category: 'frontend' },
-      { name: 'Netlify CMS', category: 'cms' },
-    ],
-    category: 'website',
-    featured: true,
-    completedDate: '2024-11-15',
-    links: [
-      { text: 'View Live Site', href: 'https://example-energy.com', type: 'live-site', openInNewTab: true },
-    ],
-  },
-  {
-    id: 'houston-dental-care',
-    title: 'Houston Family Dental Care',
-    description: 'Complete website redesign for a dental practice in Houston, TX. Includes online appointment booking, patient portal integration, and HIPAA-compliant contact forms.',
-    thumbnail: {
-      src: '/portfolio/dental-care.svg',
-      alt: 'Houston Family Dental Care website with bright, welcoming design and appointment booking interface',
-      width: 600,
-      height: 400,
-    },
-    technologies: [
-      { name: 'React', category: 'frontend' },
-      { name: 'Next.js', category: 'fullstack' },
-      { name: 'PostgreSQL', category: 'backend' },
-      { name: 'Stripe', category: 'ecommerce' },
-    ],
-    category: 'web-app',
-    featured: true,
-    completedDate: '2024-10-20',
-    links: [
-      { text: 'View Live Site', href: 'https://example-dental.com', type: 'live-site', openInNewTab: true },
-      { text: 'Case Study', href: '/case-studies/dental-care', type: 'case-study' },
-    ],
-  },
-  {
-    id: 'houston-florist',
-    title: 'Houston Florist & Gifts',
-    description: 'E-commerce platform for a local florist shop with same-day delivery options, seasonal collections, and subscription flower services. Built for high-volume traffic during holidays.',
-    thumbnail: {
-      src: '/portfolio/florist-shop.svg',
-      alt: 'Houston Florist online store showcasing beautiful floral arrangements with shopping cart functionality',
-      width: 600,
-      height: 400,
-    },
-    technologies: [
-      { name: 'Shopify', category: 'ecommerce' },
-      { name: 'Liquid', category: 'frontend' },
-      { name: 'JavaScript', category: 'frontend' },
-      { name: 'Custom Theme', category: 'design' },
-    ],
-    category: 'ecommerce',
-    featured: false,
-    completedDate: '2024-09-08',
-    links: [
-      { text: 'View Store', href: 'https://example-florist.com', type: 'live-site', openInNewTab: true },
-    ],
-  },
-  {
-    id: '-houston-fitness',
-    title: ' Houston Fitness Center',
-    description: 'Dynamic website with class schedules, membership management, and trainer booking system. Features real-time class availability and automated reminder notifications.',
-    thumbnail: {
-      src: '/portfolio/fitness-center.svg',
-      alt: ' Houston Fitness Center website with bold imagery and class schedule interface',
-      width: 600,
-      height: 400,
-    },
-    technologies: [
-      { name: 'Vue.js', category: 'frontend' },
-      { name: 'Node.js', category: 'backend' },
-      { name: 'MongoDB', category: 'backend' },
-      { name: 'Twilio', category: 'backend' },
-    ],
-    category: 'web-app',
-    featured: false,
-    completedDate: '2024-08-25',
-    links: [
-      { text: 'View Live Site', href: 'https://example-fitness.com', type: 'live-site', openInNewTab: true },
-    ],
-  },
-  {
-    id: 'houston-law-group',
-    title: 'Houston Law Group',
-    description: 'Professional legal services website with practice area pages, attorney profiles, and secure client intake forms. Optimized for local SEO to attract Houston-area clients.',
-    thumbnail: {
-      src: '/portfolio/law-firm.svg',
-      alt: 'Houston Law Group website with sophisticated dark design and attorney profile cards',
-      width: 600,
-      height: 400,
-    },
-    technologies: [
-      { name: 'WordPress', category: 'cms' },
-      { name: 'PHP', category: 'backend' },
-      { name: 'ACF Pro', category: 'cms' },
-      { name: 'Custom Theme', category: 'design' },
-    ],
-    category: 'website',
-    featured: false,
-    completedDate: '2024-07-30',
-    links: [
-      { text: 'View Live Site', href: 'https://example-law.com', type: 'live-site', openInNewTab: true },
-    ],
-  },
-  {
-    id: 'sweet-treats-bakery',
-    title: 'Sweet Treats Bakery',
-    description: 'Online ordering system for a local bakery with custom cake builder, pickup scheduling, and wholesale ordering portal. Includes inventory management backend.',
-    thumbnail: {
-      src: '/portfolio/bakery-shop.svg',
-      alt: 'Sweet Treats Bakery website with appetizing product photography and custom cake builder',
-      width: 600,
-      height: 400,
-    },
-    technologies: [
-      { name: 'React', category: 'frontend' },
-      { name: 'Firebase', category: 'backend' },
-      { name: 'Stripe', category: 'ecommerce' },
-      { name: 'Figma', category: 'design' },
-    ],
-    category: 'ecommerce',
-    featured: false,
-    completedDate: '2024-06-15',
-    links: [
-      { text: 'View Store', href: 'https://example-bakery.com', type: 'live-site', openInNewTab: true },
-      { text: 'GitHub', href: 'https://github.com/example/bakery', type: 'github', openInNewTab: true },
-    ],
-  },
-  {
-    id: 'texas-realty-partners',
-    title: 'Texas Realty Partners',
-    description: 'Real estate listing platform with MLS integration, property search filters, virtual tour support, and agent dashboard. Built for mobile-first browsing experience.',
-    thumbnail: {
-      src: '/portfolio/real-estate.svg',
-      alt: 'Texas Realty Partners website with property listings and advanced search functionality',
-      width: 600,
-      height: 400,
-    },
-    technologies: [
-      { name: 'Next.js', category: 'fullstack' },
-      { name: 'GraphQL', category: 'backend' },
-      { name: 'PostgreSQL', category: 'backend' },
-      { name: 'AWS', category: 'backend' },
-    ],
-    category: 'web-app',
-    featured: true,
-    completedDate: '2024-05-20',
-    links: [
-      { text: 'View Live Site', href: 'https://example-realty.com', type: 'live-site', openInNewTab: true },
-    ],
-  },
-  {
-    id: 'spring-branch-restaurant',
-    title: 'Spring Branch Cantina',
-    description: 'Restaurant website with online ordering, reservation system, and loyalty program integration. Features mouth-watering food photography and menu management.',
-    thumbnail: {
-      src: '/portfolio/restaurant.svg',
-      alt: 'Spring Branch Cantina website with vibrant Mexican food imagery and online ordering interface',
-      width: 600,
-      height: 400,
-    },
-    technologies: [
-      { name: 'Squarespace', category: 'cms' },
-      { name: 'Square POS', category: 'ecommerce' },
-      { name: 'JavaScript', category: 'frontend' },
-      { name: 'Custom CSS', category: 'design' },
-    ],
-    category: 'website',
-    featured: false,
-    completedDate: '2024-04-10',
-    links: [
-      { text: 'View Live Site', href: 'https://example-cantina.com', type: 'live-site', openInNewTab: true },
-    ],
-  },
-  {
-    id: 'startup-launch-page',
-    title: 'TechStart Landing Page',
-    description: 'High-converting landing page for a tech startup launch. Features animated hero section, testimonial carousel, and email capture with 40% conversion rate.',
-    thumbnail: {
-      src: '/portfolio/startup-landing.svg',
-      alt: 'TechStart modern landing page with bold gradient design and clear call-to-action buttons',
-      width: 600,
-      height: 400,
-    },
-    technologies: [
-      { name: 'HTML/CSS', category: 'frontend' },
-      { name: 'GSAP', category: 'frontend' },
-      { name: 'Mailchimp', category: 'backend' },
-      { name: 'A/B Testing', category: 'design' },
-    ],
-    category: 'landing-page',
-    featured: false,
-    completedDate: '2024-03-28',
-    links: [
-      { text: 'View Page', href: 'https://example-startup.com', type: 'live-site', openInNewTab: true },
-    ],
-  },
-  {
-    id: 'nonprofit-redesign',
-    title: 'Houston Hope Foundation',
-    description: 'Complete website redesign for a local nonprofit organization. Improved donation flow, volunteer registration, and event management resulting in 200% increase in online donations.',
-    thumbnail: {
-      src: '/portfolio/nonprofit.svg',
-      alt: 'Houston Hope Foundation website with warm, inviting design and prominent donation buttons',
-      width: 600,
-      height: 400,
-    },
-    technologies: [
-      { name: 'Astro', category: 'frontend' },
-      { name: 'React', category: 'frontend' },
-      { name: 'Stripe', category: 'ecommerce' },
-      { name: 'Sanity CMS', category: 'cms' },
-    ],
-    category: 'redesign',
-    featured: false,
-    completedDate: '2024-02-14',
-    links: [
-      { text: 'View Live Site', href: 'https://example-nonprofit.com', type: 'live-site', openInNewTab: true },
-      { text: 'Case Study', href: '/case-studies/nonprofit', type: 'case-study' },
-    ],
-  },
-  {
-    id: 'custom-crm-dashboard',
-    title: 'SalesFlow CRM Dashboard',
-    description: 'Custom CRM dashboard application for a Houston sales team. Features pipeline visualization, automated reporting, and integration with existing business tools.',
-    thumbnail: {
-      src: '/portfolio/crm-dashboard.svg',
-      alt: 'SalesFlow CRM dashboard with colorful charts, pipeline view, and team performance metrics',
-      width: 600,
-      height: 400,
-    },
-    technologies: [
-      { name: 'React', category: 'frontend' },
-      { name: 'TypeScript', category: 'frontend' },
-      { name: 'Node.js', category: 'backend' },
-      { name: 'D3.js', category: 'frontend' },
-    ],
-    category: 'custom-development',
-    featured: false,
-    completedDate: '2024-01-25',
-    links: [
-      { text: 'Request Demo', href: '/contact?project=crm-demo', type: 'live-site' },
-      { text: 'GitHub', href: 'https://github.com/example/salesflow', type: 'github', openInNewTab: true },
-    ],
-  },
-  {
-    id: 'product-launch-campaign',
-    title: 'EcoBottle Product Launch',
-    description: 'Multi-page marketing campaign for sustainable product launch. Includes product showcase, pre-order system, and social proof integration.',
-    thumbnail: {
-      src: '/portfolio/product-launch.svg',
-      alt: 'EcoBottle product launch page with stunning product photography and pre-order countdown timer',
-      width: 600,
-      height: 400,
-    },
-    technologies: [
-      { name: 'Webflow', category: 'cms' },
-      { name: 'JavaScript', category: 'frontend' },
-      { name: 'Zapier', category: 'backend' },
-      { name: 'Klaviyo', category: 'backend' },
-    ],
-    category: 'landing-page',
-    featured: false,
-    completedDate: '2023-12-01',
-    links: [
-      { text: 'View Campaign', href: 'https://example-ecobottle.com', type: 'live-site', openInNewTab: true },
-    ],
-  },
-];
+const projects: Project[] = [];
 ---
 
 <Layout
   title="Portfolio"
-  description="Browse our portfolio of web design and development projects for Houston businesses. See examples of our custom websites, e-commerce stores, and web applications."
+  description="Browse our portfolio of completed projects. See examples of our work and the results we deliver for our clients."
   openGraph={{
     type: 'website',
   }}
   jsonLd={{
     type: 'CollectionPage',
-    name: 'Houston Web Services Portfolio',
-    description: 'Portfolio of web design and development projects for Houston businesses.',
-    url: 'https://houstonwebservices.com/portfolio',
+    name: 'Our Portfolio',
+    description: 'Portfolio of completed projects showcasing our work and results.',
   }}
 >
   <main>
@@ -396,8 +53,8 @@ const projects: Project[] = [
             <span class="portfolio-hero__title-highlight">Speaks for Itself</span>
           </h1>
           <p class="portfolio-hero__description">
-            Explore our portfolio of custom web solutions. From small business websites to complex web applications,
-            we've helped Houston businesses establish their online presence and grow their digital footprint.
+            Explore our portfolio of completed projects. We've helped businesses achieve their goals
+            and deliver results that speak for themselves.
           </p>
           <div class="portfolio-hero__cta-group">
             <Button
@@ -415,17 +72,17 @@ const projects: Project[] = [
           </div>
           <div class="portfolio-hero__stats">
             <div class="portfolio-hero__stat">
-              <span class="portfolio-hero__stat-value">50+</span>
+              <span class="portfolio-hero__stat-value">—</span>
               <span class="portfolio-hero__stat-label">Projects Completed</span>
             </div>
             <div class="portfolio-hero__stat-divider"></div>
             <div class="portfolio-hero__stat">
-              <span class="portfolio-hero__stat-value">100%</span>
+              <span class="portfolio-hero__stat-value">—</span>
               <span class="portfolio-hero__stat-label">Client Satisfaction</span>
             </div>
             <div class="portfolio-hero__stat-divider"></div>
             <div class="portfolio-hero__stat">
-              <span class="portfolio-hero__stat-value">Houston</span>
+              <span class="portfolio-hero__stat-value">Local</span>
               <span class="portfolio-hero__stat-label">Locally Based</span>
             </div>
           </div>
@@ -438,8 +95,8 @@ const projects: Project[] = [
                   <path d="M4 4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2h16v9H4V6zm0 11h16v1H4v-1z"/>
                 </svg>
               </div>
-              <span class="portfolio-hero__preview-label">Business Websites</span>
-              <span class="portfolio-hero__preview-price">20+ Built</span>
+              <span class="portfolio-hero__preview-label">Category One</span>
+              <span class="portfolio-hero__preview-price">Projects</span>
             </div>
             <div class="portfolio-hero__preview-card portfolio-hero__preview-card--2">
               <div class="portfolio-hero__preview-icon">
@@ -447,8 +104,8 @@ const projects: Project[] = [
                   <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
                 </svg>
               </div>
-              <span class="portfolio-hero__preview-label">E-commerce Stores</span>
-              <span class="portfolio-hero__preview-price">15+ Launched</span>
+              <span class="portfolio-hero__preview-label">Category Two</span>
+              <span class="portfolio-hero__preview-price">Projects</span>
             </div>
             <div class="portfolio-hero__preview-card portfolio-hero__preview-card--3">
               <div class="portfolio-hero__preview-icon">
@@ -456,8 +113,8 @@ const projects: Project[] = [
                   <path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
                 </svg>
               </div>
-              <span class="portfolio-hero__preview-label">Web Applications</span>
-              <span class="portfolio-hero__preview-price">10+ Deployed</span>
+              <span class="portfolio-hero__preview-label">Category Three</span>
+              <span class="portfolio-hero__preview-price">Projects</span>
             </div>
           </div>
         </div>
@@ -469,7 +126,7 @@ const projects: Project[] = [
     <BeforeAfterGallery
       id="transformations"
       heading="Project Transformations"
-      subheading="Drag the slider to see the dramatic before and after results of our web design projects. Experience the difference professional design makes."
+      subheading="Drag the slider to see the dramatic before and after results of our projects. Experience the difference professional work makes."
       comparisons={transformations}
       enableFiltering={true}
       columns={2}
@@ -478,7 +135,7 @@ const projects: Project[] = [
     <!-- Portfolio Grid Section -->
     <PortfolioSection
       heading="Featured Projects"
-      subheading="Browse through our recent work to see the quality and diversity of our web development projects."
+      subheading="Browse through our recent work to see the quality and diversity of our projects."
       projects={projects}
       columns={3}
       enableFiltering={true}
@@ -488,7 +145,7 @@ const projects: Project[] = [
     <!-- Contact CTA Section -->
     <ContactCTA
       headline="Ready to Start Your Project?"
-      supportingText="Whether you need a simple website or a complex web application, we have the expertise to bring your vision to life.  Houston businesses trust us to deliver results that exceed expectations."
+      supportingText="We have the expertise to bring your vision to life. Our clients trust us to deliver results that exceed expectations."
       primaryCTA={{
         text: "Start Your Project",
         href: "/contact",

@@ -96,7 +96,7 @@ const googleFontsURL = 'https://fonts.googleapis.com/css2?family=DM+Sans:ital,op
 		<!-- Dark Mode Initialization - Runs before render to prevent flash -->
 		<script is:inline>
 			(function() {
-				const THEME_KEY = 'houston-theme';
+				const THEME_KEY = 'site-theme';
 				const stored = localStorage.getItem(THEME_KEY);
 				const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
@@ -144,13 +144,7 @@ const googleFontsURL = 'https://fonts.googleapis.com/css2?family=DM+Sans:ital,op
 	<body class={bodyClass}>
 		<a href="#main-content" class="skip-link">Skip to main content</a>
 		{!disableEmergencyBanner && (
-			<EmergencyServiceBanner
-				message="Need urgent help? We offer 24/7 emergency web support!"
-				phoneNumber="+1-832-555-0123"
-				phoneDisplay="(832) 555-0123"
-				ctaText="Call Now"
-				dismissDurationHours={24}
-			/>
+			<EmergencyServiceBanner />
 		)}
 		<Header currentPath={Astro.url.pathname} />
 		{showBreadcrumbs && (

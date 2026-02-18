@@ -92,9 +92,9 @@ export interface GalleryFilterOption {
  */
 export const COMPARISON_CATEGORIES: GalleryFilterOption[] = [
   { label: 'All Transformations', value: 'all' },
-  { label: 'Website Redesigns', value: 'redesign' },
-  { label: 'Branding Updates', value: 'branding' },
-  { label: 'E-Commerce', value: 'ecommerce' },
-  { label: 'Mobile Optimization', value: 'mobile' },
-  { label: 'Performance', value: 'performance' },
+  { label: 'Renovations', value: 'renovation' },
+  { label: 'Repairs', value: 'repair' },
+  { label: 'Installations', value: 'installation' },
+  { label: 'Upgrades', value: 'upgrade' },
+  { label: 'Maintenance', value: 'maintenance' },
 ];

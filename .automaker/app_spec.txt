@@ -379,6 +379,22 @@
       <name>Preferred Vendors and Suppliers Directory</name>
       <description>List recommended vendors, suppliers, and complementary service providers with descriptions and contact info. Builds ecosystem and partnership value.</description>
     </feature>
+    <feature>
+      <name>Update default development port to 3002</name>
+      <description>change the default dev port to 3002</description>
+    </feature>
+    <feature>
+      <name>License and Insurance Verification Page</name>
+      <description>Display business licenses, insurance certificates, and bonding information with verification links. Critical trust-building element for service businesses.</description>
+    </feature>
+    <feature>
+      <name>Feature: feature-1769891787659-27coisoek</name>
+      <description>This whole repo was forked. The original repo had a different purpose - it was for a web design small business. There is still a lot of leftover content present (especially text and site sections) that have to do with a web design business. This doesn&apos;t match the purpose of this repo - to serve as a starter template for me to build sites for small service businesses.
+
+Please identify these vestigal elements and either remove them, or update them to make them fit the real purpose of this repo, whichever is easier.
+
+We wouldn&apos;t want that mini-website-mockup element for a restaurant site. we also wouldn&apos;t want the text &quot;Fast-loading, search-friendly websites that turn visitors into customers.&quot; - this is supposed to be an example/starter site for a service business.</description>
+    </feature>
   </implemented_features>
 
   <additional_requirements>

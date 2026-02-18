@@ -76,16 +76,16 @@ export interface NewsletterConfig {
  * Default newsletter content
  */
 export const defaultNewsletterContent: NewsletterContentConfig = {
-  headline: 'Stay Updated',
-  description: 'Get web development tips, industry insights, and exclusive offers delivered to your inbox.',
-  buttonText: 'Subscribe',
-  successMessage: 'Thanks for subscribing! Please check your email to confirm your subscription.',
-  pendingMessage: 'Almost there! Please check your email to confirm your subscription.',
-  errorMessage: 'Something went wrong. Please try again later.',
-  privacyNotice: 'We respect your privacy. Unsubscribe at any time.',
-  gdprLabel: 'I agree to receive newsletter emails and accept the Privacy Policy.',
-  emailPlaceholder: 'Enter your email',
-  namePlaceholder: 'Your first name (optional)',
+  headline: '',
+  description: '',
+  buttonText: '',
+  successMessage: '',
+  pendingMessage: '',
+  errorMessage: '',
+  privacyNotice: '',
+  gdprLabel: '',
+  emailPlaceholder: '',
+  namePlaceholder: '',
 };
 
 /**
@@ -96,7 +96,7 @@ export const defaultPopupConfig: NewsletterPopupConfig = {
   showDelay: 30000, // 30 seconds
   showOnExitIntent: true,
   showOnPages: [], // Empty = all pages
-  excludePages: ['/contact', '/service-request', '/booking', '/unsubscribe'],
+  excludePages: [],
   dismissalDays: 14, // Remember dismissal for 14 days
   maxShowsPerSession: 1,
 };

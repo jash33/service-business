@@ -275,7 +275,7 @@ const formspreeEndpoint = import.meta.env.PUBLIC_FORMSPREE_ENDPOINT || '';
           </span>
         </button>
         <span id="submit-hint" class="sr-only">
-          Submitting will send your information to Houston Web Services
+          Submitting will send your information to our team
         </span>
       </div>
     </form>
@@ -1241,13 +1241,9 @@ const formspreeEndpoint = import.meta.env.PUBLIC_FORMSPREE_ENDPOINT || '';
    */
   function formatProjectType(value: string): string {
     const labels: Record<string, string> = {
-      'website-design': 'New Website Design',
-      'website-redesign': 'Website Redesign',
-      'e-commerce': 'E-Commerce Store',
-      'web-application': 'Web Application',
-      'business-automation': 'Business Automation',
-      'existing-website-support': 'Existing Website Support',
-      'maintenance': 'Website Maintenance',
+      'service-inquiry': 'Service Inquiry',
+      'estimate-request': 'Estimate Request',
+      'maintenance-request': 'Maintenance Request',
       'consultation': 'Consultation',
       'other': 'Other',
     };

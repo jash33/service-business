@@ -12,66 +12,54 @@ import type { SEOConfig, LocalBusinessSchema } from '../types/seo';
  */
 export const localBusinessSchema: LocalBusinessSchema = {
   type: 'ProfessionalService',
-  name: 'Houston Web Services',
-  legalName: 'Houston Web Services',
-  description: 'Professional web design and development services for small businesses in Houston. We specialize in custom websites, SEO optimization, and digital solutions for Houston businesses.',
-  slogan: 'Building Digital Success for Houston Businesses',
-  url: 'https://houstonwebservices.com',
-  telephone: '+1-832-XXX-XXXX', // TODO: Update with actual phone
-  email: 'info@houstonwebservices.com', // TODO: Update with actual email
+  name: '', // Configure: Business name
+  legalName: '', // Configure: Legal business name
+  description: '', // Configure: Business description for SEO
+  slogan: '', // Configure: Business slogan/tagline
+  url: '', // Configure: Production URL (e.g., https://example.com)
+  telephone: '', // Configure: Business phone (e.g., +1-555-000-0000)
+  email: '', // Configure: Business email (e.g., info@example.com)
   address: {
-    streetAddress: '1234 Main Street', // TODO: Update with actual address
-    addressLocality: 'Houston',
-    addressRegion: 'TX',
-    postalCode: '77077',
+    streetAddress: '', // Configure: Street address
+    addressLocality: '', // Configure: City
+    addressRegion: '', // Configure: State/region code (e.g., TX)
+    postalCode: '', // Configure: Postal/ZIP code
     addressCountry: 'US',
   },
   geo: {
-    latitude: 29.7752, // TODO: Update with actual coordinates
-    longitude: -95.6091,
+    latitude: 0, // Configure: Business latitude
+    longitude: 0, // Configure: Business longitude
   },
   areaServed: [
-    { type: 'City', name: 'Houston', addressLocality: 'Houston', addressRegion: 'TX', addressCountry: 'US' },
+    // Configure: Add service areas
+    // Example: { type: 'City', name: 'Your City', addressLocality: 'Your City', addressRegion: 'ST', addressCountry: 'US' },
   ],
   openingHoursSpecification: [
     { dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], opens: '09:00', closes: '17:00' },
   ],
   openingHours: ['Mo-Fr 09:00-17:00'],
-  logo: 'https://houstonwebservices.com/images/logo.png',
-  image: ['https://houstonwebservices.com/images/storefront.jpg'],
+  logo: '', // Configure: Absolute URL to logo image
+  image: [], // Configure: Absolute URLs to business images
   priceRange: '$$',
   currenciesAccepted: 'USD',
   paymentAccepted: ['Cash', 'Credit Card', 'Debit Card', 'Check', 'Invoice', 'Bank Transfer'],
-  sameAs: [],
+  sameAs: [], // Configure: Social media profile URLs
   contactPoint: {
-    telephone: '+1-832-XXX-XXXX', // TODO: Update
-    email: 'info@houstonwebservices.com', // TODO: Update
+    telephone: '', // Configure: Contact phone
+    email: '', // Configure: Contact email
     contactType: 'customer service',
-    availableLanguage: ['English', 'Spanish'],
-    areaServed: ['Houston'],
+    availableLanguage: ['English'],
+    areaServed: [], // Configure: Service area names
   },
   makesOffer: [
-    'Custom Website Design',
-    'Web Development',
-    'Website Maintenance',
-    'Web Hosting',
-    'SEO Optimization',
-    'E-commerce Website Development',
-    'Logo Design',
-    'Content Writing',
+    // Configure: List of services offered
+    // Example: 'Service One', 'Service Two', 'Service Three',
   ],
   knowsAbout: [
-    'Web Design',
-    'Web Development',
-    'Search Engine Optimization',
-    'User Experience Design',
-    'Responsive Design',
-    'Website Security',
-    'Website Performance Optimization',
-    'Small Business Websites',
-    'Houston Web Services',
+    // Configure: List of expertise/knowledge areas
+    // Example: 'Your Expertise Area', 'Another Specialty', 'Additional Knowledge',
   ],
-  knowsLanguage: ['English', 'Spanish'],
+  knowsLanguage: ['English'],
 };
 
 /**
@@ -80,21 +68,20 @@ export const localBusinessSchema: LocalBusinessSchema = {
  */
 export const seoConfig: SEOConfig = {
   // Site Identity
-  siteName: 'Houston Web Services',
-  siteUrl: 'https://houstonwebservices.com', // Update with actual domain
+  siteName: '', // Configure: Business/site name
+  siteUrl: '', // Configure: Production URL (e.g., https://example.com)
 
   // Title Configuration
-  titleTemplate: '%s | Houston Web Services',
+  titleTemplate: '%s', // Configure: e.g., '%s | Your Business Name'
 
   // Default Meta Content
-  defaultDescription:
-    'Professional web design and development services for small businesses in West Houston. Custom websites, SEO optimization, and digital solutions.',
+  defaultDescription: '', // Configure: Default meta description for SEO
   defaultLang: 'en',
   defaultLocale: 'en_US',
 
   // Default Social Sharing Image
-  defaultImage: '/images/og-default.jpg', // Create this image (1200x630 recommended)
-  defaultImageAlt: 'Houston Web Services - Professional Web Design',
+  defaultImage: '/images/og-default.jpg', // Configure: Create this image (1200x630 recommended)
+  defaultImageAlt: '', // Configure: Alt text for default social sharing image
 
   // Twitter Configuration
   twitterSite: undefined, // Add @username when available

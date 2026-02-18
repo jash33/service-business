@@ -83,11 +83,11 @@ const tagsWithCounts: BlogFilterOption[] = allTags.map(tag => ({
 
 // SEO
 const pageTitle = categoryParam !== 'all'
-  ? `${BLOG_CATEGORIES.find(c => c.value === categoryParam)?.label || 'Blog'} Articles | Houston Web Services Blog`
+  ? `${BLOG_CATEGORIES.find(c => c.value === categoryParam)?.label || 'Blog'} Articles | Blog`
   : tagParam
-    ? `Articles tagged "${allTags.find(t => t.slug === tagParam)?.name || tagParam}" | Houston Web Services Blog`
-    : 'Blog | Houston Web Services';
-const pageDescription = 'Web design, development, and digital marketing insights for Houston businesses. Tips, tutorials, and case studies to help your business succeed online.';
+    ? `Articles tagged "${allTags.find(t => t.slug === tagParam)?.name || tagParam}" | Blog`
+    : 'Blog';
+const pageDescription = 'Insights, tips, and resources for your business. Helpful articles, tutorials, and case studies to help you succeed.';
 
 // Build base URL for pagination
 const buildBaseUrl = (): string => {
@@ -229,7 +229,7 @@ const buildBaseUrl = (): string => {
   <!-- Contact CTA -->
   <ContactCTA
     heading="Ready to Start Your Project?"
-    subheading="Let's discuss how we can help your Houston business succeed online."
+    subheading="Let's discuss how we can help your business succeed online."
     primaryCTA={{
       text: "Get a Free Quote",
       href: "/contact",

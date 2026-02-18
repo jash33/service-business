@@ -9,13 +9,9 @@
  */
 export type ProjectType =
   | ''
-  | 'website-design'
-  | 'website-redesign'
-  | 'e-commerce'
-  | 'web-application'
-  | 'business-automation'
-  | 'existing-website-support'
-  | 'maintenance'
+  | 'service-inquiry'
+  | 'estimate-request'
+  | 'maintenance-request'
   | 'consultation'
   | 'other';
 
@@ -153,14 +149,10 @@ export const DEFAULT_VALIDATION_CONFIG: ValidationConfig = {
  * Project type options
  */
 export const PROJECT_TYPE_OPTIONS: ProjectTypeOption[] = [
-  { value: '', label: 'Select a project type' },
-  { value: 'website-design', label: 'New Website Design' },
-  { value: 'website-redesign', label: 'Website Redesign' },
-  { value: 'e-commerce', label: 'E-Commerce Store' },
-  { value: 'web-application', label: 'Web Application' },
-  { value: 'business-automation', label: 'Business Automation' },
-  { value: 'existing-website-support', label: 'Existing Website Support' },
-  { value: 'maintenance', label: 'Website Maintenance' },
+  { value: '', label: 'Select an inquiry type' },
+  { value: 'service-inquiry', label: 'Service Inquiry' },
+  { value: 'estimate-request', label: 'Estimate Request' },
+  { value: 'maintenance-request', label: 'Maintenance Request' },
   { value: 'consultation', label: 'Consultation' },
   { value: 'other', label: 'Other' },
 ];

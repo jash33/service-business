@@ -1,0 +1,188 @@
+{
+  "category": "Uncategorized",
+  "description": "This whole repo was forked. The original repo had a different purpose - it was for a web design small business. There is still a lot of leftover content present (especially text and site sections) that have to do with a web design business. This doesn't match the purpose of this repo - to serve as a starter template for me to build sites for small service businesses.\n\nPlease identify these vestigal elements and either remove them, or update them to make them fit the real purpose of this repo, whichever is easier.\n\nWe wouldn't want that mini-website-mockup element for a restaurant site. we also wouldn't want the text \"Fast-loading, search-friendly websites that turn visitors into customers.\" - this is supposed to be an example/starter site for a service business.",
+  "title": "",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": true,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "main",
+  "priority": 2,
+  "planningMode": "full",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "custom",
+  "titleGenerating": false,
+  "status": "in_progress",
+  "id": "feature-1769891787659-27coisoek",
+  "descriptionHistory": [
+    {
+      "description": "This whole repo was forked. The original repo had a different purpose - it was for a web design small business. There is still a lot of leftover content present (especially text and site sections) that have to do with a web design business. This doesn't match the purpose of this repo - to serve as a starter template for me to build sites for small retail businesses.\n\nPlease identify these vestigal elements and either remove them, or update them to make them fit the real purpose of this repo, whichever is easier.\n\nWe wouldn't want that mini-website-mockup element for a restaurant site. we also wouldn't want the text \"Fast-loading, search-friendly websites that turn visitors into customers.\" - this is supposed to be an example/starter site for a retail business.",
+      "timestamp": "2026-01-31T20:36:27.669Z",
+      "source": "initial"
+    },
+    {
+      "description": "This whole repo was forked. The original repo had a different purpose - it was for a web design small business. There is still a lot of leftover content present (especially text and site sections) that have to do with a web design business. This doesn't match the purpose of this repo - to serve as a starter template for me to build sites for small service businesses.\n\nPlease identify these vestigal elements and either remove them, or update them to make them fit the real purpose of this repo, whichever is easier.\n\nWe wouldn't want that mini-website-mockup element for a restaurant site. we also wouldn't want the text \"Fast-loading, search-friendly websites that turn visitors into customers.\" - this is supposed to be an example/starter site for a service business.",
+      "timestamp": "2026-01-31T20:36:48.985Z",
+      "source": "edit"
+    }
+  ],
+  "startedAt": "2026-01-31T21:19:19.732Z",
+  "updatedAt": "2026-01-31T21:19:26.546Z",
+  "planSpec": {
+    "status": "approved",
+    "version": 1,
+    "reviewedByUser": false,
+    "content": "I'll start by silently analyzing the codebase to understand its structure and identify vestigial web design business content.\n\n🔧 Tool: Task\nInput: {\n  \"description\": \"Explore codebase structure\",\n  \"prompt\": \"Explore this codebase thoroughly. I need to understand:\\n1. The overall project structure (all directories and key files)\\n2. What framework/tech stack is used\\n3. The purpose - it's supposed to be a starter template for small service business websites\\n\\nList ALL files, especially content files, config files, component files, and any data files. Use glob patterns like **/*.{astro,ts,tsx,js,jsx,json,md,mdx,css} to find everything. Also look at the root directory structure.\",\n  \"subagent_type\": \"Explore\",\n  \"run_in_background\": true\n}\n\n🔧 Tool: Task\nInput: {\n  \"description\": \"Find web design content\",\n  \"prompt\": \"Search the entire codebase for any content related to a \\\"web design\\\" business. Look for:\\n1. Text mentioning \\\"web design\\\", \\\"web development\\\", \\\"website design\\\", \\\"websites that turn visitors into customers\\\"\\n2. References to building websites for clients\\n3. Service offerings related to web design/development\\n4. Any \\\"mini-website-mockup\\\" element or similar\\n5. Text like \\\"Fast-loading, search-friendly websites\\\"\\n6. Any portfolio or case study content about web design projects\\n7. Pricing for web design services\\n8. Testimonials about web design work\\n\\nUse grep to search for patterns like: \\\"web design\\\", \\\"website\\\", \\\"SEO\\\", \\\"search-friendly\\\", \\\"mockup\\\", \\\"portfolio\\\", \\\"visitors into customers\\\", \\\"fast-loading\\\", etc.\\n\\nReport ALL matches with file paths and line numbers, and the surrounding context.\",\n  \"subagent_type\": \"Explore\",\n  \"run_in_background\": true\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-James-Repos-service-business\\\\tasks\\\\aca3bff.output\"\n}\n\n🔧 Tool: TaskOutput\nInput: {\n  \"task_id\": \"a2f54a0\",\n  \"block\": true,\n  \"timeout\": 30000\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-James-Repos-service-business\\\\tasks\\\\a2f54a0.output\"\n}\nNow let me read the key files to understand the full scope of changes needed.\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\service-business\\\\src\\\\pages\\\\index.astro\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\service-business\\\\src\\\\components\\\\HeroSection.astro\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\service-business\\\\src\\\\pages\\\\services.astro\"\n}\nNow let me read more of the affected files:\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\service-business\\\\src\\\\components\\\\HeroSection.astro\",\n  \"limit\": 200\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\service-business\\\\src\\\\config\\\\blog.config.ts\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\service-business\\\\src\\\\types\\\\contact-form.ts\",\n  \"limit\": 200\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\service-business\\\\src\\\\types\\\\blog.ts\",\n  \"limit\": 50\n}\nLet me read a few more key files to complete my understanding:\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\service-business\\\\src\\\\components\\\\HeroSection.astro\",\n  \"offset\": 200,\n  \"limit\": 200\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\service-business\\\\src\\\\config\\\\service-checklists.config.ts\",\n  \"limit\": 50\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\service-business\\\\src\\\\config\\\\resources.config.ts\",\n  \"limit\": 50\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\service-business\\\\src\\\\components\\\\Breadcrumb.astro\",\n  \"limit\": 80\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\service-business\\\\src\\\\components\\\\FeaturedProjectsPreview.astro\",\n  \"limit\": 80\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\service-business\\\\src\\\\components\\\\BeforeAfterGallery.astro\",\n  \"limit\": 80\n}\nNow let me check a few more files to complete the picture:\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\service-business\\\\src\\\\types\\\\blog.ts\",\n  \"offset\": 200,\n  \"limit\": 50\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\service-business\\\\src\\\\types\\\\service-checklist.ts\",\n  \"limit\": 50\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\service-business\\\\src\\\\docs\\\\SEO_COMPONENT.md\",\n  \"limit\": 30\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\service-business\\\\src\\\\config\\\\seo.config.ts\",\n  \"limit\": 80\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\service-business\\\\src\\\\components\\\\ContactForm.astro\",\n  \"offset\": 1230,\n  \"limit\": 30\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\service-business\\\\src\\\\config\\\\featured-projects.config.ts\",\n  \"limit\": 60\n}\nNow let me check the FAQ config to see if there's web-design content there too:\n\n🔧 Tool: Grep\nInput: {\n  \"pattern\": \"web.?design|website.?design|web development|websites that|Fast.?loading.*search|Houston Web|mini.?website|mockup|webDesign|web-design\",\n  \"output_mode\": \"files_with_matches\"\n}\nNow I have a comprehensive picture. Let me read the remaining key source files:\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\service-business\\\\src\\\\types\\\\blog.ts\",\n  \"offset\": 200,\n  \"limit\": 40\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\service-business\\\\src\\\\types\\\\service-checklist.ts\",\n  \"offset\": 180,\n  \"limit\": 70\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\service-business\\\\src\\\\components\\\\BlogFilter.astro\",\n  \"limit\": 30\n}\nI now have a thorough understanding of the codebase. Let me generate the specification.\n\n---\n\n## 1. Problem Statement\n\nThis repository was forked from a web design business site and is intended to serve as a generic starter template for small service businesses (e.g., plumbing, landscaping, restaurants). However, extensive vestigial content remains from the original web design business: service offerings for \"Website Design,\" \"Website Maintenance,\" \"Web Hosting,\" and \"Existing Website Support\"; a browser mockup element in the hero section showcasing a website; web-design-specific blog categories, tags, and default author references; and text like \"Fast-loading, search-friendly websites that turn visitors into customers.\"\n\n## 2. User Story\n\nAs a **developer using this starter template**, I want **all web-design-business-specific content removed or replaced with generic service business placeholders**, so that **I can quickly customize the template for any small service business without having to hunt down and clean up irrelevant web design references**.\n\n## 3. Acceptance Criteria\n\n- **Happy Path**: GIVEN the template is freshly cloned, WHEN a developer reviews the content, THEN all text, service offerings, categories, and tags are generic/placeholder-based for a general service business with no web-design-specific references.\n- **Hero Mockup Removal**: GIVEN the HeroSection component, WHEN it renders, THEN there is no browser mockup element showing a mini-website preview (the entire mockup section is removed).\n- **Services Generalized**: GIVEN the services page, WHEN a user views it, THEN all five web-design-specific services (Website Design, Maintenance, Hosting, Existing Website Support, Business Process Automation) are replaced with three generic placeholder services.\n- **Tags & Categories**: GIVEN the blog, resource, and checklist configs, WHEN referenced, THEN web-design-specific tags/categories are replaced with generic service-business tags/categories.\n- **Contact Form**: GIVEN the contact form, WHEN a user views project types, THEN options are generic service inquiry types, not web-design project types.\n- **Edge Case - Houston Specific**: GIVEN location references like \"Serving the Greater Houston Area,\" WHEN rendered, THEN these are replaced with generic placeholders like \"Serving Your Local Area.\"\n- **Error Handling**: GIVEN that some files are documentation (`.md`), WHEN these reference web design examples, THEN examples are updated to generic service business context.\n\n## 4. Technical Context\n\n| Aspect | Value |\n|--------|-------|\n| Affected Files | `src/components/HeroSection.astro`, `src/pages/services.astro`, `src/pages/index.astro`, `src/types/contact-form.ts`, `src/types/blog.ts`, `src/types/service-checklist.ts`, `src/config/blog.config.ts`, `src/config/resources.config.ts`, `src/config/service-checklists.config.ts`, `src/components/FeaturedProjectsPreview.astro`, `src/components/BeforeAfterGallery.astro`, `src/components/Breadcrumb.astro`, `src/components/ContactForm.astro`, `src/config/seo.config.ts`, `src/docs/SEO_COMPONENT.md` |\n| Dependencies | None (all changes are content/text) |\n| Constraints | Must preserve existing component architecture, props interfaces, and CSS; only content/text changes |\n| Patterns to Follow | Existing TODO/placeholder patterns already used in `index.astro` (e.g., \"Service One\", \"Your Business Name\") |\n\n## 5. Non-Goals\n\n- **Not** changing any visual design, CSS styling, or component architecture\n- **Not** removing the overall site structure (services page, blog, portfolio, contact form still exist)\n- **Not** changing configuration fields that are already blank/placeholder (e.g., empty `seoConfig` fields)\n- **Not** modifying `.automaker/` directory or test files\n- **Not** changing actual functional code logic, only content strings\n\n## 6. Implementation Tasks\n\n```tasks\n## Phase 1: Hero Section & Homepage Cleanup\n- [ ] T001: Remove the entire browser mockup element (hero__mockup div and all children, lines ~133-333) from HeroSection.astro, plus all associated CSS styles for mockup classes | File: src/components/HeroSection.astro\n- [ ] T002: Replace web-design-specific default trust badges (\"Fast & Search-Friendly Sites\") and default example text in HeroSection.astro comment/docblock | File: src/components/HeroSection.astro\n- [ ] T003: Replace \"Serving the Greater Houston Area\" location cue with generic placeholder text | File: src/components/HeroSection.astro\n- [ ] T004: Update homepage index.astro icon variable names from webDesign/existingWebsite to generic names, and fix icon key references | File: src/pages/index.astro\n\n## Phase 2: Services Page Overhaul\n- [ ] T005: Replace all 5 web-design-specific services on services.astro with 3 generic placeholder services (Service One, Service Two, Service Three) with placeholder descriptions, benefits, and pricing | File: src/pages/services.astro\n- [ ] T006: Update services page hero visual preview cards to match the new 3 generic services instead of showing Website Design/Maintenance/Automation/Site Support cards | File: src/pages/services.astro\n- [ ] T007: Remove extra service detail sections (keeping only 3) and update section HTML to reference the 3 generic services | File: src/pages/services.astro\n\n## Phase 3: Contact Form & Type Definitions\n- [ ] T008: Replace web-design-specific ProjectType values and labels with generic service business inquiry types (e.g., 'service-inquiry', 'estimate-request', 'maintenance-request', 'consultation', 'other') | File: src/types/contact-form.ts\n- [ ] T009: Update ContactForm.astro formatProjectType labels to match new generic types | File: src/components/ContactForm.astro\n\n## Phase 4: Blog, Resources & Checklist Configs\n- [ ] T010: Replace web-design-specific blog categories with generic service business categories; update BlogCategory type and BLOG_CATEGORIES array | File: src/types/blog.ts\n- [ ] T011: Update DEFAULT_AUTHOR in blog.ts from \"Houston Web Services\" to generic placeholder | File: src/types/blog.ts\n- [ ] T012: Rename web-design tags to generic service tags in blog.config.ts COMMON_TAGS | File: src/config/blog.config.ts\n- [ ] T013: Rename web-design tags to generic service tags in resources.config.ts COMMON_RESOURCE_TAGS | File: src/config/resources.config.ts\n- [ ] T014: Rename web-design tags and ServiceType values in service-checklists.config.ts and service-checklist.ts | File: src/config/service-checklists.config.ts\n- [ ] T015: Update ServiceType type and SERVICE_TYPES/SERVICE_TYPE_LABELS in service-checklist.ts to use generic service types | File: src/types/service-checklist.ts\n\n## Phase 5: Component Default Text & Breadcrumbs\n- [ ] T016: Update FeaturedProjectsPreview.astro default subheading from \"web design and development\" to generic text | File: src/components/FeaturedProjectsPreview.astro\n- [ ] T017: Update BeforeAfterGallery.astro default subheading from \"web design and development services\" to generic text | File: src/components/BeforeAfterGallery.astro\n- [ ] T018: Update Breadcrumb.astro pathNameMap to remove 'website-design' and add generic service paths | File: src/components/Breadcrumb.astro\n\n## Phase 6: SEO Config & Documentation\n- [ ] T019: Update seo.config.ts makesOffer/knowsAbout example comments to use generic service business examples instead of web design examples | File: src/config/seo.config.ts\n- [ ] T020: Update SEO_COMPONENT.md documentation examples from \"Houston Web Services\" and web design references to generic service business examples | File: src/docs/SEO_COMPONENT.md\n```\n\n## 7. Success Metrics\n\n- Zero occurrences of \"web design,\" \"website design,\" \"web development,\" \"Houston Web Services,\" or \"Fast-loading, search-friendly\" in any source file under `src/`\n- The hero mockup browser element is completely removed from the DOM\n- All service offerings use generic placeholder names (Service One, Two, Three)\n- Contact form project types are generic service inquiry types\n- Blog categories and tags are generic (no web-design-specific categories)\n- Template builds successfully with `npm run build`\n\n## 8. Risks & Mitigations\n\n| Risk | Mitigation |\n|------|------------|\n| Breaking TypeScript type unions when changing ProjectType/BlogCategory values | Update all locations referencing the old string literal values simultaneously |\n| CSS orphan rules after mockup removal | Remove all associated CSS selectors for mockup classes |\n| Missed references in deeply nested files | Use grep search to verify zero remaining web-design references after all changes |\n| Build breakage from type mismatches | Run build verification after all changes |",
+    "generatedAt": "2026-01-31T20:39:33.330Z",
+    "tasks": [
+      {
+        "id": "T001",
+        "description": "Remove the entire browser mockup element (hero__mockup div and all children, lines ~133-333) from HeroSection.astro, plus all associated CSS styles for mockup classes",
+        "filePath": "src/components/HeroSection.astro",
+        "phase": "Phase 1: Hero Section & Homepage Cleanup",
+        "status": "pending"
+      },
+      {
+        "id": "T002",
+        "description": "Replace web-design-specific default trust badges (\"Fast & Search-Friendly Sites\") and default example text in HeroSection.astro comment/docblock",
+        "filePath": "src/components/HeroSection.astro",
+        "phase": "Phase 1: Hero Section & Homepage Cleanup",
+        "status": "pending"
+      },
+      {
+        "id": "T003",
+        "description": "Replace \"Serving the Greater Houston Area\" location cue with generic placeholder text",
+        "filePath": "src/components/HeroSection.astro",
+        "phase": "Phase 1: Hero Section & Homepage Cleanup",
+        "status": "pending"
+      },
+      {
+        "id": "T004",
+        "description": "Update homepage index.astro icon variable names from webDesign/existingWebsite to generic names, and fix icon key references",
+        "filePath": "src/pages/index.astro",
+        "phase": "Phase 1: Hero Section & Homepage Cleanup",
+        "status": "pending"
+      },
+      {
+        "id": "T005",
+        "description": "Replace all 5 web-design-specific services on services.astro with 3 generic placeholder services (Service One, Service Two, Service Three) with placeholder descriptions, benefits, and pricing",
+        "filePath": "src/pages/services.astro",
+        "phase": "Phase 2: Services Page Overhaul",
+        "status": "pending"
+      },
+      {
+        "id": "T006",
+        "description": "Update services page hero visual preview cards to match the new 3 generic services instead of showing Website Design/Maintenance/Automation/Site Support cards",
+        "filePath": "src/pages/services.astro",
+        "phase": "Phase 2: Services Page Overhaul",
+        "status": "pending"
+      },
+      {
+        "id": "T007",
+        "description": "Remove extra service detail sections (keeping only 3) and update section HTML to reference the 3 generic services",
+        "filePath": "src/pages/services.astro",
+        "phase": "Phase 2: Services Page Overhaul",
+        "status": "pending"
+      },
+      {
+        "id": "T008",
+        "description": "Replace web-design-specific ProjectType values and labels with generic service business inquiry types (e.g., 'service-inquiry', 'estimate-request', 'maintenance-request', 'consultation', 'other')",
+        "filePath": "src/types/contact-form.ts",
+        "phase": "Phase 3: Contact Form & Type Definitions",
+        "status": "pending"
+      },
+      {
+        "id": "T009",
+        "description": "Update ContactForm.astro formatProjectType labels to match new generic types",
+        "filePath": "src/components/ContactForm.astro",
+        "phase": "Phase 3: Contact Form & Type Definitions",
+        "status": "pending"
+      },
+      {
+        "id": "T010",
+        "description": "Replace web-design-specific blog categories with generic service business categories; update BlogCategory type and BLOG_CATEGORIES array",
+        "filePath": "src/types/blog.ts",
+        "phase": "Phase 4: Blog, Resources & Checklist Configs",
+        "status": "pending"
+      },
+      {
+        "id": "T011",
+        "description": "Update DEFAULT_AUTHOR in blog.ts from \"Houston Web Services\" to generic placeholder",
+        "filePath": "src/types/blog.ts",
+        "phase": "Phase 4: Blog, Resources & Checklist Configs",
+        "status": "pending"
+      },
+      {
+        "id": "T012",
+        "description": "Rename web-design tags to generic service tags in blog.config.ts COMMON_TAGS",
+        "filePath": "src/config/blog.config.ts",
+        "phase": "Phase 4: Blog, Resources & Checklist Configs",
+        "status": "pending"
+      },
+      {
+        "id": "T013",
+        "description": "Rename web-design tags to generic service tags in resources.config.ts COMMON_RESOURCE_TAGS",
+        "filePath": "src/config/resources.config.ts",
+        "phase": "Phase 4: Blog, Resources & Checklist Configs",
+        "status": "pending"
+      },
+      {
+        "id": "T014",
+        "description": "Rename web-design tags and ServiceType values in service-checklists.config.ts and service-checklist.ts",
+        "filePath": "src/config/service-checklists.config.ts",
+        "phase": "Phase 4: Blog, Resources & Checklist Configs",
+        "status": "pending"
+      },
+      {
+        "id": "T015",
+        "description": "Update ServiceType type and SERVICE_TYPES/SERVICE_TYPE_LABELS in service-checklist.ts to use generic service types",
+        "filePath": "src/types/service-checklist.ts",
+        "phase": "Phase 4: Blog, Resources & Checklist Configs",
+        "status": "pending"
+      },
+      {
+        "id": "T016",
+        "description": "Update FeaturedProjectsPreview.astro default subheading from \"web design and development\" to generic text",
+        "filePath": "src/components/FeaturedProjectsPreview.astro",
+        "phase": "Phase 5: Component Default Text & Breadcrumbs",
+        "status": "pending"
+      },
+      {
+        "id": "T017",
+        "description": "Update BeforeAfterGallery.astro default subheading from \"web design and development services\" to generic text",
+        "filePath": "src/components/BeforeAfterGallery.astro",
+        "phase": "Phase 5: Component Default Text & Breadcrumbs",
+        "status": "pending"
+      },
+      {
+        "id": "T018",
+        "description": "Update Breadcrumb.astro pathNameMap to remove 'website-design' and add generic service paths",
+        "filePath": "src/components/Breadcrumb.astro",
+        "phase": "Phase 5: Component Default Text & Breadcrumbs",
+        "status": "pending"
+      },
+      {
+        "id": "T019",
+        "description": "Update seo.config.ts makesOffer/knowsAbout example comments to use generic service business examples instead of web design examples",
+        "filePath": "src/config/seo.config.ts",
+        "phase": "Phase 6: SEO Config & Documentation",
+        "status": "pending"
+      },
+      {
+        "id": "T020",
+        "description": "Update SEO_COMPONENT.md documentation examples from \"Houston Web Services\" and web design references to generic service business examples",
+        "filePath": "src/docs/SEO_COMPONENT.md",
+        "phase": "Phase 6: SEO Config & Documentation",
+        "status": "pending"
+      }
+    ],
+    "tasksTotal": 20,
+    "tasksCompleted": 4,
+    "approvedAt": "2026-01-31T20:39:33.338Z",
+    "currentTaskId": "T005"
+  }
+}

@@ -7,23 +7,23 @@
  * Technology category for filtering projects
  */
 export type TechnologyCategory =
-  | 'frontend'
-  | 'backend'
-  | 'fullstack'
+  | 'tools'
+  | 'materials'
+  | 'techniques'
   | 'design'
-  | 'ecommerce'
-  | 'cms';
+  | 'specialty'
+  | 'equipment';
 
 /**
  * Project type/category
  */
 export type ProjectCategory =
-  | 'website'
-  | 'web-app'
-  | 'ecommerce'
-  | 'landing-page'
-  | 'redesign'
-  | 'custom-development';
+  | 'residential'
+  | 'commercial'
+  | 'renovation'
+  | 'maintenance'
+  | 'emergency'
+  | 'custom';
 
 /**
  * Link configuration for project CTAs

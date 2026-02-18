@@ -44,46 +44,17 @@ const badgeIcons = {
  * These showcase industry credentials and trust signals
  */
 export const ACCREDITATION_BADGES: TrustBadge[] = [
-  {
-    id: 'bbb-accredited',
-    title: 'BBB Accredited Business',
-    description: 'A+ Rating with the Better Business Bureau',
-    icon: badgeIcons.bbb,
-    issuer: 'Better Business Bureau',
-    year: '2024',
-    verificationUrl: 'https://www.bbb.org/us/tx/houston',
-    category: 'certification',
-  },
-  {
-    id: 'houston-chamber',
-    title: 'Chamber Member',
-    description: 'Proud member of the Greater Houston Partnership',
-    icon: badgeIcons.chamber,
-    issuer: 'Greater Houston Partnership',
-    year: '2024',
-    verificationUrl: 'https://www.houston.org/',
-    category: 'membership',
-  },
-  {
-    id: 'fully-insured',
-    title: 'Fully Insured',
-    description: 'General liability and professional liability coverage',
-    icon: badgeIcons.insurance,
-    issuer: 'Verified Coverage',
-    year: '2024',
-    verificationUrl: '#', // Placeholder - update with actual verification link
-    category: 'insurance',
-  },
-  {
-    id: 'google-certified',
-    title: 'Google Partner',
-    description: 'Certified in Google Analytics and web best practices',
-    icon: badgeIcons.certification,
-    issuer: 'Google',
-    year: '2024',
-    verificationUrl: 'https://www.google.com/partners/',
-    category: 'certification',
-  },
+  // Add your accreditation badges here. Example:
+  // {
+  //   id: 'bbb-accredited',
+  //   title: 'BBB Accredited Business',
+  //   description: 'A+ Rating with the Better Business Bureau',
+  //   icon: badgeIcons.bbb,
+  //   issuer: 'Better Business Bureau',
+  //   year: '2024',
+  //   verificationUrl: 'https://www.bbb.org/',
+  //   category: 'certification',
+  // },
 ];
 
 /**

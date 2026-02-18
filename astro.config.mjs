@@ -5,7 +5,7 @@ import sitemap from '@astrojs/sitemap';
 // https://astro.build/config
 export default defineConfig({
   // IMPORTANT: Set this to your actual production domain
-  site: 'https://houston-web-services.com',
+  site: 'https://example.com', // TODO: Set this to your actual production domain
 
   // Build optimizations
   build: {

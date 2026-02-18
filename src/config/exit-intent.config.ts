@@ -83,31 +83,31 @@ export interface ExitIntentConfig {
 export const defaultExitIntentPopupConfig: ExitIntentPopupConfig = {
   enabled: true,
   offerType: 'both',
-  discountPercentage: 10,
-  discountCode: 'SAVE10',
+  discountPercentage: 0,
+  discountCode: '',
   dismissalDays: 7, // Remember dismissal for 7 days
   maxShowsPerSession: 1,
   minimumTimeOnPage: 10000, // 10 seconds minimum time on page
   showOnPages: [], // Empty = all pages
-  excludePages: ['/contact', '/service-request', '/booking', '/thank-you', '/404'],
+  excludePages: [],
   desktopOnly: true, // Exit-intent is mouse-based, so desktop only
-  consultationUrl: '/booking',
-  contactUrl: '/contact',
+  consultationUrl: '',
+  contactUrl: '',
 };
 
 /**
  * Default content configuration
  */
 export const defaultExitIntentContentConfig: ExitIntentContentConfig = {
-  headline: 'Wait! Before You Go...',
-  description: "We'd love to help transform your online presence. Take advantage of our exclusive offer before you leave!",
-  discountText: '10% OFF your first project',
-  consultationText: 'FREE 30-minute consultation',
-  primaryButtonText: 'Claim My Discount',
-  secondaryButtonText: 'Book Free Consultation',
-  dismissText: 'No thanks, maybe later',
-  successMessage: "Great choice! We'll be in touch soon.",
-  badgeText: 'Exclusive Offer',
+  headline: '',
+  description: '',
+  discountText: '',
+  consultationText: '',
+  primaryButtonText: '',
+  secondaryButtonText: '',
+  dismissText: '',
+  successMessage: '',
+  badgeText: '',
 };
 
 /**

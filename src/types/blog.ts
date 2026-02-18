@@ -7,14 +7,14 @@
  * Blog category for organizing articles
  */
 export type BlogCategory =
-  | 'web-design'
-  | 'web-development'
-  | 'seo'
-  | 'digital-marketing'
+  | 'tips-and-tricks'
+  | 'how-to-guides'
+  | 'industry-insights'
   | 'business-tips'
   | 'case-studies'
   | 'tutorials'
-  | 'industry-news';
+  | 'industry-news'
+  | 'behind-the-scenes';
 
 /**
  * Blog tag for article classification
@@ -211,23 +211,23 @@ export interface BlogListingProps {
  */
 export const BLOG_CATEGORIES: BlogFilterOption[] = [
   { label: 'All Articles', value: 'all' },
-  { label: 'Web Design', value: 'web-design' },
-  { label: 'Web Development', value: 'web-development' },
-  { label: 'SEO', value: 'seo' },
-  { label: 'Digital Marketing', value: 'digital-marketing' },
+  { label: 'Tips & Tricks', value: 'tips-and-tricks' },
+  { label: 'How-To Guides', value: 'how-to-guides' },
+  { label: 'Industry Insights', value: 'industry-insights' },
   { label: 'Business Tips', value: 'business-tips' },
   { label: 'Case Studies', value: 'case-studies' },
   { label: 'Tutorials', value: 'tutorials' },
   { label: 'Industry News', value: 'industry-news' },
+  { label: 'Behind the Scenes', value: 'behind-the-scenes' },
 ];
 
 /**
  * Default author for blog articles
  */
 export const DEFAULT_AUTHOR: BlogAuthor = {
-  name: 'Houston Web Services',
+  name: 'Author Name', // TODO: Update with your business name
   avatar: '/images/team/default-author.svg',
-  bio: 'Expert web design and development team serving Houston businesses.',
+  bio: 'Author bio goes here.', // TODO: Update with your actual author bio
 };
 
 /**

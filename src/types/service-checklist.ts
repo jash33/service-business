@@ -19,12 +19,10 @@ export type ChecklistCategory =
  * Service type the checklist relates to
  */
 export type ServiceType =
-  | 'web-design'
-  | 'web-development'
-  | 'hosting'
+  | 'service-one'
+  | 'service-two'
+  | 'service-three'
   | 'maintenance'
-  | 'seo'
-  | 'ecommerce'
   | 'general';
 
 /**
@@ -189,12 +187,11 @@ export const CHECKLIST_CATEGORIES: ChecklistFilterOption[] = [
  */
 export const SERVICE_TYPES: ChecklistFilterOption[] = [
   { label: 'All Services', value: 'all' },
-  { label: 'Web Design', value: 'web-design' },
-  { label: 'Web Development', value: 'web-development' },
-  { label: 'Hosting', value: 'hosting' },
+  // TODO: Update these labels to match your actual service names
+  { label: 'Service One', value: 'service-one' },
+  { label: 'Service Two', value: 'service-two' },
+  { label: 'Service Three', value: 'service-three' },
   { label: 'Maintenance', value: 'maintenance' },
-  { label: 'SEO', value: 'seo' },
-  { label: 'E-Commerce', value: 'ecommerce' },
   { label: 'General', value: 'general' },
 ];
 
@@ -226,11 +223,10 @@ export const CATEGORY_LABELS: Record<ChecklistCategory, string> = {
  * Service type labels mapping
  */
 export const SERVICE_TYPE_LABELS: Record<ServiceType, string> = {
-  'web-design': 'Web Design',
-  'web-development': 'Web Development',
-  'hosting': 'Hosting',
+  // TODO: Update these labels to match your actual service names
+  'service-one': 'Service One',
+  'service-two': 'Service Two',
+  'service-three': 'Service Three',
   'maintenance': 'Maintenance',
-  'seo': 'SEO',
-  'ecommerce': 'E-Commerce',
   'general': 'General',
 };

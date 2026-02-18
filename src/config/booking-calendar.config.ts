@@ -53,10 +53,9 @@ export const bookingCalendarConfig: BookingCalendarConfig = {
   minHeight: '600px',
   hideCookieBanner: false,
   hideEventTypeDetails: false,
-  // Use brand colors for widget customization (if supported)
-  primaryColor: '365395', // --color-primary-500 without #
-  textColor: '111827', // --color-text-primary without #
-  backgroundColor: 'ffffff', // --color-background without #
+  primaryColor: '',
+  textColor: '',
+  backgroundColor: '',
 };
 
 // =================================================================
@@ -83,29 +82,15 @@ export interface ConsultationType {
 }
 
 export const consultationTypes: ConsultationType[] = [
-  {
-    id: 'discovery-call',
-    name: 'Free Discovery Call',
-    description: 'A complimentary 15-minute call to discuss your project needs and see how we can help.',
-    duration: 15,
-    eventType: 'discovery-call',
-    price: 'Free',
-  },
-  {
-    id: 'website-consultation',
-    name: 'Website Consultation',
-    description: 'In-depth 30-minute consultation to review your website needs, goals, and get expert recommendations.',
-    duration: 30,
-    eventType: 'website-consultation',
-    price: 'Free',
-  },
-  {
-    id: 'project-planning',
-    name: 'Project Planning Session',
-    description: 'A comprehensive 60-minute session to plan your web project, discuss timelines, and create a roadmap.',
-    duration: 60,
-    eventType: 'project-planning',
-  },
+  // Add your consultation types here. Example:
+  // {
+  //   id: 'discovery-call',
+  //   name: 'Free Discovery Call',
+  //   description: 'A complimentary 15-minute call to discuss your project needs.',
+  //   duration: 15,
+  //   eventType: 'discovery-call',
+  //   price: 'Free',
+  // },
 ];
 
 // =================================================================
@@ -193,30 +178,21 @@ export function getCalendlyEmbedUrl(options?: {
  */
 export const bookingPageContent = {
   hero: {
-    title: 'Schedule a Consultation',
-    subtitle: 'Choose a convenient time to discuss your web project. Our consultations are free with no obligation.',
+    title: '',
+    subtitle: '',
   },
   benefits: [
-    {
-      icon: 'clock',
-      title: 'Quick & Easy',
-      description: 'Book your appointment in seconds. Pick a time that works for you.',
-    },
-    {
-      icon: 'video',
-      title: 'Virtual or Phone',
-      description: 'Meet via video call or phone - whatever works best for you.',
-    },
-    {
-      icon: 'check',
-      title: 'No Obligation',
-      description: 'Our initial consultations are completely free with no pressure.',
-    },
+    // Add your booking benefits here. Example:
+    // {
+    //   icon: 'clock',
+    //   title: 'Quick & Easy',
+    //   description: 'Book your appointment in seconds.',
+    // },
   ],
   fallback: {
-    title: 'Booking Unavailable',
-    message: 'Our online booking system is currently being set up. Please contact us directly to schedule a consultation.',
-    contactText: 'Contact Us Instead',
-    contactUrl: '/contact',
+    title: '',
+    message: '',
+    contactText: '',
+    contactUrl: '',
   },
 };

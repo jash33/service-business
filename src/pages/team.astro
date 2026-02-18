@@ -1,6 +1,6 @@
 ---
 /**
- * Team Page - Houston Web Services
+ * Team Page
  * A page showcasing the team members with their bios, photos,
  * specializations, and contact information.
  *
@@ -20,14 +20,14 @@ import { TEAM_MEMBERS, TEAM_PAGE_CONFIG } from '../config/team.config';
 
 <Layout
   title="Our Team"
-  description="Meet the talented team behind Houston Web Services. Our experts bring years of experience in web development, design, SEO, and digital marketing to help your business succeed online."
+  description="Meet the talented team behind our business. Our experts bring years of experience to help your business succeed."
   openGraph={{
     type: 'website',
   }}
   jsonLd={{
     type: 'WebPage',
-    name: 'Our Team - Houston Web Services',
-    description: 'Meet the talented team behind Houston Web Services. Our experts bring years of experience in web development, design, SEO, and digital marketing.',
+    name: 'Our Team',
+    description: 'Meet the talented team behind our business. Our experts bring years of experience to help your business succeed.',
   }}
 >
   <main>
@@ -59,18 +59,20 @@ import { TEAM_MEMBERS, TEAM_PAGE_CONFIG } from '../config/team.config';
     </section>
 
     <!-- Team Members Grid Section -->
-    <section class="team-grid-section" aria-labelledby="team-members-heading">
-      <div class="team-grid-section__container">
-        <h2 id="team-members-heading" class="sr-only">Team Members</h2>
-        <div class="team-grid">
-          {TEAM_MEMBERS.map((member, index) => (
-            <div class={`team-grid__item reveal reveal--up reveal--delay-${Math.min(index + 1, 4)}`}>
-              <TeamMemberCard {...member} />
-            </div>
-          ))}
+    {TEAM_MEMBERS.length > 0 && (
+      <section class="team-grid-section" aria-labelledby="team-members-heading">
+        <div class="team-grid-section__container">
+          <h2 id="team-members-heading" class="sr-only">Team Members</h2>
+          <div class="team-grid">
+            {TEAM_MEMBERS.map((member, index) => (
+              <div class={`team-grid__item reveal reveal--up reveal--delay-${Math.min(index + 1, 4)}`}>
+                <TeamMemberCard {...member} />
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    )}
 
     <!-- Call to Action Section -->
     <section class="team-cta" aria-labelledby="team-cta-heading">

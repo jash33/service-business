@@ -26,7 +26,7 @@ import Layout from '../layouts/Layout.astro';
 
 <Layout
   title="About Us"
-  description="Learn about Houston Web Services and our mission to help small businesses succeed online."
+  description="Learn about our company and our mission to help customers succeed."
 >
   <main>
     <h1>About Us</h1>
@@ -48,8 +48,8 @@ import SEO from '../components/SEO.astro';
   <head>
     <SEO
       title="Services"
-      description="Explore our web design and development services."
-      canonicalUrl="https://houstonwebservices.com/services"
+      description="Explore our professional services for your business."
+      canonicalUrl="https://example.com/services"
       image="/images/services-og.jpg"
     />
   </head>
@@ -158,8 +158,8 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout
-  title="Houston Web Services"
-  description="Professional web design and development services for small businesses in West Houston."
+  title="Your Business Name"
+  description="Professional services for your local area. Contact us for a free estimate."
   noTitleTemplate
   openGraph={{
     type: 'website',
@@ -169,13 +169,13 @@ import Layout from '../layouts/Layout.astro';
   }}
   jsonLd={{
     type: 'Organization',
-    name: 'Houston Web Services',
-    url: 'https://houstonwebservices.com',
-    logo: 'https://houstonwebservices.com/images/logo.png',
-    description: 'Professional web design services in West Houston.',
+    name: 'Your Business Name',
+    url: 'https://example.com',
+    logo: 'https://example.com/images/logo.png',
+    description: 'Professional services for your local area.',
     sameAs: [
-      'https://www.facebook.com/houstonwebservices',
-      'https://www.linkedin.com/company/houstonwebservices',
+      'https://www.facebook.com/yourbusiness',
+      'https://www.linkedin.com/company/yourbusiness',
     ],
   }}
 >
@@ -190,11 +190,11 @@ import Layout from '../layouts/Layout.astro';
 import Layout from '../layouts/Layout.astro';
 
 const post = {
-  title: '10 Tips for Small Business Websites',
-  description: 'Learn the essential tips for creating an effective small business website.',
+  title: '10 Tips for Growing Your Service Business',
+  description: 'Learn the essential tips for growing an effective service business.',
   author: 'John Smith',
   datePublished: '2024-01-15',
-  image: '/images/blog/small-business-tips.jpg',
+  image: '/images/blog/business-tips.jpg',
 };
 ---
 
@@ -230,20 +230,20 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout
-  title="Web Design Services"
-  description="Custom web design services tailored for small businesses."
+  title="Our Services"
+  description="Professional services tailored for your needs."
   jsonLd={[
     {
       type: 'WebPage',
-      name: 'Web Design Services',
-      description: 'Custom web design services tailored for small businesses.',
+      name: 'Our Services',
+      description: 'Professional services tailored for your needs.',
     },
     {
       type: 'BreadcrumbList',
       items: [
         { name: 'Home', url: '/' },
         { name: 'Services', url: '/services' },
-        { name: 'Web Design', url: '/services/web-design' },
+        { name: 'Service One', url: '/services/service-one' },
       ],
     },
   ]}
@@ -260,12 +260,12 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout
-  title="Starter Website Package"
-  description="Affordable website package for small businesses - starting at $999."
+  title="Starter Service Package"
+  description="Affordable service package for your business - starting at $999."
   jsonLd={{
     type: 'Product',
-    name: 'Starter Website Package',
-    description: 'Professional 5-page website for small businesses.',
+    name: 'Starter Service Package',
+    description: 'Professional service package for small businesses.',
     image: '/images/starter-package.jpg',
     offers: {
       price: 999,
@@ -384,9 +384,9 @@ Supports: `Organization`, `LocalBusiness`
   sameAs: ['https://facebook.com/business', 'https://linkedin.com/company/business'],
   address: {
     streetAddress: '123 Main St',
-    addressLocality: 'Houston',
-    addressRegion: 'TX',
-    postalCode: '77077',
+    addressLocality: 'Your City',
+    addressRegion: 'ST',
+    postalCode: '00000',
     addressCountry: 'US',
   },
 }

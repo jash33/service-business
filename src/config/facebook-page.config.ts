@@ -87,25 +87,25 @@ export const facebookSDKConfig: FacebookSDKConfig = {
  */
 export const facebookPageContent = {
   default: {
-    title: 'Connect With Us on Facebook',
-    subtitle: 'Join our community and stay updated with our latest news, tips, and special offers.',
+    title: '',
+    subtitle: '',
   },
   cta: {
-    text: 'Follow Us on Facebook',
+    text: '',
     icon: 'facebook',
   },
   fallback: {
-    title: 'Follow Us on Facebook',
-    message: 'Connect with us on Facebook to stay updated with our latest news, tips, and exclusive offers.',
-    buttonText: 'Visit Our Facebook Page',
+    title: '',
+    message: '',
+    buttonText: '',
   },
   loading: {
-    text: 'Loading Facebook page...',
+    text: '',
   },
   error: {
-    title: 'Unable to Load Facebook Feed',
-    message: 'The Facebook plugin could not be loaded. Please visit our page directly.',
-    buttonText: 'Visit Facebook Page',
+    title: '',
+    message: '',
+    buttonText: '',
   },
 };
 

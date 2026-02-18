@@ -33,35 +33,35 @@ const counterIcons = {
 export const SOCIAL_PROOF_METRICS: CounterMetric[] = [
   {
     id: 'projects-completed',
-    value: 50,
+    value: 0,
     suffix: '+',
     label: 'Projects Completed',
     icon: counterIcons.projects,
-    description: 'Websites designed and launched for local businesses',
+    description: '',
   },
   {
     id: 'years-experience',
-    value: 10,
+    value: 0,
     suffix: '+',
     label: 'Years Experience',
     icon: counterIcons.years,
-    description: 'Years of professional web development expertise',
+    description: '',
   },
   {
     id: 'satisfied-customers',
-    value: 50,
+    value: 0,
     suffix: '+',
     label: 'Happy Clients',
     icon: counterIcons.customers,
-    description: 'Satisfied business owners across Houston',
+    description: '',
   },
   {
     id: 'satisfaction-rate',
-    value: 100,
+    value: 0,
     suffix: '%',
     label: 'Client Satisfaction',
     icon: counterIcons.satisfaction,
-    description: 'Of our clients would recommend our services',
+    description: '',
   },
 ];
 
@@ -70,8 +70,8 @@ export const SOCIAL_PROOF_METRICS: CounterMetric[] = [
  */
 export const SOCIAL_PROOF_COUNTER_CONFIG: SocialProofCounterConfig = {
   id: 'social-proof',
-  heading: 'Trusted by Houston Businesses',
-  subheading: 'Numbers that reflect our commitment to helping local businesses succeed online.',
+  heading: '',
+  subheading: '',
   columns: 4,
   animationDuration: 2000,
 };

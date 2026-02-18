@@ -16,20 +16,19 @@ import BookingCalendar from '../components/BookingCalendar.astro';
 import {
   bookingPageContent,
   consultationTypes,
-  isBookingConfigured,
 } from '../config/booking-calendar.config';
 ---
 
 <Layout
-  title="Book a Consultation | Houston Web Services"
-  description="Schedule a free consultation with Houston Web Services. Discuss your web project needs, get expert recommendations, and learn how we can help your business succeed online."
+  title="Book a Consultation"
+  description="Schedule a free consultation. Discuss your project needs, get expert recommendations, and learn how we can help your business succeed."
   openGraph={{
     type: 'website',
   }}
   jsonLd={{
     type: 'WebPage',
-    name: 'Book a Consultation - Houston Web Services',
-    description: 'Schedule a free consultation to discuss your web design and development needs with Houston Web Services.',
+    name: 'Book a Consultation',
+    description: 'Schedule a free consultation to discuss your project needs.',
   }}
 >
   <main>
@@ -178,7 +177,7 @@ import {
           <a href="/contact" class="booking-alternative__btn booking-alternative__btn--primary">
             Contact Form
           </a>
-          <a href="mailto:hello@houstonwebservices.com" class="booking-alternative__btn booking-alternative__btn--secondary">
+          <a href="mailto:hello@example.com" class="booking-alternative__btn booking-alternative__btn--secondary">
             Email Us
           </a>
         </div>
@@ -527,21 +526,6 @@ import {
   .booking-alternative__btn:focus-visible {
     outline: none;
     box-shadow: var(--focus-ring);
-  }
-
-  /* =================================================================
-   * SCREEN READER ONLY
-   * ================================================================= */
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
   }
 
   /* =================================================================

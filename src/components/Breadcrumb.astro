@@ -40,7 +40,7 @@ export interface BreadcrumbItem {
 interface Props {
   /** Custom breadcrumb items (overrides auto-generation) */
   items?: BreadcrumbItem[];
-  /** Current page path for auto-generation (e.g., '/services/website-design') */
+  /** Current page path for auto-generation (e.g., '/services/service-one') */
   currentPath?: string;
   /** Current page title (used as the last breadcrumb item when auto-generating) */
   currentTitle?: string;
@@ -63,10 +63,9 @@ const {
  */
 const pathNameMap: Record<string, string> = {
   'services': 'Services',
-  'website-design': 'Website Design',
-  'maintenance': 'Maintenance',
-  'hosting': 'Hosting',
-  'seo': 'SEO',
+  'service-one': 'Service One',
+  'service-two': 'Service Two',
+  'service-three': 'Service Three',
   'about': 'About',
   'contact': 'Contact',
   'portfolio': 'Portfolio',
