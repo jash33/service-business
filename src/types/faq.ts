@@ -68,33 +68,39 @@ export interface FAQAccordionItemState {
  */
 export const DEFAULT_FAQ_ITEMS: FAQItem[] = [
   {
-    id: 'faq-ac-repair-cost',
-    question: 'How much does AC repair cost?',
-    answer: `Most repairs range from $150–$500 depending on the issue. We provide upfront pricing before any work begins — no surprises.`,
+    id: 'faq-plumbing-cost',
+    question: 'How much does plumbing repair cost?',
+    answer: `Most repairs range from $150–$500 depending on the issue. Unlike other companies, we price by the job — not by the hour — so there are no surprises. We'll diagnose the problem, explain your options, and give you an upfront quote before any work begins.`,
     category: 'pricing',
   },
   {
     id: 'faq-financing',
     question: 'Do you offer financing?',
-    answer: `Yes! We partner with trusted lenders to offer flexible financing on new system installations. Apply in minutes, get approved same-day.`,
+    answer: `Yes! We understand major plumbing work like water heater replacement or repiping is a significant investment. We partner with trusted lenders to offer flexible financing options with affordable monthly payments. Apply in minutes, get approved same-day.`,
     category: 'pricing',
   },
   {
-    id: 'faq-service-frequency',
-    question: 'How often should I service my AC?',
-    answer: `We recommend a tune-up twice a year — once before summer and once before winter. Regular maintenance prevents 90% of breakdowns.`,
+    id: 'faq-clogged-drain',
+    question: 'Why does my drain keep clogging?',
+    answer: `Recurring clogs usually mean there's a deeper issue — buildup in the pipes, tree roots, or a damaged sewer line. Our video inspection can show exactly what's going on so we can fix the root cause, not just the symptom. No more repeat visits.`,
     category: 'services',
   },
   {
     id: 'faq-service-area',
     question: 'What areas do you serve?',
-    answer: `We serve the Greater Houston area including Katy, Sugar Land, Memorial, Energy Corridor, The Woodlands, and surrounding communities.`,
+    answer: `We proudly serve the Greater Houston area including Katy, Sugar Land, Memorial, Energy Corridor, The Woodlands, and surrounding communities. Our trucks are stocked and ready to roll — most appointments are same-day or next-day. Not sure if we service your area? Give us a call!`,
     category: 'general',
   },
   {
     id: 'faq-emergency-service',
-    question: 'Do you offer emergency service?',
-    answer: `Absolutely. Our 24/7 line is always staffed. AC emergencies don't wait, and neither do we.`,
+    question: 'Do you offer 24/7 emergency service?',
+    answer: `Absolutely — we're ready to leap into action any time of day, any day of the year. Plumbing emergencies don't wait, and neither do we. Call our 24/7 line and a real person will answer, not a machine. We'll have a technician to your door fast.`,
     category: 'services',
+  },
+  {
+    id: 'faq-satisfaction-guarantee',
+    question: 'What if I\'m not satisfied with the work?',
+    answer: `Your satisfaction is 100% guaranteed. If you're not completely happy with our service, we'll make it right at no extra cost. That's our promise. We've built our reputation on quality work and honest service — and we stand behind every job.`,
+    category: 'general',
   },
 ];

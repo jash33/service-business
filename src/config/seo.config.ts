@@ -12,13 +12,13 @@ import type { SEOConfig, LocalBusinessSchema } from '../types/seo';
  */
 export const localBusinessSchema: LocalBusinessSchema = {
   type: 'ProfessionalService',
-  name: 'Coolside Comfort',
-  legalName: 'Coolside Comfort LLC',
-  description: 'Houston HVAC experts offering AC repair, heating services, and maintenance plans. Same-day service, upfront pricing, serving the Greater Houston area since 2010.',
-  slogan: 'Keeping Houston Cool Since 2010',
-  url: 'https://coolsidecomfort.com',
-  telephone: '+1-832-555-2665',
-  email: 'info@coolsidecomfort.com',
+  name: 'HTX Plumbing Co.',
+  legalName: 'HTX Plumbing Co. LLC',
+  description: 'Houston plumbing experts offering drain cleaning, water heater services, leak repair, and more. Same-day service, flat-rate pricing, serving the Greater Houston area for 20 years.',
+  slogan: 'Houston\'s Trusted Plumbers',
+  url: 'https://htxplumbing.com',
+  telephone: '+1-832-555-3569',
+  email: 'info@htxplumbing.com',
   address: {
     streetAddress: '12847 Westheimer Rd',
     addressLocality: 'Houston',
@@ -49,8 +49,8 @@ export const localBusinessSchema: LocalBusinessSchema = {
   paymentAccepted: ['Cash', 'Credit Card', 'Debit Card', 'Check', 'Invoice', 'Bank Transfer'],
   sameAs: [], // Configure: Social media profile URLs
   contactPoint: {
-    telephone: '+1-832-555-2665',
-    email: 'info@coolsidecomfort.com',
+    telephone: '+1-832-555-3569',
+    email: 'info@htxplumbing.com',
     contactType: 'customer service',
     availableLanguage: ['English'],
     areaServed: ['Houston', 'Katy', 'Sugar Land', 'Memorial', 'Energy Corridor', 'The Woodlands'],
@@ -72,11 +72,11 @@ export const localBusinessSchema: LocalBusinessSchema = {
  */
 export const seoConfig: SEOConfig = {
   // Site Identity
-  siteName: 'Coolside Comfort',
-  siteUrl: 'https://coolsidecomfort.com',
+  siteName: 'HTX Plumbing Co.',
+  siteUrl: 'https://htxplumbing.com',
 
   // Title Configuration
-  titleTemplate: '%s | Coolside Comfort',
+  titleTemplate: '%s | HTX Plumbing Co.',
 
   // Default Meta Content
   defaultDescription: 'Houston HVAC experts offering AC repair, heating services, and maintenance plans. Same-day service, upfront pricing, serving the Greater Houston area since 2010.',
@@ -85,7 +85,7 @@ export const seoConfig: SEOConfig = {
 
   // Default Social Sharing Image
   defaultImage: '/images/og-default.jpg', // Configure: Create this image (1200x630 recommended)
-  defaultImageAlt: 'Coolside Comfort - Houston HVAC Services',
+  defaultImageAlt: 'HTX Plumbing Co. - Houston Plumbing Services',
 
   // Twitter Configuration
   twitterSite: undefined, // Add @username when available

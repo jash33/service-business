@@ -1,15 +1,15 @@
 ---
 /**
- * Services Page - Coolside Comfort HVAC
- * Comprehensive HVAC services for Houston and the Energy Corridor
+ * Services Page - HTX Plumbing Co.
+ * Comprehensive plumbing services for Houston and the Energy Corridor
  *
  * Sections:
- * 1. Hero Section - HVAC expertise and trust signals (enhanced with gradient + skyline)
- * 2. Services Overview - Service cards grid (enhanced with hover effects)
- * 3. Service Detail Sections - Individual service breakdowns (alternating layout)
+ * 1. Hero Section - Plumbing expertise and trust signals
+ * 2. Services Overview - Service cards grid
+ * 3. Service Detail Sections - Individual service breakdowns
  * 4. Testimonials Section - Customer testimonials
  * 5. Trust Badges Section - Credentials and certifications
- * 6. CTA Section - Schedule service (enhanced gradient)
+ * 6. CTA Section - Schedule service
  */
 
 import Layout from '../layouts/Layout.astro';
@@ -21,7 +21,7 @@ import type { Testimonial } from '../types/testimonial';
 import { localBusinessSchema } from '../config/seo.config';
 
 /**
- * HVAC Service data for Coolside Comfort
+ * Plumbing Service data for HTX Plumbing Co.
  */
 
 interface ServiceData {
@@ -37,86 +37,86 @@ interface ServiceData {
   ctaHref: string;
 }
 
-// Snowflake icon for AC
-const snowflakeIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M20 12h-8l-4-4"/><path d="M4 12h8l4 4"/><path d="M16 4l-4 4-4-4"/><path d="M8 20l4-4 4 4"/><path d="M20 8l-4 4 4 4"/><path d="M4 16l4-4-4-4"/></svg>`;
-
-// Flame icon for Heating
-const flameIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 23c-3.6 0-7-2.4-7-7 0-2.1.8-4 2.2-5.5.4-.4 1-.5 1.5-.1.2.2.4.4.4.7.1.3 0 .6-.1.8-1 1.1-1.5 2.5-1.5 4.1 0 2.7 2 4.5 4.5 4.5s4.5-1.8 4.5-4.5c0-3.8-3.2-7-6.1-9.4-.5-.4-.5-1.1-.1-1.5.2-.2.5-.3.8-.3.2 0 .5.1.7.2C15.9 7.5 21 12.3 21 17c0 4.1-3.9 6-9 6zM9.5 16c0 1.4 1.1 2.5 2.5 2.5s2.5-1.1 2.5-2.5c0-1.8-1.7-3.5-2.5-4.2-.8.7-2.5 2.4-2.5 4.2z"/></svg>`;
-
-// Wrench/tools icon for Maintenance
+// Wrench icon for Drain Cleaning
 const wrenchIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/></svg>`;
 
-// Wind/air icon for Indoor Air Quality
-const windIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg>`;
+// Water icon for Water Heaters
+const waterIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8zm0 18c-3.35 0-6-2.57-6-6.2 0-2.34 1.95-5.44 6-9.14 4.05 3.7 6 6.79 6 9.14 0 3.63-2.65 6.2-6 6.2z"/></svg>`;
+
+// Shield icon for Leak Detection
+const shieldIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>`;
+
+// Flame icon for Gas Lines
+const flameIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 23c-3.6 0-7-2.4-7-7 0-2.1.8-4 2.2-5.5.4-.4 1-.5 1.5-.1.2.2.4.4.4.7.1.3 0 .6-.1.8-1 1.1-1.5 2.5-1.5 4.1 0 2.7 2 4.5 4.5 4.5s4.5-1.8 4.5-4.5c0-3.8-3.2-7-6.1-9.4-.5-.4-.5-1.1-.1-1.5.2-.2.5-.3.8-.3.2 0 .5.1.7.2C15.9 7.5 21 12.3 21 17c0 4.1-3.9 6-9 6zM9.5 16c0 1.4 1.1 2.5 2.5 2.5s2.5-1.1 2.5-2.5c0-1.8-1.7-3.5-2.5-4.2-.8.7-2.5 2.4-2.5 4.2z"/></svg>`;
 
 const services: ServiceData[] = [
   {
-    id: 'ac-repair',
-    name: 'AC Repair & Installation',
-    slug: 'ac-repair',
-    shortDescription: 'Fast, reliable air conditioning repair and expert installation for all major brands. We keep Houston homes cool when it matters most—including 24/7 emergency service.',
+    id: 'drain-cleaning',
+    name: 'Drain Cleaning & Repair',
+    slug: 'drain-cleaning',
+    shortDescription: 'Clogged drains slowing you down? We clear blockages fast with professional-grade equipment. From simple clogs to stubborn roots, we\'ll get your drains flowing again.',
     benefits: [
-      'Same-day emergency AC repair available',
-      'Expert installation of all major brands',
-      'Honest diagnostics—no unnecessary upsells',
+      'Same-day drain cleaning available',
+      'Hydro-jetting for tough blockages',
+      'Video inspection to find the problem',
       'Backed by our 100% satisfaction guarantee',
     ],
-    startingPrice: '$89',
-    priceNote: 'Diagnostic fee (waived with repair)',
-    icon: snowflakeIcon,
-    ctaText: 'Schedule AC Service',
-    ctaHref: '/service-business/contact?service=ac-repair',
-  },
-  {
-    id: 'heating',
-    name: 'Heating Services',
-    slug: 'heating',
-    shortDescription: 'Complete heating solutions including furnace repair, heat pump service, and emergency repairs. When those rare Houston cold snaps hit, we\'ve got you covered.',
-    benefits: [
-      'Furnace repair and replacement',
-      'Heat pump installation and service',
-      'Emergency heating available 24/7',
-      'Energy-efficient upgrade options',
-    ],
-    startingPrice: '$89',
-    priceNote: 'Diagnostic fee (waived with repair)',
-    icon: flameIcon,
-    ctaText: 'Schedule Heating Service',
-    ctaHref: '/service-business/contact?service=heating',
-  },
-  {
-    id: 'maintenance',
-    name: 'Maintenance Plans',
-    slug: 'maintenance',
-    shortDescription: 'Join the Comfort Club for priority scheduling, seasonal tune-ups, and exclusive member discounts. Regular maintenance extends equipment life and prevents costly breakdowns.',
-    benefits: [
-      'Priority scheduling—skip the wait',
-      'Spring & fall tune-ups included',
-      '15% discount on all repairs',
-      'No overtime charges ever',
-    ],
-    startingPrice: '$19',
-    priceNote: '/month (or $199/year)',
+    startingPrice: '$99',
+    priceNote: 'Starting price for drain cleaning',
     icon: wrenchIcon,
-    ctaText: 'Join Comfort Club',
-    ctaHref: '/service-business/contact?service=maintenance',
+    ctaText: 'Clear My Drain',
+    ctaHref: '/service-business/contact?service=drain-cleaning',
   },
   {
-    id: 'air-quality',
-    name: 'Indoor Air Quality',
-    slug: 'air-quality',
-    shortDescription: 'Breathe easier with professional duct cleaning, air purification systems, and humidity control. Improve your home\'s air quality and your family\'s comfort.',
+    id: 'water-heaters',
+    name: 'Water Heater Services',
+    slug: 'water-heaters',
+    shortDescription: 'No hot water? We repair and install traditional tank and tankless water heaters. Same-day service available for most repairs—because cold showers shouldn\'t happen.',
     benefits: [
-      'Professional duct cleaning',
-      'Whole-home air purifiers',
-      'Humidity control solutions',
-      'Allergy & asthma relief systems',
+      'Tank and tankless water heaters',
+      'Same-day repairs available',
+      'Energy-efficient upgrades',
+      'Financing options available',
     ],
-    startingPrice: '$299',
-    priceNote: 'Starting price for duct cleaning',
-    icon: windIcon,
-    ctaText: 'Improve Your Air',
-    ctaHref: '/service-business/contact?service=air-quality',
+    startingPrice: '$89',
+    priceNote: 'Diagnostic fee (waived with repair)',
+    icon: waterIcon,
+    ctaText: 'Fix My Hot Water',
+    ctaHref: '/service-business/contact?service=water-heaters',
+  },
+  {
+    id: 'leak-detection',
+    name: 'Leak Detection & Repair',
+    slug: 'leak-detection',
+    shortDescription: 'Hidden leaks can cause serious damage. We use advanced technology to locate leaks in walls, under slabs, anywhere—and fix them right the first time.',
+    benefits: [
+      'Non-invasive leak detection',
+      'Slab leak specialists',
+      'Water damage prevention',
+      'Insurance claim assistance',
+    ],
+    startingPrice: '$149',
+    priceNote: 'Starting price for leak detection',
+    icon: shieldIcon,
+    ctaText: 'Find My Leak',
+    ctaHref: '/service-business/contact?service=leak-detection',
+  },
+  {
+    id: 'sewer-gas-lines',
+    name: 'Sewer & Gas Lines',
+    slug: 'sewer-gas-lines',
+    shortDescription: 'From sewer line repairs and replacements to gas line installation and leak detection. We handle the big jobs safely and professionally. Licensed and insured.',
+    benefits: [
+      'Sewer line repair & replacement',
+      'Gas line installation & repair',
+      'Trenchless sewer options',
+      'Licensed gas work',
+    ],
+    startingPrice: '$199',
+    priceNote: 'Starting price for inspections',
+    icon: flameIcon,
+    ctaText: 'Schedule Service',
+    ctaHref: '/service-business/contact?service=sewer-gas',
   },
 ];
 
@@ -126,19 +126,19 @@ const testimonials: Testimonial[] = [
     id: 'testimonial-sarah',
     name: 'Sarah M.',
     location: 'Katy, TX',
-    quote: 'Coolside came out same-day when our AC died in August. Fair price, fixed fast. Highly recommend!',
+    quote: 'HTX Plumbing Co. came out same-day when our water heater died. Fair price, fixed fast. Highly recommend!',
   },
   {
     id: 'testimonial-mike',
     name: 'Mike T.',
     location: 'Energy Corridor',
-    quote: 'Been using them for maintenance for 3 years. Always professional, always on time.',
+    quote: 'Been using them for years. Always professional, always on time, always honest about what needs fixing.',
   },
   {
     id: 'testimonial-johnson',
     name: 'The Johnson Family',
     location: 'Memorial',
-    quote: 'They installed our new system and it\'s been running perfect. Great financing options too.',
+    quote: 'They found and fixed a slab leak that another company missed. Saved us thousands in potential damage.',
   },
 ];
 
@@ -161,7 +161,7 @@ const providerInfo = {
   type: 'LocalBusiness' as const,
   name: localBusinessSchema.name,
   url: localBusinessSchema.url,
-  telephone: '(832) 555-COOL',
+  telephone: '(832) 555-FLOW',
   address: localBusinessSchema.address,
   priceRange: '$$',
 };
@@ -210,8 +210,8 @@ const serviceSchemas: ServiceSchema[] = services.map((service) => {
 ---
 
 <Layout
-  title="HVAC Services | AC Repair, Heating & Maintenance"
-  description="Professional HVAC services in Houston. AC repair & installation, heating services, maintenance plans, and indoor air quality solutions. Licensed & insured. Call (832) 555-COOL."
+  title="Plumbing Services | Drain Cleaning, Water Heaters Plumbing Services | Drain Cleaning, Heating & Maintenance More"
+  description="Professional plumbing services in Houston. Drain cleaning, water heater repair, leak detection, and sewer line services. Licensed & insured. Call (832) 555-FLOW."
   openGraph={{
     type: 'website',
   }}
@@ -230,7 +230,7 @@ const serviceSchemas: ServiceSchema[] = services.map((service) => {
           </div>
           <h1 id="services-hero-heading" class="services-hero__title">
             Houston's Trusted<br/>
-            <span class="services-hero__title-highlight">HVAC Experts</span>
+            <span class="services-hero__title-highlight">Plumbing Experts</span>
           </h1>
           <p class="services-hero__description">
             From emergency AC repairs to complete system installations, we keep Houston homes comfortable year-round. Serving the Energy Corridor and beyond.
@@ -243,8 +243,8 @@ const serviceSchemas: ServiceSchema[] = services.map((service) => {
               size="large"
             />
             <Button
-              text="(832) 555-COOL"
-              href="tel:832-555-2665"
+              text="(832) 555-FLOW"
+              href="tel:832-555-3569"
               variant="secondary"
               size="large"
             />
@@ -270,7 +270,7 @@ const serviceSchemas: ServiceSchema[] = services.map((service) => {
           <div class="services-hero__image-container">
             <img 
               src="/service-business/images/technician-hero.jpg" 
-              alt="HVAC technician servicing equipment"
+              alt="Plumber servicing equipment"
               class="services-hero__image"
               loading="eager"
             />
@@ -285,7 +285,7 @@ const serviceSchemas: ServiceSchema[] = services.map((service) => {
                   <path d="M4 12h8l4 4"/>
                 </svg>
               </div>
-              <span class="services-hero__preview-label">AC Repair</span>
+              <span class="services-hero__preview-label">Drain Cleaning</span>
               <span class="services-hero__preview-price">From $89</span>
             </div>
             <div class="services-hero__preview-card services-hero__preview-card--2">
@@ -334,7 +334,7 @@ const serviceSchemas: ServiceSchema[] = services.map((service) => {
         <header class="services-overview__header">
           <div class="services-overview__header-wrapper">
             <h2 id="services-overview-heading" class="services-overview__heading">
-              Our HVAC Services
+              Our Plumbing Services
             </h2>
           </div>
           <p class="services-overview__description">
@@ -360,7 +360,7 @@ const serviceSchemas: ServiceSchema[] = services.map((service) => {
       </div>
     </section>
 
-    <!-- AC Repair Detail Section -->
+    <!-- Drain Cleaning Detail Section -->
     <section id="ac-repair" class="service-detail service-detail--left" aria-labelledby="ac-repair-heading">
       <div class="service-detail__container">
         <div class="service-detail__content">
@@ -583,8 +583,8 @@ const serviceSchemas: ServiceSchema[] = services.map((service) => {
               size="large"
             />
             <Button
-              text="Call (832) 555-COOL"
-              href="tel:832-555-2665"
+              text="Call (832) 555-FLOW"
+              href="tel:832-555-3569"
               variant="secondary"
               size="large"
             />
@@ -606,7 +606,7 @@ const serviceSchemas: ServiceSchema[] = services.map((service) => {
 
 <style>
   /* =================================================================
-   * SERVICES PAGE STYLES - Coolside Comfort HVAC
+   * SERVICES PAGE STYLES - HTX Plumbing Co.
    * =================================================================
    * Uses design system variables from variables.css
    * Follows BEM naming convention
@@ -1069,7 +1069,7 @@ const serviceSchemas: ServiceSchema[] = services.map((service) => {
     transform: scale(1.05);
   }
 
-  /* HVAC-themed icon backgrounds with circular shape */
+  /* Plumbing-themed icon backgrounds with circular shape */
   .service-detail__icon--cold {
     background-color: #e0f2fe;
     color: #0284c7;

@@ -34,10 +34,10 @@ import { PARTNER_LOGOS, PARTNER_LOGOS_CONFIG } from '../config/partner-logos.con
 
 // SVG Icons for services (optimized inline SVGs)
 const icons = {
-	snowflake: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M22 11h-4.17l3.24-3.24-1.41-1.42L15 11h-2V9l4.66-4.66-1.42-1.41L13 6.17V2h-2v4.17L7.76 2.93 6.34 4.34 11 9v2H9L4.34 6.34 2.93 7.76 6.17 11H2v2h4.17l-3.24 3.24 1.41 1.42L9 13h2v2l-4.66 4.66 1.42 1.41L11 17.83V22h2v-4.17l3.24 3.24 1.42-1.41L13 15v-2h2l4.66 4.66 1.41-1.42L17.83 13H22z"/></svg>`,
-	flame: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z"/></svg>`,
+	wrench: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/></svg>`,
+	water: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8zm0 18c-3.35 0-6-2.57-6-6.2 0-2.34 1.95-5.44 6-9.14 4.05 3.7 6 6.79 6 9.14 0 3.63-2.65 6.2-6 6.2z"/></svg>`,
 	shield: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>`,
-	wind: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M14.5 17c0 1.65-1.35 3-3 3s-3-1.35-3-3h2c0 .55.45 1 1 1s1-.45 1-1-.45-1-1-1H2v-2h9.5c1.65 0 3 1.35 3 3zM19 6.5C19 4.57 17.43 3 15.5 3S12 4.57 12 6.5h2c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5S16.33 8 15.5 8H2v2h13.5c1.93 0 3.5-1.57 3.5-3.5zm-.5 4.5H2v2h16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5H15c0 1.93 1.57 3.5 3.5 3.5s3.5-1.57 3.5-3.5-1.57-3.5-3.5-3.5z"/></svg>`,
+	flame: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z"/></svg>`,
 };
 
 // SVG Icons for differentiators (optimized inline SVGs)
@@ -51,43 +51,43 @@ const differentiatorIcons = {
 // Service offerings for the homepage
 const services: Service[] = [
 	{
-		id: 'ac-repair-installation',
-		title: 'AC Repair & Installation',
-		description: "When your AC goes out in Houston, you need it fixed fast. Our certified technicians diagnose and repair all makes and models — usually same-day. Need a new system? We'll help you choose the right fit for your home and budget.",
-		icon: icons.snowflake,
+		id: 'drain-cleaning',
+		title: 'Drain Cleaning & Repair',
+		description: "Clogged drain? Slow sink? We'll have it flowing again fast. Our technicians use professional-grade equipment to clear even the toughest blockages — roots, grease, buildup, you name it.",
+		icon: icons.wrench,
 		cta: {
 			text: 'Learn More',
-			href: '/service-business/services/ac-repair-installation',
+			href: '/service-business/services/drain-cleaning',
 		},
 	},
 	{
-		id: 'heating-services',
-		title: 'Heating Services',
-		description: "Don't let those rare Texas cold snaps catch you off guard. From furnace repairs to full system replacements, we keep your family warm when temperatures drop.",
-		icon: icons.flame,
+		id: 'water-heaters',
+		title: 'Water Heater Services',
+		description: "No hot water? We repair and install traditional tank and tankless water heaters. Same-day service available — because cold showers shouldn't be a thing.",
+		icon: icons.water,
 		cta: {
 			text: 'Learn More',
-			href: '/service-business/services/heating-services',
+			href: '/service-business/services/water-heaters',
 		},
 	},
 	{
-		id: 'maintenance-plans',
-		title: 'Maintenance Plans',
-		description: 'Prevent breakdowns before they happen. Our Comfort Club members get priority scheduling, 20% off repairs, and two annual tune-ups to keep your system running efficiently year-round.',
+		id: 'leak-detection',
+		title: 'Leak Detection & Repair',
+		description: "Hidden leaks can cause serious damage. We use advanced detection technology to find leaks fast — in walls, under slabs, anywhere — and fix them right the first time.",
 		icon: icons.shield,
 		cta: {
 			text: 'Learn More',
-			href: '/service-business/services/maintenance-plans',
+			href: '/service-business/services/leak-detection',
 		},
 	},
 	{
-		id: 'indoor-air-quality',
-		title: 'Indoor Air Quality',
-		description: 'Houston humidity breeds allergens and mold. We offer air purification systems, duct cleaning, and humidity control solutions to keep your indoor air fresh and healthy.',
-		icon: icons.wind,
+		id: 'sewer-gas-lines',
+		title: 'Sewer & Gas Lines',
+		description: "From sewer line repairs and replacements to gas line installation and leak detection, we handle the big jobs safely and professionally. Licensed and insured.",
+		icon: icons.flame,
 		cta: {
 			text: 'Learn More',
-			href: '/service-business/services/indoor-air-quality',
+			href: '/service-business/services/sewer-gas-lines',
 		},
 	},
 ];
@@ -97,25 +97,25 @@ const differentiators: Differentiator[] = [
 	{
 		id: 'same-day-service',
 		title: 'Same-Day Service',
-		description: "AC out? We'll be there today. No waiting around in the Houston heat — our trucks are stocked and ready to roll.",
+		description: "Plumbing emergency? We're ready to leap into action. Our trucks are fully stocked and our technicians are standing by — we'll be there fast.",
 		icon: differentiatorIcons.clock,
 	},
 	{
 		id: 'upfront-pricing',
-		title: 'Upfront Pricing',
-		description: "No surprises, no hidden fees. We quote the job before we start, so you know exactly what you're paying.",
+		title: 'Flat-Rate Pricing',
+		description: "We price by the job, not by the hour — so there are no surprises. You'll know exactly what you're paying before we start. Transparent and guaranteed.",
 		icon: differentiatorIcons.dollarSign,
 	},
 	{
 		id: 'local-family-owned',
 		title: 'Local & Family-Owned',
-		description: "We're your neighbors in the Energy Corridor. Our family has served Houston for 15 years — your comfort is our reputation.",
+		description: "We're your neighbors in the Energy Corridor, not some out-of-town franchise. Our family has served Houston for 20 years — your satisfaction is our reputation.",
 		icon: differentiatorIcons.mapPin,
 	},
 	{
-		id: 'licensed-epa-certified',
-		title: 'Licensed & EPA Certified',
-		description: 'All our technicians are NATE-certified and EPA-licensed. We do the job right, every time, guaranteed.',
+		id: 'licensed-insured',
+		title: '100% Satisfaction Guarantee',
+		description: 'All technicians are licensed and background-checked. We do the job right the first time, every time — or we make it right at no extra cost.',
 		icon: differentiatorIcons.shield,
 	},
 ];
@@ -124,31 +124,31 @@ const differentiators: Differentiator[] = [
 const testimonials: Testimonial[] = [
 	{
 		id: 'testimonial-1',
-		name: 'Maria Gonzalez',
+		name: 'Maria G.',
 		location: 'Katy, TX',
-		quote: 'Our AC died on the hottest day of July. Coolside had a tech here in 2 hours and got us running the same day. Fair price, friendly service. They\'re our go-to now.',
-		title: 'Homeowner',
+		quote: 'Had a major leak on a Saturday night. HTX Plumbing Co. had someone here within the hour and fixed it fast. They explained everything, gave us an upfront quote, and the technician was professional and courteous. They\'re our go-to now!',
+		title: 'Verified Customer',
 	},
 	{
 		id: 'testimonial-2',
-		name: 'David Chen',
+		name: 'David C.',
 		location: 'Memorial, TX',
-		quote: 'I\'ve used a lot of HVAC companies over the years. Coolside is the only one that shows up on time, explains everything clearly, and doesn\'t try to upsell me stuff I don\'t need.',
-		title: 'Homeowner',
+		quote: 'I\'ve used a lot of plumbing companies over the years. HTX is the only one that shows up on time, explains the problem clearly, and doesn\'t try to upsell me stuff I don\'t need. Honest, reliable service — exactly what you want.',
+		title: 'Verified Customer',
 	},
 	{
 		id: 'testimonial-3',
-		name: 'Jennifer & Marcus Williams',
+		name: 'Jennifer W.',
 		location: 'Sugar Land, TX',
-		quote: 'The Comfort Club membership has saved us twice now. Both times we got priority service and the repairs were discounted. Absolutely worth it for peace of mind.',
-		title: 'Homeowners',
+		quote: 'They replaced our ancient water heater with a tankless unit. The crew was fast, clean, and professional. Gave us a fair price and even cleaned up after themselves. Highly recommend!',
+		title: 'Verified Customer',
 	},
 ];
 ---
 
 <Layout
-	title="Coolside Comfort"
-	description="Professional services for your business. Quality solutions, expert support, and results you can count on."
+	title="HTX Plumbing Co."
+	description="Houston's trusted plumbers. Same-day service, flat-rate pricing, and 24/7 emergency calls. Family-owned, serving the Energy Corridor for 20 years. Call (832) 555-FLOW."
 	noTitleTemplate
 	openGraph={{
 		type: 'website',
@@ -158,30 +158,30 @@ const testimonials: Testimonial[] = [
 	<main>
 		<!-- Hero Section -->
 		<HeroSection
-			headline="Houston's Trusted HVAC Experts — Fast, Fair & Always There"
-			subheadline="Same-day AC repair, upfront pricing, and 24/7 emergency service. Keeping Houston families comfortable since 2010."
+			headline="Houston's Trusted Plumbers — Fast, Fair & Always There"
+			subheadline="No shortcuts, no surprises — just expert plumbing done right the first time. We price by the job, not the hour, and offer 24/7 emergency service for immediate peace of mind."
 			primaryCTA={{
 				text: "Schedule Service",
 				href: "/contact",
 			}}
 			secondaryCTA={{
-				text: "Call (832) 555-COOL",
-				href: "tel:+18325552665",
+				text: "Call (832) 555-FLOW",
+				href: "tel:+18325553569",
 			}}
 			trustBadges={[
-				{ icon: 'experience', text: '15+ Years Experience' },
-				{ icon: 'projects', text: '5,000+ Homes Served' },
+				{ icon: 'experience', text: '20+ Years Experience' },
+				{ icon: 'projects', text: '10,000+ Jobs Completed' },
 				{ icon: 'tech', text: '24/7 Emergency Service' },
 			]}
-			heroImage="/service-business/images/technician-hero.jpg"
-			heroImageAlt="Professional HVAC technician servicing equipment"
+			heroImage="/service-business/images/hero-plumber.jpg"
+			heroImageAlt="Professional plumber working on pipe fittings"
 		/>
 
 		<!-- Services Section -->
 		<ServicesSection
 			id="services"
 			heading="Our Services"
-			subheading="Keeping Houston homes comfortable year-round"
+			subheading="Plumbing solutions you can count on"
 			services={services}
 			columns={4}
 		/>
@@ -234,8 +234,8 @@ const testimonials: Testimonial[] = [
 				href: "/contact",
 			}}
 			secondaryCTA={{
-				text: "Call (832) 555-COOL",
-				href: "tel:+18325552665",
+				text: "Call (832) 555-FLOW",
+				href: "tel:+18325553569",
 			}}
 			trustBadges={[
 				"Licensed & Insured",
