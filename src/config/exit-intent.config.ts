@@ -81,7 +81,7 @@ export interface ExitIntentConfig {
  * Default popup configuration
  */
 export const defaultExitIntentPopupConfig: ExitIntentPopupConfig = {
-  enabled: true,
+  enabled: false, // Disabled - intrusive for service business
   offerType: 'both',
   discountPercentage: 0,
   discountCode: '',

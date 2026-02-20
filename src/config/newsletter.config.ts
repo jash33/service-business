@@ -92,9 +92,9 @@ export const defaultNewsletterContent: NewsletterContentConfig = {
  * Default popup configuration
  */
 export const defaultPopupConfig: NewsletterPopupConfig = {
-  enabled: true,
+  enabled: false, // Disabled - too intrusive for service business
   showDelay: 30000, // 30 seconds
-  showOnExitIntent: true,
+  showOnExitIntent: false,
   showOnPages: [], // Empty = all pages
   excludePages: [],
   dismissalDays: 14, // Remember dismissal for 14 days
