@@ -647,8 +647,20 @@ const ctaLink = { href: '/service-business/contact', label: 'Free Estimate' };
         setTimeout(() => firstLink.focus(), 100);
       }
 
-      // Prevent body scroll when menu is open
-      document.body.style.overflow = newState ? 'hidden' : '';
+      // Prevent body scroll and horizontal shift when menu is open
+      if (newState) {
+        document.body.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.width = '100%';
+        document.body.style.top = `-${window.scrollY}px`;
+      } else {
+        const scrollY = document.body.style.top;
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.width = '';
+        document.body.style.top = '';
+        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+      }
     }
 
     /**
@@ -658,7 +670,14 @@ const ctaLink = { href: '/service-business/contact', label: 'Free Estimate' };
       menuToggle.setAttribute('aria-expanded', 'false');
       menuToggle.setAttribute('aria-label', 'Open navigation menu');
       mobileMenu.setAttribute('aria-hidden', 'true');
+      
+      // Restore body scroll
+      const scrollY = document.body.style.top;
       document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.top = '';
+      window.scrollTo(0, parseInt(scrollY || '0') * -1);
 
       mobileNavLinks.forEach((link) => {
         (link as HTMLElement).tabIndex = -1;

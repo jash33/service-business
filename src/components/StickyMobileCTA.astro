@@ -156,6 +156,8 @@ const cleanPhoneNumber = phoneNumber.replace(/[^\d+]/g, '');
 
     /* Ensure container doesn't exceed viewport */
     max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
   }
 
   /* =================================================================
@@ -203,36 +205,36 @@ const cleanPhoneNumber = phoneNumber.replace(/[^\d+]/g, '');
 
   /* Primary button (Call) - Solid background */
   .sticky-cta__button--primary {
-    background-color: var(--color-primary, #365395);
+    background-color: var(--color-primary, #0ea5e9);
     color: var(--color-text-inverse, #ffffff);
     box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.1));
   }
 
   .sticky-cta__button--primary:hover {
-    background-color: var(--color-primary-hover, #304b8d);
+    background-color: var(--color-primary-hover, #0284c7);
     box-shadow: var(--shadow-md, 0 4px 6px rgba(0, 0, 0, 0.1));
   }
 
   .sticky-cta__button--primary:active {
-    background-color: var(--color-primary-active, #284182);
+    background-color: var(--color-primary-active, #0369a1);
     transform: scale(0.98);
   }
 
   /* Secondary button (Message) - Outlined style */
   .sticky-cta__button--secondary {
     background-color: transparent;
-    color: var(--color-primary, #365395);
-    border: var(--border-width-2, 2px) solid var(--color-primary, #365395);
+    color: var(--color-primary, #0ea5e9);
+    border: var(--border-width-2, 2px) solid var(--color-primary, #0ea5e9);
   }
 
   .sticky-cta__button--secondary:hover {
-    background-color: var(--color-primary-50, #e6eaf2);
-    border-color: var(--color-primary-hover, #304b8d);
-    color: var(--color-primary-hover, #304b8d);
+    background-color: var(--color-primary-50, #e0f7ff);
+    border-color: var(--color-primary-hover, #0284c7);
+    color: var(--color-primary-hover, #0284c7);
   }
 
   .sticky-cta__button--secondary:active {
-    background-color: var(--color-primary-100, #c2cbdf);
+    background-color: var(--color-primary-100, #b8ebff);
     transform: scale(0.98);
   }
 
@@ -244,7 +246,7 @@ const cleanPhoneNumber = phoneNumber.replace(/[^\d+]/g, '');
     outline: none;
     box-shadow:
       0 0 0 var(--focus-ring-offset, 2px) var(--color-background, #ffffff),
-      0 0 0 calc(var(--focus-ring-offset, 2px) + var(--focus-ring-width, 2px)) var(--focus-ring-color, #365395);
+      0 0 0 calc(var(--focus-ring-offset, 2px) + var(--focus-ring-width, 2px)) var(--focus-ring-color, #0ea5e9);
   }
 
   /* Remove focus outline for mouse users */
