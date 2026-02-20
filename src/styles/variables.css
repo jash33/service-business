@@ -9,7 +9,7 @@
  *
  * TABLE OF CONTENTS:
  * 1. Color System
- *    - Primary Colors (Navy/Dark Blue brand palette)
+ *    - Primary Colors (Sky Blue 'cool air' palette)
  *    - Background Colors
  *    - Text Colors
  *    - Accent Colors
@@ -61,21 +61,21 @@
    */
 
   /* -----------------------------------------------------------------
-   * Primary Colors - Navy/Dark Blue Brand Palette
-   * Main brand color with shade variations for different states
+   * Primary Colors - Sky Blue 'Cool Air' Palette
+   * HVAC-friendly brand color with shade variations for different states
    * Contrast ratios calculated for WCAG AA compliance
    * ----------------------------------------------------------------- */
-  --color-primary-50: #e6eaf2;   /* Lightest - backgrounds, subtle tints */
-  --color-primary-100: #c2cbdf;  /* Light - hover backgrounds */
-  --color-primary-200: #9aa9ca;  /* Light - disabled backgrounds */
-  --color-primary-300: #7287b5;  /* Medium light */
-  --color-primary-400: #546da5;  /* Medium */
-  --color-primary-500: #365395;  /* Base primary - main brand color */
-  --color-primary-600: #304b8d;  /* Slightly darker - hover states */
-  --color-primary-700: #284182;  /* Dark - active states */
-  --color-primary-800: #203777;  /* Darker - pressed states */
-  --color-primary-900: #132564;  /* Darkest - high contrast needs */
-  --color-primary-950: #0a1640;  /* Near black - maximum contrast */
+  --color-primary-50: #f0f9ff;   /* Lightest - backgrounds, subtle tints */
+  --color-primary-100: #e0f2fe;  /* Light - hover backgrounds */
+  --color-primary-200: #bae6fd;  /* Light - disabled backgrounds */
+  --color-primary-300: #7dd3fc;  /* Medium light */
+  --color-primary-400: #38bdf8;  /* Medium */
+  --color-primary-500: #0ea5e9;  /* Base primary - main brand color */
+  --color-primary-600: #0284c7;  /* Slightly darker - hover states */
+  --color-primary-700: #0369a1;  /* Dark - active states */
+  --color-primary-800: #075985;  /* Darker - pressed states */
+  --color-primary-900: #0c4a6e;  /* Darkest - high contrast needs */
+  --color-primary-950: #082f49;  /* Near black - maximum contrast */
 
   /* Semantic primary aliases for easy use */
   --color-primary: var(--color-primary-500);
@@ -114,11 +114,11 @@
    * Accent Colors
    * Secondary actions, highlights, and decorative elements
    * ----------------------------------------------------------------- */
-  --color-accent: #8b5cf6;          /* Purple accent */
-  --color-accent-light: #a78bfa;
-  --color-accent-dark: #7c3aed;
-  --color-accent-hover: #7c3aed;
-  --color-accent-subtle: #ede9fe;   /* Light purple background */
+  --color-accent: #f97316;          /* Orange accent - warmth & action */
+  --color-accent-light: #fb923c;
+  --color-accent-dark: #ea580c;
+  --color-accent-hover: #ea580c;
+  --color-accent-subtle: #fff7ed;   /* Light orange background */
 
   /* Alternative accent (teal/cyan for variety) */
   --color-accent-alt: #06b6d4;
@@ -288,13 +288,13 @@
   --border-width-8: 8px;
 
   --radius-none: 0;
-  --radius-sm: 0.125rem;    /* 2px */
-  --radius-base: 0.25rem;   /* 4px */
-  --radius-md: 0.375rem;    /* 6px */
-  --radius-lg: 0.5rem;      /* 8px */
-  --radius-xl: 0.75rem;     /* 12px */
-  --radius-2xl: 1rem;       /* 16px */
-  --radius-3xl: 1.5rem;     /* 24px */
+  --radius-sm: 0.1875rem;   /* 3px - slightly softer */
+  --radius-base: 0.375rem;  /* 6px - friendlier */
+  --radius-md: 0.5rem;      /* 8px - softer corners */
+  --radius-lg: 0.75rem;     /* 12px - approachable */
+  --radius-xl: 1rem;        /* 16px - warm & friendly */
+  --radius-2xl: 1.25rem;    /* 20px - inviting */
+  --radius-3xl: 1.75rem;    /* 28px - very friendly */
   --radius-full: 9999px;    /* Pill/circle shapes */
 
   /* =================================================================
@@ -302,18 +302,19 @@
    * =================================================================
    */
 
-  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-  --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+  /* Softer shadows for a friendly, approachable feel */
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.04);
+  --shadow-sm: 0 2px 4px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.04);
+  --shadow-md: 0 4px 8px -2px rgb(0 0 0 / 0.06), 0 2px 4px -2px rgb(0 0 0 / 0.04);
+  --shadow-lg: 0 12px 20px -4px rgb(0 0 0 / 0.06), 0 4px 8px -4px rgb(0 0 0 / 0.04);
+  --shadow-xl: 0 20px 30px -6px rgb(0 0 0 / 0.08), 0 8px 12px -6px rgb(0 0 0 / 0.04);
+  --shadow-2xl: 0 28px 50px -12px rgb(0 0 0 / 0.15);
+  --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.03);
   --shadow-none: 0 0 #0000;
 
-  /* Colored shadows for elevated elements */
-  --shadow-primary: 0 4px 14px 0 rgb(54 83 149 / 0.25);
-  --shadow-primary-lg: 0 10px 25px -3px rgb(54 83 149 / 0.3);
+  /* Softer colored shadows for elevated elements */
+  --shadow-primary: 0 4px 16px 0 rgb(14 165 233 / 0.18);
+  --shadow-primary-lg: 0 12px 28px -4px rgb(14 165 233 / 0.22);
 
   /* =================================================================
    * 6. TRANSITIONS
@@ -407,7 +408,7 @@
   --gradient-primary-horizontal: linear-gradient(90deg, var(--color-primary-500) 0%, var(--color-primary-700) 100%);
 
   /* -----------------------------------------------------------------
-   * Accent Gradients - Purple/Teal accent combinations
+   * Accent Gradients - Orange/Teal accent combinations
    * ----------------------------------------------------------------- */
   --gradient-accent: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
   --gradient-accent-alt: linear-gradient(135deg, var(--color-accent-alt) 0%, var(--color-accent-alt-dark) 100%);
@@ -445,18 +446,18 @@
   /* -----------------------------------------------------------------
    * Primary Glow - Brand-colored glow effects
    * ----------------------------------------------------------------- */
-  --glow-primary-sm: 0 0 10px rgba(54, 83, 149, 0.3);
-  --glow-primary-md: 0 0 20px rgba(54, 83, 149, 0.4);
-  --glow-primary-lg: 0 0 30px rgba(54, 83, 149, 0.5);
-  --glow-primary-xl: 0 0 40px rgba(54, 83, 149, 0.5), 0 0 60px rgba(54, 83, 149, 0.3);
+  --glow-primary-sm: 0 0 10px rgba(14, 165, 233, 0.3);
+  --glow-primary-md: 0 0 20px rgba(14, 165, 233, 0.4);
+  --glow-primary-lg: 0 0 30px rgba(14, 165, 233, 0.5);
+  --glow-primary-xl: 0 0 40px rgba(14, 165, 233, 0.5), 0 0 60px rgba(14, 165, 233, 0.3);
 
   /* -----------------------------------------------------------------
-   * Accent Glow - Purple accent glow effects
+   * Accent Glow - Orange accent glow effects
    * ----------------------------------------------------------------- */
-  --glow-accent-sm: 0 0 10px rgba(139, 92, 246, 0.3);
-  --glow-accent-md: 0 0 20px rgba(139, 92, 246, 0.4);
-  --glow-accent-lg: 0 0 30px rgba(139, 92, 246, 0.5);
-  --glow-accent-xl: 0 0 40px rgba(139, 92, 246, 0.5), 0 0 60px rgba(139, 92, 246, 0.3);
+  --glow-accent-sm: 0 0 10px rgba(249, 115, 22, 0.3);
+  --glow-accent-md: 0 0 20px rgba(249, 115, 22, 0.4);
+  --glow-accent-lg: 0 0 30px rgba(249, 115, 22, 0.5);
+  --glow-accent-xl: 0 0 40px rgba(249, 115, 22, 0.5), 0 0 60px rgba(249, 115, 22, 0.3);
 
   /* -----------------------------------------------------------------
    * Alt Accent Glow - Teal/Cyan glow effects
@@ -468,20 +469,20 @@
   /* -----------------------------------------------------------------
    * Combined/Mixed Glow - Multi-color glow combinations
    * ----------------------------------------------------------------- */
-  --glow-mixed: 0 0 20px rgba(139, 92, 246, 0.3), 0 0 40px rgba(6, 182, 212, 0.2);
-  --glow-mixed-lg: 0 0 30px rgba(139, 92, 246, 0.4), 0 0 60px rgba(6, 182, 212, 0.3);
+  --glow-mixed: 0 0 20px rgba(249, 115, 22, 0.3), 0 0 40px rgba(6, 182, 212, 0.2);
+  --glow-mixed-lg: 0 0 30px rgba(249, 115, 22, 0.4), 0 0 60px rgba(6, 182, 212, 0.3);
 
   /* -----------------------------------------------------------------
-   * Card/Element Glow - For card hover states
+   * Card/Element Glow - For card hover states (softened for friendly feel)
    * ----------------------------------------------------------------- */
-  --glow-card-hover: 0 0 0 1px rgba(54, 83, 149, 0.1), 0 4px 20px rgba(54, 83, 149, 0.15);
-  --glow-card-active: 0 0 0 2px rgba(54, 83, 149, 0.2), 0 8px 30px rgba(54, 83, 149, 0.2);
+  --glow-card-hover: 0 0 0 1px rgba(14, 165, 233, 0.06), 0 6px 24px rgba(14, 165, 233, 0.1);
+  --glow-card-active: 0 0 0 2px rgba(14, 165, 233, 0.12), 0 10px 32px rgba(14, 165, 233, 0.12);
 
   /* -----------------------------------------------------------------
    * Text Glow - For glowing text effects (use sparingly)
    * ----------------------------------------------------------------- */
   --glow-text-subtle: 0 0 10px rgba(255, 255, 255, 0.5);
-  --glow-text-accent: 0 0 20px rgba(139, 92, 246, 0.6);
+  --glow-text-accent: 0 0 20px rgba(249, 115, 22, 0.6);
 
   /* =================================================================
    * 12. DESIGN FLAIR - ANIMATION TIMINGS
@@ -630,8 +631,8 @@ html[data-theme="dark"] {
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.2);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.2), 0 8px 10px -6px rgb(0 0 0 / 0.2);
   --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.4);
-  --shadow-primary: 0 4px 14px 0 rgb(84 109 165 / 0.35);
-  --shadow-primary-lg: 0 10px 25px -3px rgb(84 109 165 / 0.4);
+  --shadow-primary: 0 4px 14px 0 rgb(56 189 248 / 0.35);
+  --shadow-primary-lg: 0 10px 25px -3px rgb(56 189 248 / 0.4);
 
   /* Focus ring for dark mode */
   --focus-ring-color: var(--color-primary-400);
@@ -649,28 +650,28 @@ html[data-theme="dark"] {
   /* -----------------------------------------------------------------
    * Dark Mode - Glow Adjustments (more visible against dark backgrounds)
    * ----------------------------------------------------------------- */
-  --glow-primary-sm: 0 0 15px rgba(84, 109, 165, 0.4);
-  --glow-primary-md: 0 0 25px rgba(84, 109, 165, 0.5);
-  --glow-primary-lg: 0 0 35px rgba(84, 109, 165, 0.6);
-  --glow-primary-xl: 0 0 45px rgba(84, 109, 165, 0.6), 0 0 70px rgba(84, 109, 165, 0.4);
+  --glow-primary-sm: 0 0 15px rgba(56, 189, 248, 0.4);
+  --glow-primary-md: 0 0 25px rgba(56, 189, 248, 0.5);
+  --glow-primary-lg: 0 0 35px rgba(56, 189, 248, 0.6);
+  --glow-primary-xl: 0 0 45px rgba(56, 189, 248, 0.6), 0 0 70px rgba(56, 189, 248, 0.4);
 
-  --glow-accent-sm: 0 0 15px rgba(167, 139, 250, 0.4);
-  --glow-accent-md: 0 0 25px rgba(167, 139, 250, 0.5);
-  --glow-accent-lg: 0 0 35px rgba(167, 139, 250, 0.6);
-  --glow-accent-xl: 0 0 45px rgba(167, 139, 250, 0.6), 0 0 70px rgba(167, 139, 250, 0.4);
+  --glow-accent-sm: 0 0 15px rgba(251, 146, 60, 0.4);
+  --glow-accent-md: 0 0 25px rgba(251, 146, 60, 0.5);
+  --glow-accent-lg: 0 0 35px rgba(251, 146, 60, 0.6);
+  --glow-accent-xl: 0 0 45px rgba(251, 146, 60, 0.6), 0 0 70px rgba(251, 146, 60, 0.4);
 
   --glow-accent-alt-sm: 0 0 15px rgba(34, 211, 238, 0.4);
   --glow-accent-alt-md: 0 0 25px rgba(34, 211, 238, 0.5);
   --glow-accent-alt-lg: 0 0 35px rgba(34, 211, 238, 0.6);
 
-  --glow-mixed: 0 0 25px rgba(167, 139, 250, 0.4), 0 0 45px rgba(34, 211, 238, 0.3);
-  --glow-mixed-lg: 0 0 35px rgba(167, 139, 250, 0.5), 0 0 70px rgba(34, 211, 238, 0.4);
+  --glow-mixed: 0 0 25px rgba(251, 146, 60, 0.4), 0 0 45px rgba(34, 211, 238, 0.3);
+  --glow-mixed-lg: 0 0 35px rgba(251, 146, 60, 0.5), 0 0 70px rgba(34, 211, 238, 0.4);
 
-  --glow-card-hover: 0 0 0 1px rgba(84, 109, 165, 0.2), 0 4px 25px rgba(84, 109, 165, 0.25);
-  --glow-card-active: 0 0 0 2px rgba(84, 109, 165, 0.3), 0 8px 35px rgba(84, 109, 165, 0.3);
+  --glow-card-hover: 0 0 0 1px rgba(56, 189, 248, 0.2), 0 4px 25px rgba(56, 189, 248, 0.25);
+  --glow-card-active: 0 0 0 2px rgba(56, 189, 248, 0.3), 0 8px 35px rgba(56, 189, 248, 0.3);
 
   --glow-text-subtle: 0 0 15px rgba(248, 250, 252, 0.4);
-  --glow-text-accent: 0 0 25px rgba(167, 139, 250, 0.7);
+  --glow-text-accent: 0 0 25px rgba(251, 146, 60, 0.7);
 }
 
 /* Selection styling for dark mode */

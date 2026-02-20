@@ -17,19 +17,56 @@
 import type { PartnerLogo, PartnerLogosConfig } from '../types/partner';
 
 /**
- * Partner logos to display in the carousel
+ * Partner/Brand logos to display in the carousel
  *
- * Add your partner logos here. Example entry:
- * {
- *   id: 'partner-example',
- *   name: 'Example Partner',
- *   logoSrc: '/images/partners/example-logo.svg',
- *   href: 'https://www.example.com/',
- *   width: 160,
- *   height: 60,
- * }
+ * HVAC manufacturer brands we service - builds trust with customers
+ * by showing we work with recognized industry names.
  */
-export const PARTNER_LOGOS: PartnerLogo[] = [];
+export const PARTNER_LOGOS: PartnerLogo[] = [
+  // Reordered for color variety: blue, red, green, orange, blue, red
+  {
+    id: 'brand-carrier',
+    name: 'Carrier',
+    logoSrc: '/service-business/images/brands/carrier.svg',
+    width: 200,
+    height: 80,
+  },
+  {
+    id: 'brand-trane',
+    name: 'Trane',
+    logoSrc: '/service-business/images/brands/trane.svg',
+    width: 200,
+    height: 80,
+  },
+  {
+    id: 'brand-goodman',
+    name: 'Goodman',
+    logoSrc: '/service-business/images/brands/goodman.svg',
+    width: 200,
+    height: 80,
+  },
+  {
+    id: 'brand-york',
+    name: 'York',
+    logoSrc: '/service-business/images/brands/york.svg',
+    width: 200,
+    height: 80,
+  },
+  {
+    id: 'brand-lennox',
+    name: 'Lennox',
+    logoSrc: '/service-business/images/brands/lennox.svg',
+    width: 200,
+    height: 80,
+  },
+  {
+    id: 'brand-rheem',
+    name: 'Rheem',
+    logoSrc: '/service-business/images/brands/rheem.svg',
+    width: 200,
+    height: 80,
+  },
+];
 
 /**
  * Section configuration for the partner logos section
@@ -37,19 +74,19 @@ export const PARTNER_LOGOS: PartnerLogo[] = [];
  */
 export const PARTNER_LOGOS_CONFIG: PartnerLogosConfig = {
   /** Section ID for anchor linking */
-  id: 'partners',
+  id: 'brands-we-service',
 
   /** Main heading for the section */
-  heading: 'Our Partners',
+  heading: 'Brands We Service',
 
   /** Subheading/description text */
-  subheading: '',
+  subheading: 'Factory-trained technicians certified to repair and maintain all major HVAC brands',
 
   /** Enable auto-scrolling carousel */
   autoScroll: true,
 
   /** Scroll speed in pixels per second */
-  scrollSpeed: 30,
+  scrollSpeed: 40,
 
   /** Pause scrolling on hover */
   pauseOnHover: true,

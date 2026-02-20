@@ -68,39 +68,33 @@ export interface FAQAccordionItemState {
  */
 export const DEFAULT_FAQ_ITEMS: FAQItem[] = [
   {
-    id: 'faq-pricing',
-    question: 'How much do your services cost?',
-    answer: `Our pricing depends on the scope and complexity of your project. We offer a range of packages to fit different budgets and needs. Contact us for a free consultation and we'll provide a detailed quote tailored to your specific requirements.`,
+    id: 'faq-ac-repair-cost',
+    question: 'How much does AC repair cost?',
+    answer: `Most repairs range from $150–$500 depending on the issue. We provide upfront pricing before any work begins — no surprises.`,
     category: 'pricing',
   },
   {
-    id: 'faq-timeline',
-    question: 'How long does a typical project take?',
-    answer: `Project timelines vary based on scope and complexity. We'll provide a clear timeline during our initial consultation and keep you informed throughout every stage of the process with regular updates and milestone reviews.`,
-    category: 'timeline',
+    id: 'faq-financing',
+    question: 'Do you offer financing?',
+    answer: `Yes! We partner with trusted lenders to offer flexible financing on new system installations. Apply in minutes, get approved same-day.`,
+    category: 'pricing',
   },
   {
-    id: 'faq-process',
-    question: 'What does your process look like?',
-    answer: `Our process has four clear phases: <strong>Discovery</strong> — We learn about your business, goals, and target audience. <strong>Planning</strong> — We create a detailed project plan for your approval. <strong>Execution</strong> — We deliver the work with quality and attention to detail. <strong>Review</strong> — We refine the results based on your feedback until you're completely satisfied.`,
-    category: 'process',
-  },
-  {
-    id: 'faq-getting-started',
-    question: 'How do I get started?',
-    answer: `Getting started is easy! Simply reach out through our contact form or give us a call to schedule a free consultation. We'll discuss your needs, answer any questions, and outline the best path forward for your project.`,
-    category: 'general',
-  },
-  {
-    id: 'faq-revisions',
-    question: 'What if I need changes after the project is complete?',
-    answer: `We want you to be completely satisfied with our work. Our packages include a revision period where we'll refine the deliverables based on your feedback. We also offer ongoing support plans to help with future updates and adjustments.`,
-    category: 'process',
+    id: 'faq-service-frequency',
+    question: 'How often should I service my AC?',
+    answer: `We recommend a tune-up twice a year — once before summer and once before winter. Regular maintenance prevents 90% of breakdowns.`,
+    category: 'services',
   },
   {
     id: 'faq-service-area',
     question: 'What areas do you serve?',
-    answer: `We work with clients both locally and remotely. Whether you prefer to meet in person or connect via phone or video call, we're flexible and ready to accommodate your needs.`,
+    answer: `We serve the Greater Houston area including Katy, Sugar Land, Memorial, Energy Corridor, The Woodlands, and surrounding communities.`,
     category: 'general',
+  },
+  {
+    id: 'faq-emergency-service',
+    question: 'Do you offer emergency service?',
+    answer: `Absolutely. Our 24/7 line is always staffed. AC emergencies don't wait, and neither do we.`,
+    category: 'services',
   },
 ];

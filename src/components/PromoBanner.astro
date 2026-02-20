@@ -1,0 +1,166 @@
+---
+/**
+ * Promotional Banner
+ * A dismissible banner for seasonal promotions, displayed below the EmergencyBanner.
+ * Dismissal state is persisted in localStorage.
+ *
+ * @example
+ * ```astro
+ * <PromoBanner
+ *   message="🌡️ Summer Special: AC Tune-Up Only $89!"
+ *   ctaText="Book Now"
+ *   ctaHref="/service-business/booking"
+ * />
+ * ```
+ */
+
+interface Props {
+  /** Promotional message text */
+  message: string;
+  /** Call-to-action button text */
+  ctaText: string;
+  /** Call-to-action link href */
+  ctaHref: string;
+  /** Enable/disable the banner (default: true) */
+  enabled?: boolean;
+}
+
+const { message, ctaText, ctaHref, enabled = true } = Astro.props;
+---
+
+{enabled && (
+  <div class="promo-banner" id="promo-banner" role="banner" aria-label="Promotional offer" hidden>
+    <div class="promo-banner__inner">
+      <span class="promo-banner__message">{message}</span>
+      <a href={ctaHref} class="promo-banner__cta">{ctaText}</a>
+      <button
+        class="promo-banner__dismiss"
+        type="button"
+        aria-label="Dismiss promotion"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true">
+          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+)}
+
+<script>
+  function initPromoBanner() {
+    const banner = document.getElementById('promo-banner');
+    if (!banner) return;
+
+    const STORAGE_KEY = 'promo-banner-dismissed';
+
+    if (localStorage.getItem(STORAGE_KEY) === 'true') return;
+
+    banner.hidden = false;
+
+    const dismissBtn = banner.querySelector('.promo-banner__dismiss');
+    dismissBtn?.addEventListener('click', () => {
+      banner.hidden = true;
+      localStorage.setItem(STORAGE_KEY, 'true');
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPromoBanner);
+  } else {
+    initPromoBanner();
+  }
+
+  document.addEventListener('astro:page-load', initPromoBanner);
+</script>
+
+<style>
+  .promo-banner {
+    background: linear-gradient(90deg, var(--color-primary-500) 0%, var(--color-primary-400) 50%, var(--color-primary-600) 100%);
+    color: #fff;
+    text-align: center;
+  }
+
+  .promo-banner__inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-3, 0.75rem);
+    padding: var(--spacing-2-5, 0.625rem) var(--spacing-4, 1rem);
+    max-width: var(--container-7xl, 1280px);
+    margin: 0 auto;
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: var(--font-size-sm, 0.875rem);
+    font-weight: var(--font-weight-medium, 500);
+    line-height: 1.2;
+    position: relative;
+  }
+
+  .promo-banner__message {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .promo-banner__cta {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--spacing-1, 0.25rem) var(--spacing-3, 0.75rem);
+    background: #fff;
+    color: var(--color-primary-700, #0369a1);
+    font-size: var(--font-size-xs, 0.75rem);
+    font-weight: var(--font-weight-bold, 700);
+    text-decoration: none;
+    border-radius: var(--radius-full, 9999px);
+    white-space: nowrap;
+    transition: background-color 150ms ease, transform 150ms ease;
+    flex-shrink: 0;
+  }
+
+  .promo-banner__cta:hover {
+    background: var(--color-primary-100, #e0f2fe);
+    transform: scale(1.05);
+  }
+
+  .promo-banner__cta:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+    border-radius: var(--radius-full, 9999px);
+  }
+
+  .promo-banner__dismiss {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    padding: var(--spacing-1, 0.25rem);
+    border-radius: var(--radius-base, 0.25rem);
+    flex-shrink: 0;
+    transition: color 150ms ease;
+  }
+
+  .promo-banner__dismiss:hover {
+    color: #fff;
+  }
+
+  .promo-banner__dismiss:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+    border-radius: var(--radius-base, 0.25rem);
+  }
+
+  @media (max-width: 480px) {
+    .promo-banner__inner {
+      font-size: var(--font-size-xs, 0.75rem);
+      gap: var(--spacing-2, 0.5rem);
+      padding: var(--spacing-2, 0.5rem) var(--spacing-3, 0.75rem);
+    }
+
+    .promo-banner__message {
+      white-space: normal;
+      text-align: left;
+    }
+  }
+</style>

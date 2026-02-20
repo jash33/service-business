@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 80">
+  <defs>
+    <linearGradient id="rheemGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#C62828;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8E0000;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="200" height="80" rx="12" fill="url(#rheemGrad)"/>
+  <!-- Flame icon -->
+  <g transform="translate(30, 40)">
+    <path d="M0 -18 C-4 -10 -10 -6 -10 4 C-10 12 -5 18 0 18 C5 18 10 12 10 4 C10 -6 4 -10 0 -18 M0 -8 C2 -4 5 -2 5 3 C5 7 2 10 0 10 C-2 10 -5 7 -5 3 C-5 -2 -2 -4 0 -8" fill="#FFCDD2"/>
+  </g>
+  <text x="118" y="42" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="800" fill="#FFFFFF" letter-spacing="2">RHEEM</text>
+  <text x="118" y="58" text-anchor="middle" font-family="system-ui, sans-serif" font-size="7" fill="#FFCDD2" letter-spacing="1">A GREATER DEGREE OF COMFORT</text>
+</svg>

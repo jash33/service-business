@@ -55,8 +55,8 @@ export const GOOGLE_REVIEWS_SECTION_CONFIG = {
  * In production, this would be fetched from the Google Places API
  */
 export const BUSINESS_RATING: GoogleBusinessRating = {
-  averageRating: 0,
-  totalReviews: 0,
+  averageRating: 4.9,
+  totalReviews: 280,
   googleBusinessUrl: GOOGLE_REVIEWS_CONFIG.googleBusinessUrl,
 };
 

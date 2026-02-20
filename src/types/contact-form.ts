@@ -149,11 +149,13 @@ export const DEFAULT_VALIDATION_CONFIG: ValidationConfig = {
  * Project type options
  */
 export const PROJECT_TYPE_OPTIONS: ProjectTypeOption[] = [
-  { value: '', label: 'Select an inquiry type' },
-  { value: 'service-inquiry', label: 'Service Inquiry' },
-  { value: 'estimate-request', label: 'Estimate Request' },
-  { value: 'maintenance-request', label: 'Maintenance Request' },
-  { value: 'consultation', label: 'Consultation' },
+  { value: '', label: 'What do you need help with?' },
+  { value: 'ac-repair', label: 'AC Repair (Emergency or Scheduled)' },
+  { value: 'heating-repair', label: 'Heating / Furnace Repair' },
+  { value: 'new-system', label: 'New AC or Heating System' },
+  { value: 'maintenance', label: 'Maintenance Plan / Tune-Up' },
+  { value: 'air-quality', label: 'Indoor Air Quality / Duct Cleaning' },
+  { value: 'free-estimate', label: 'Free Estimate' },
   { value: 'other', label: 'Other' },
 ];
 

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 80">
+  <defs>
+    <linearGradient id="yorkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F9A825;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F57F17;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="200" height="80" rx="12" fill="url(#yorkGrad)"/>
+  <!-- Gear/efficiency icon -->
+  <g transform="translate(30, 40)" fill="#FFF8E1">
+    <circle cx="0" cy="0" r="6"/>
+    <path d="M-3 -14 L3 -14 L3 -10 L-3 -10 Z" transform="rotate(0)"/>
+    <path d="M-3 -14 L3 -14 L3 -10 L-3 -10 Z" transform="rotate(45)"/>
+    <path d="M-3 -14 L3 -14 L3 -10 L-3 -10 Z" transform="rotate(90)"/>
+    <path d="M-3 -14 L3 -14 L3 -10 L-3 -10 Z" transform="rotate(135)"/>
+    <path d="M-3 -14 L3 -14 L3 -10 L-3 -10 Z" transform="rotate(180)"/>
+    <path d="M-3 -14 L3 -14 L3 -10 L-3 -10 Z" transform="rotate(225)"/>
+    <path d="M-3 -14 L3 -14 L3 -10 L-3 -10 Z" transform="rotate(270)"/>
+    <path d="M-3 -14 L3 -14 L3 -10 L-3 -10 Z" transform="rotate(315)"/>
+    <circle cx="0" cy="0" r="4" fill="url(#yorkGrad)"/>
+  </g>
+  <text x="118" y="44" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="36" font-weight="800" fill="#FFFFFF" letter-spacing="3">YORK</text>
+  <text x="118" y="60" text-anchor="middle" font-family="system-ui, sans-serif" font-size="8" fill="#FFF8E1" letter-spacing="1">BUILT TO LAST</text>
+</svg>

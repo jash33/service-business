@@ -779,13 +779,13 @@ html[data-theme="dark"] .dots-pattern::before {
 }
 
 .hover-lift:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .hover-lift--subtle:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
 /* -----------------------------------------------------------------
@@ -851,20 +851,7 @@ html[data-theme="dark"] .dots-pattern::before {
   animation: section-accent-shimmer 4s ease-in-out infinite;
 }
 
-/* Decorative dots before the heading */
-.section-heading--decorated::before {
-  content: '';
-  display: block;
-  width: 6px;
-  height: 6px;
-  margin-bottom: var(--spacing-3);
-  background: var(--color-accent);
-  border-radius: var(--radius-full);
-  box-shadow:
-    -12px 0 0 var(--color-primary),
-    12px 0 0 var(--color-accent-alt);
-  opacity: 0.8;
-}
+/* Decorative dots removed - felt too generic/techy for service business */
 
 /* Animation for the accent line shimmer */
 @keyframes section-accent-shimmer {
@@ -919,17 +906,7 @@ html[data-theme="dark"] .dots-pattern::before {
   animation: section-accent-shimmer 4s ease-in-out infinite;
 }
 
-.section-heading--decorated-left::before {
-  content: '';
-  display: block;
-  width: 6px;
-  height: 6px;
-  margin-bottom: var(--spacing-2);
-  background: var(--color-accent);
-  border-radius: var(--radius-full);
-  box-shadow: 10px 0 0 var(--color-primary);
-  opacity: 0.7;
-}
+/* Left-aligned dots also removed */
 
 /* Alternative style - side lines flanking heading */
 .section-heading--decorated-alt {

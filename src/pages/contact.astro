@@ -4,6 +4,11 @@
  * A dedicated page for user inquiries with a fully validated contact form.
  *
  * Features:
+ * - Vibrant hero with gradient background
+ * - Emergency callout banner
+ * - Visual contact info cards
+ * - Service areas display
+ * - Trust section
  * - Comprehensive contact form with validation
  * - Spam prevention (honeypot + time-based)
  * - Full accessibility support
@@ -12,11 +17,45 @@
 
 import Layout from '../layouts/Layout.astro';
 import ContactForm from '../components/ContactForm.astro';
+
+// Service areas we cover
+const serviceAreas = [
+  { name: 'Houston', primary: true },
+  { name: 'Katy', primary: false },
+  { name: 'Sugar Land', primary: false },
+  { name: 'Memorial', primary: false },
+  { name: 'Energy Corridor', primary: false },
+  { name: 'The Woodlands', primary: false },
+];
+
+// Trust points
+const trustPoints = [
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>`,
+    title: 'Same-Day Service',
+    description: 'Fast response when you need it most',
+  },
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>`,
+    title: 'Upfront Pricing',
+    description: 'No surprises or hidden fees',
+  },
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>`,
+    title: 'Licensed Techs',
+    description: 'NATE-certified professionals',
+  },
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`,
+    title: 'Satisfaction Guarantee',
+    description: '100% satisfaction or we make it right',
+  },
+];
 ---
 
 <Layout
   title="Contact Us"
-  description="Get in touch with us. We'd love to hear about your project and discuss how we can help your business succeed."
+  description="Contact Coolside Comfort for AC repair, heating service, and HVAC maintenance in Houston's Energy Corridor. Call (832) 555-COOL for same-day service."
   openGraph={{
     type: 'website',
   }}
@@ -27,71 +66,178 @@ import ContactForm from '../components/ContactForm.astro';
   }}
 >
   <main>
+    <!-- Emergency Banner -->
+    <section class="contact-emergency" aria-label="Emergency Service">
+      <div class="contact-emergency__container">
+        <div class="contact-emergency__icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+          </svg>
+        </div>
+        <div class="contact-emergency__content">
+          <span class="contact-emergency__label">AC Emergency?</span>
+          <span class="contact-emergency__text">We're available 24/7!</span>
+        </div>
+        <a href="tel:+18325552665" class="contact-emergency__cta">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="contact-emergency__phone-icon">
+            <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+          </svg>
+          Call (832) 555-COOL
+        </a>
+      </div>
+    </section>
+
     <!-- Hero Section -->
     <section class="contact-hero" aria-labelledby="contact-hero-heading">
       <div class="contact-hero__container">
         <h1 id="contact-hero-heading" class="contact-hero__title">
-          Let's Build Something Great Together
+          Get in Touch with Coolside Comfort
         </h1>
         <p class="contact-hero__subtitle">
-          Whether you're starting a new project or looking to improve your current operations,
-          we're here to help. Tell us about your needs and let's get started.
+          Whether you need emergency AC repair, a new system installation, or a maintenance plan,
+          our team is ready to help keep your home comfortable year-round.
         </p>
+        
+        <!-- Trust Badges Inline -->
+        <div class="contact-hero__badges">
+          <div class="contact-hero__badge">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="contact-hero__badge-icon">
+              <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+            </svg>
+            <span>Licensed & Insured</span>
+          </div>
+          <div class="contact-hero__badge">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="contact-hero__badge-icon">
+              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+            </svg>
+            <span>BBB A+ Rated</span>
+          </div>
+          <div class="contact-hero__badge">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="contact-hero__badge-icon">
+              <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+            </svg>
+            <span>Same-Day Service</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Info Cards -->
+    <section class="contact-cards" aria-labelledby="contact-cards-heading">
+      <div class="contact-cards__container">
+        <h2 id="contact-cards-heading" class="sr-only">Ways to Reach Us</h2>
+        
+        <div class="contact-cards__grid">
+          <!-- Phone Card -->
+          <a href="tel:+18325552665" class="contact-card contact-card--phone">
+            <div class="contact-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+              </svg>
+            </div>
+            <div class="contact-card__content">
+              <h3 class="contact-card__title">Call Us</h3>
+              <p class="contact-card__value">(832) 555-COOL</p>
+              <p class="contact-card__detail">Tap to call now</p>
+            </div>
+          </a>
+
+          <!-- Email Card -->
+          <a href="mailto:info@coolsidecomfort.com" class="contact-card contact-card--email">
+            <div class="contact-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
+            </div>
+            <div class="contact-card__content">
+              <h3 class="contact-card__title">Email Us</h3>
+              <p class="contact-card__value">info@coolsidecomfort.com</p>
+              <p class="contact-card__detail">We respond within 24 hours</p>
+            </div>
+          </a>
+
+          <!-- Location Card -->
+          <div class="contact-card contact-card--location">
+            <div class="contact-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+            </div>
+            <div class="contact-card__content">
+              <h3 class="contact-card__title">Visit Us</h3>
+              <p class="contact-card__value">12847 Westheimer Rd</p>
+              <p class="contact-card__detail">Houston, TX 77077</p>
+            </div>
+          </div>
+
+          <!-- Hours Card -->
+          <div class="contact-card contact-card--hours">
+            <div class="contact-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+            </div>
+            <div class="contact-card__content">
+              <h3 class="contact-card__title">Business Hours</h3>
+              <p class="contact-card__value">Mon-Fri: 7am - 7pm</p>
+              <p class="contact-card__detail contact-card__detail--emergency">24/7 Emergency Service</p>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- Contact Form Section -->
     <ContactForm />
 
-    <!-- Additional Contact Info -->
-    <section class="contact-info" aria-labelledby="contact-info-heading">
-      <div class="contact-info__container">
-        <h2 id="contact-info-heading" class="sr-only">Alternative Ways to Contact Us</h2>
-
-        <div class="contact-info__grid">
-          <!-- Response Time -->
-          <div class="contact-info__card">
-            <div class="contact-info__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <polyline points="12 6 12 12 16 14" />
-              </svg>
-            </div>
-            <h3 class="contact-info__title">Quick Response</h3>
-            <p class="contact-info__text">
-              We respond to all inquiries within 24 hours during business days.
-            </p>
+    <!-- Service Areas Section -->
+    <section class="service-areas" aria-labelledby="service-areas-heading">
+      <div class="service-areas__container">
+        <div class="service-areas__header">
+          <div class="service-areas__icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+            </svg>
           </div>
-
-          <!-- Email -->
-          <div class="contact-info__card">
-            <div class="contact-info__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                <polyline points="22,6 12,13 2,6" />
+          <h2 id="service-areas-heading" class="service-areas__title">Areas We Serve</h2>
+          <p class="service-areas__subtitle">Proudly serving the Greater Houston area</p>
+        </div>
+        
+        <div class="service-areas__grid">
+          {serviceAreas.map((area) => (
+            <div class={`service-area-tag ${area.primary ? 'service-area-tag--primary' : ''}`}>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="service-area-tag__icon">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
               </svg>
+              {area.name}
             </div>
-            <h3 class="contact-info__title">Email Us</h3>
-            <p class="contact-info__text">
-              <a href="mailto:hello@example.com" class="contact-info__link">
-                hello@example.com
-              </a>
-            </p>
-          </div>
+          ))}
+        </div>
+        
+        <p class="service-areas__note">
+          Don't see your area? Give us a call — we may still be able to help!
+        </p>
+      </div>
+    </section>
 
-          <!-- Location -->
-          <div class="contact-info__card">
-            <div class="contact-info__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                <circle cx="12" cy="10" r="3" />
-              </svg>
+    <!-- Trust Section -->
+    <section class="trust-section" aria-labelledby="trust-section-heading">
+      <div class="trust-section__container">
+        <h2 id="trust-section-heading" class="trust-section__title">
+          Why Houston Homeowners Trust Coolside
+        </h2>
+        
+        <div class="trust-section__grid">
+          {trustPoints.map((point) => (
+            <div class="trust-point">
+              <div class="trust-point__icon" aria-hidden="true" set:html={point.icon} />
+              <h3 class="trust-point__title">{point.title}</h3>
+              <p class="trust-point__description">{point.description}</p>
             </div>
-            <h3 class="contact-info__title">Serving</h3>
-            <p class="contact-info__text">
-              Your area and surrounding regions
-            </p>
-          </div>
+          ))}
         </div>
       </div>
     </section>
@@ -100,148 +246,552 @@ import ContactForm from '../components/ContactForm.astro';
 
 <style>
   /* =================================================================
+   * EMERGENCY BANNER
+   * ================================================================= */
+  .contact-emergency {
+    background: linear-gradient(135deg, #ea580c 0%, #f97316 50%, #fb923c 100%);
+    padding: var(--spacing-3) var(--spacing-4);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .contact-emergency::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(255,255,255,0.03) 10px,
+      rgba(255,255,255,0.03) 20px
+    );
+  }
+
+  .contact-emergency__container {
+    max-width: var(--container-6xl);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-4);
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+  }
+
+  .contact-emergency__icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: white;
+    animation: pulse-icon 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-icon {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+  }
+
+  .contact-emergency__content {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .contact-emergency__label {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: white;
+  }
+
+  .contact-emergency__text {
+    font-size: var(--font-size-base);
+    color: rgba(255, 255, 255, 0.95);
+  }
+
+  .contact-emergency__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    background: white;
+    color: #ea580c;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-base);
+    padding: var(--spacing-2) var(--spacing-4);
+    border-radius: var(--radius-full);
+    text-decoration: none;
+    transition: all var(--duration-200) var(--ease-in-out);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .contact-emergency__cta:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .contact-emergency__phone-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  /* =================================================================
    * HERO SECTION
    * ================================================================= */
   .contact-hero {
-    padding: var(--spacing-20) var(--spacing-4) var(--spacing-12);
-    background: linear-gradient(
-      135deg,
-      var(--color-primary-50) 0%,
-      var(--color-background) 100%
-    );
+    padding: var(--spacing-16) var(--spacing-4) var(--spacing-12);
+    background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 50%, #38bdf8 100%);
     text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .contact-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%);
   }
 
   .contact-hero__container {
     max-width: var(--container-4xl);
     margin: 0 auto;
+    position: relative;
+    z-index: 1;
   }
 
   .contact-hero__title {
     font-size: var(--font-size-4xl);
     font-weight: var(--font-weight-bold);
-    color: var(--color-text-primary);
+    color: white;
     margin-bottom: var(--spacing-4);
     letter-spacing: var(--letter-spacing-tight);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
   .contact-hero__subtitle {
     font-size: var(--font-size-lg);
-    color: var(--color-text-secondary);
+    color: rgba(255, 255, 255, 0.95);
     max-width: 40rem;
-    margin: 0 auto;
+    margin: 0 auto var(--spacing-8);
     line-height: var(--line-height-relaxed);
   }
 
-  /* =================================================================
-   * CONTACT INFO SECTION
-   * ================================================================= */
-  .contact-info {
-    padding: var(--spacing-16) var(--spacing-4);
-    background-color: var(--color-background);
+  .contact-hero__badges {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-6);
+    flex-wrap: wrap;
   }
 
-  .contact-info__container {
+  .contact-hero__badge {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    padding: var(--spacing-2) var(--spacing-4);
+    border-radius: var(--radius-full);
+    color: white;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .contact-hero__badge-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  /* =================================================================
+   * CONTACT CARDS
+   * ================================================================= */
+  .contact-cards {
+    padding: var(--spacing-12) var(--spacing-4);
+    background: linear-gradient(180deg, #f0f9ff 0%, white 100%);
+    margin-top: -2rem;
+    position: relative;
+    z-index: 2;
+  }
+
+  .contact-cards__container {
     max-width: var(--container-6xl);
     margin: 0 auto;
   }
 
-  .contact-info__grid {
+  .contact-cards__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+  }
+
+  @media (min-width: 640px) {
+    .contact-cards__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .contact-cards__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .contact-card {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-4);
+    padding: var(--spacing-6);
+    background: white;
+    border-radius: var(--radius-xl);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    transition: all var(--duration-200) var(--ease-in-out);
+    text-decoration: none;
+    border: 1px solid rgba(14, 165, 233, 0.1);
+  }
+
+  a.contact-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.15);
+    border-color: rgba(14, 165, 233, 0.3);
+  }
+
+  .contact-card__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+    border-radius: var(--radius-lg);
+    color: #0284c7;
+  }
+
+  .contact-card__icon svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .contact-card__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .contact-card__title {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--spacing-1);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .contact-card__value {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-1);
+  }
+
+  .contact-card__detail {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  .contact-card__detail--emergency {
+    color: #ea580c;
+    font-weight: var(--font-weight-semibold);
+  }
+
+  /* =================================================================
+   * CONTACT FORM SECTION
+   * ================================================================= */
+  .contact-form-section {
+    padding: var(--spacing-16) var(--spacing-4);
+    background: white;
+  }
+
+  .contact-form-section__container {
+    max-width: var(--container-4xl);
+    margin: 0 auto;
+  }
+
+  .contact-form-section__wrapper {
+    background: linear-gradient(180deg, #f8fafc 0%, white 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: var(--radius-2xl);
+    padding: var(--spacing-8);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  }
+
+  .contact-form-section__header {
+    text-align: center;
+    margin-bottom: var(--spacing-8);
+  }
+
+  .contact-form-section__title {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-2);
+  }
+
+  .contact-form-section__subtitle {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  /* =================================================================
+   * SERVICE AREAS
+   * ================================================================= */
+  .service-areas {
+    padding: var(--spacing-16) var(--spacing-4);
+    background: linear-gradient(180deg, #f0f9ff 0%, white 100%);
+  }
+
+  .service-areas__container {
+    max-width: var(--container-4xl);
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .service-areas__header {
+    margin-bottom: var(--spacing-8);
+  }
+
+  .service-areas__icon {
+    width: 3rem;
+    height: 3rem;
+    margin: 0 auto var(--spacing-4);
+    color: #0ea5e9;
+  }
+
+  .service-areas__title {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-2);
+  }
+
+  .service-areas__subtitle {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  .service-areas__grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-3);
+    margin-bottom: var(--spacing-6);
+  }
+
+  .service-area-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3) var(--spacing-5);
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all var(--duration-200) var(--ease-in-out);
+  }
+
+  .service-area-tag:hover {
+    border-color: #0ea5e9;
+    box-shadow: 0 4px 6px rgba(14, 165, 233, 0.15);
+  }
+
+  .service-area-tag--primary {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    color: white;
+    border-color: transparent;
+  }
+
+  .service-area-tag--primary:hover {
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.35);
+  }
+
+  .service-area-tag__icon {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .service-areas__note {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+    font-style: italic;
+  }
+
+  /* =================================================================
+   * TRUST SECTION
+   * ================================================================= */
+  .trust-section {
+    padding: var(--spacing-16) var(--spacing-4);
+    background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 50%, #38bdf8 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .trust-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      radial-gradient(circle at 10% 90%, rgba(255,255,255,0.08) 0%, transparent 40%),
+      radial-gradient(circle at 90% 10%, rgba(255,255,255,0.08) 0%, transparent 40%);
+  }
+
+  .trust-section__container {
+    max-width: var(--container-6xl);
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+    text-align: center;
+  }
+
+  .trust-section__title {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: white;
+    margin: 0 0 var(--spacing-10);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .trust-section__grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: var(--spacing-6);
   }
 
   @media (min-width: 640px) {
-    .contact-info__grid {
+    .trust-section__grid {
       grid-template-columns: repeat(2, 1fr);
     }
   }
 
   @media (min-width: 1024px) {
-    .contact-info__grid {
-      grid-template-columns: repeat(3, 1fr);
+    .trust-section__grid {
+      grid-template-columns: repeat(4, 1fr);
     }
   }
 
-  .contact-info__card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: var(--spacing-8);
-    background-color: var(--color-background-subtle);
+  .trust-point {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: var(--radius-xl);
-    transition: box-shadow var(--duration-200) var(--ease-in-out);
+    padding: var(--spacing-6);
+    text-align: center;
+    transition: all var(--duration-200) var(--ease-in-out);
   }
 
-  .contact-info__card:hover {
-    box-shadow: var(--shadow-md);
+  .trust-point:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-4px);
   }
 
-  .contact-info__icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 3rem;
-    height: 3rem;
-    margin-bottom: var(--spacing-4);
-    color: var(--color-primary);
+  .trust-point__icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    margin: 0 auto var(--spacing-4);
+    color: white;
   }
 
-  .contact-info__icon svg {
+  .trust-point__icon svg {
     width: 100%;
     height: 100%;
   }
 
-  .contact-info__title {
+  .trust-point__title {
     font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-text-primary);
-    margin-bottom: var(--spacing-2);
+    font-weight: var(--font-weight-bold);
+    color: white;
+    margin: 0 0 var(--spacing-2);
   }
 
-  .contact-info__text {
-    font-size: var(--font-size-base);
-    color: var(--color-text-secondary);
+  .trust-point__description {
+    font-size: var(--font-size-sm);
+    color: rgba(255, 255, 255, 0.9);
     margin: 0;
-  }
-
-  .contact-info__link {
-    color: var(--color-primary);
-    text-decoration: none;
-    font-weight: var(--font-weight-medium);
-    transition: color var(--duration-150) var(--ease-in-out);
-  }
-
-  .contact-info__link:hover {
-    color: var(--color-primary-hover);
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
+    line-height: var(--line-height-relaxed);
   }
 
   /* =================================================================
    * RESPONSIVE ADJUSTMENTS
    * ================================================================= */
   @media (max-width: 767px) {
+    .contact-emergency__container {
+      flex-direction: column;
+      text-align: center;
+    }
+
     .contact-hero {
       padding: var(--spacing-12) var(--spacing-4) var(--spacing-8);
     }
 
     .contact-hero__title {
-      font-size: var(--font-size-3xl);
+      font-size: var(--font-size-2xl);
     }
 
     .contact-hero__subtitle {
       font-size: var(--font-size-base);
     }
 
-    .contact-info {
+    .contact-hero__badges {
+      gap: var(--spacing-3);
+    }
+
+    .contact-hero__badge {
+      font-size: var(--font-size-xs);
+      padding: var(--spacing-1-5) var(--spacing-3);
+    }
+
+    .contact-cards {
+      padding: var(--spacing-8) var(--spacing-4);
+      margin-top: 0;
+    }
+
+    .contact-card {
+      padding: var(--spacing-4);
+    }
+
+    .contact-form-section__wrapper {
+      padding: var(--spacing-6);
+    }
+
+    .service-areas {
       padding: var(--spacing-12) var(--spacing-4);
     }
 
-    .contact-info__card {
-      padding: var(--spacing-6);
+    .trust-section {
+      padding: var(--spacing-12) var(--spacing-4);
+    }
+
+    .trust-section__title {
+      font-size: var(--font-size-xl);
     }
   }
 
@@ -249,8 +799,35 @@ import ContactForm from '../components/ContactForm.astro';
    * REDUCED MOTION
    * ================================================================= */
   @media (prefers-reduced-motion: reduce) {
-    .contact-info__card {
+    .contact-emergency__icon {
+      animation: none;
+    }
+
+    .contact-card,
+    .trust-point,
+    .service-area-tag,
+    .contact-emergency__cta {
       transition: none;
     }
+
+    a.contact-card:hover,
+    .trust-point:hover {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * SCREEN READER ONLY
+   * ================================================================= */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
   }
 </style>

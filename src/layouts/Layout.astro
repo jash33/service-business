@@ -29,6 +29,8 @@ import criticalCSS from '../styles/critical.css?raw';
 import SEO from '../components/SEO.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import EmergencyBanner from '../components/EmergencyBanner.astro';
+import PromoBanner from '../components/PromoBanner.astro';
 import EmergencyServiceBanner from '../components/EmergencyServiceBanner.astro';
 import GoogleAnalytics from '../components/GoogleAnalytics.astro';
 import CookieConsent from '../components/CookieConsent.astro';
@@ -77,10 +79,8 @@ const {
   ...seoProps
 } = Astro.props;
 
-// Determine if we should show breadcrumbs
-// Hide on home page by default, show on all other pages
-const isHomePage = Astro.url.pathname === '/' || Astro.url.pathname === '';
-const showBreadcrumbs = !hideBreadcrumbs && !isHomePage;
+// Breadcrumbs disabled site-wide per client preference
+const showBreadcrumbs = false;
 
 // Google Fonts URL - optimized with display=swap and subset
 const googleFontsURL = 'https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Inter:wght@400;500;600;700&display=swap';
@@ -142,10 +142,8 @@ const googleFontsURL = 'https://fonts.googleapis.com/css2?family=DM+Sans:ital,op
 		<slot name="head" />
 	</head>
 	<body class={bodyClass}>
+		<EmergencyBanner />
 		<a href="#main-content" class="skip-link">Skip to main content</a>
-		{!disableEmergencyBanner && (
-			<EmergencyServiceBanner />
-		)}
 		<Header currentPath={Astro.url.pathname} />
 		{showBreadcrumbs && (
 			<Breadcrumb

@@ -76,16 +76,16 @@ export interface NewsletterConfig {
  * Default newsletter content
  */
 export const defaultNewsletterContent: NewsletterContentConfig = {
-  headline: '',
-  description: '',
-  buttonText: '',
-  successMessage: '',
-  pendingMessage: '',
-  errorMessage: '',
-  privacyNotice: '',
-  gdprLabel: '',
-  emailPlaceholder: '',
-  namePlaceholder: '',
+  headline: 'Subscribe to Our Newsletter',
+  description: 'Get HVAC tips, seasonal maintenance reminders, and exclusive offers.',
+  buttonText: 'Subscribe',
+  successMessage: 'Thanks for subscribing! Check your email to confirm.',
+  pendingMessage: 'Please check your email to confirm your subscription.',
+  errorMessage: 'Something went wrong. Please try again.',
+  privacyNotice: 'We respect your privacy. Unsubscribe anytime.',
+  gdprLabel: 'I agree to receive emails and accept the',
+  emailPlaceholder: 'Enter your email',
+  namePlaceholder: 'Your name (optional)',
 };
 
 /**

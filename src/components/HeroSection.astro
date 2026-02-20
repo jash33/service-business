@@ -48,9 +48,11 @@
 
 import type { HeroSectionProps } from '../types/hero';
 import Button from './Button.astro';
+import TrustBadges from './TrustBadges.astro';
 
 interface Props extends HeroSectionProps {
-  trustBadges?: Array<{ icon: 'experience' | 'projects' | 'tech'; text: string; }>;
+  heroImage?: string;
+  heroImageAlt?: string;
 }
 
 const {
@@ -61,20 +63,11 @@ const {
   secondaryCTA,
   id = 'hero',
   class: className = '',
-  trustBadges = [
-    { icon: 'experience', text: '10+ Years Experience' },
-    { icon: 'projects', text: '50+ Local Businesses Helped' },
-    { icon: 'tech', text: 'Quality-Driven Results' },
-  ],
+  heroImage,
+  heroImageAlt = 'Professional service technician',
 } = Astro.props;
 
 const sectionClasses = ['hero', className].filter(Boolean).join(' ');
-
-const trustIcons: Record<string, string> = {
-  experience: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`,
-  projects: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>`,
-  tech: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>`,
-};
 ---
 
 <section class={sectionClasses} id={id} aria-labelledby={`${id}-headline`}>
@@ -90,7 +83,7 @@ const trustIcons: Record<string, string> = {
         {subheadline && (
           <p class="hero__subheadline">
             <svg class="hero__subheadline-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true">
-              <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/>
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
             </svg>
             <span>{subheadline}</span>
           </p>
@@ -108,47 +101,39 @@ const trustIcons: Record<string, string> = {
                 <Button text={secondaryCTA.text} href={secondaryCTA.href} variant={secondaryCTA.variant || 'secondary'} size="large" class="hero__cta hero__cta--secondary" />
               )}
             </div>
-            {trustBadges && trustBadges.length > 0 && (
-              <div class="hero__trust-badges" aria-label="Credentials">
-                {trustBadges.map((badge) => (
-                  <div class="hero__trust-badge">
-                    <span class="hero__trust-badge-icon" set:html={trustIcons[badge.icon]} />
-                    <span class="hero__trust-badge-text">{badge.text}</span>
-                  </div>
-                ))}
-              </div>
-            )}
+            {/* Inline trust badges removed - consolidated into TrustBadges component */}
           </div>
         )}
+
+        <TrustBadges />
 
         <div class="hero__location-cue">
           <svg class="hero__location-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
             <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
           </svg>
-          <span class="hero__location-text">Serving Your Local Area</span>
-          <span class="hero__coordinates">Your Neighborhood</span>
+          <span class="hero__location-text">Serving the Greater Houston Area</span>
+          <span class="hero__coordinates">Houston, TX</span>
         </div>
       </div>
+
+      {heroImage && (
+        <div class="hero__image-wrapper">
+          <img 
+            src={heroImage} 
+            alt={heroImageAlt}
+            class="hero__image"
+            loading="eager"
+            decoding="async"
+          />
+        </div>
+      )}
 
     </div>
   </div>
 
   <div class="hero__background" aria-hidden="true"></div>
 
-  <!-- Animated Grid Background -->
-  <div class="hero__grid-bg" aria-hidden="true">
-    <div class="hero__grid-lines"></div>
-    <div class="hero__grid-glow"></div>
-  </div>
-
-  <!-- Floating Gradient Orbs Animation -->
-  <div class="hero__orbs" aria-hidden="true">
-    <div class="hero__orb hero__orb--1"></div>
-    <div class="hero__orb hero__orb--2"></div>
-    <div class="hero__orb hero__orb--3"></div>
-    <div class="hero__orb hero__orb--4"></div>
-    <div class="hero__orb hero__orb--5"></div>
-  </div>
+  <!-- Animated backgrounds removed for performance and brand fit -->
 
   <div class="hero__skyline" aria-hidden="true">
     <svg viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
@@ -157,45 +142,7 @@ const trustIcons: Record<string, string> = {
   </div>
   <div class="hero__accent-shape" aria-hidden="true"></div>
 
-  <!-- Fancy Interior Border -->
-  <div class="hero__interior-border" aria-hidden="true">
-    <div class="hero__border-line hero__border-line--top"></div>
-    <div class="hero__border-line hero__border-line--right"></div>
-    <div class="hero__border-line hero__border-line--bottom"></div>
-    <div class="hero__border-line hero__border-line--left"></div>
-    <div class="hero__border-corner hero__border-corner--top-left">
-      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M0 40V0H40" stroke="currentColor" stroke-width="2" fill="none"/>
-        <circle cx="0" cy="0" r="4" fill="currentColor"/>
-        <path d="M8 0L0 8" stroke="currentColor" stroke-width="1.5"/>
-        <path d="M16 0L0 16" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-      </svg>
-    </div>
-    <div class="hero__border-corner hero__border-corner--top-right">
-      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M40 40V0H0" stroke="currentColor" stroke-width="2" fill="none"/>
-        <circle cx="40" cy="0" r="4" fill="currentColor"/>
-        <path d="M32 0L40 8" stroke="currentColor" stroke-width="1.5"/>
-        <path d="M24 0L40 16" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-      </svg>
-    </div>
-    <div class="hero__border-corner hero__border-corner--bottom-left">
-      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M0 0V40H40" stroke="currentColor" stroke-width="2" fill="none"/>
-        <circle cx="0" cy="40" r="4" fill="currentColor"/>
-        <path d="M8 40L0 32" stroke="currentColor" stroke-width="1.5"/>
-        <path d="M16 40L0 24" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-      </svg>
-    </div>
-    <div class="hero__border-corner hero__border-corner--bottom-right">
-      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M40 0V40H0" stroke="currentColor" stroke-width="2" fill="none"/>
-        <circle cx="40" cy="40" r="4" fill="currentColor"/>
-        <path d="M32 40L40 32" stroke="currentColor" stroke-width="1.5"/>
-        <path d="M24 40L40 24" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-      </svg>
-    </div>
-  </div>
+  <!-- Interior border removed - too tech-startup for HVAC business -->
 </section>
 
 <style>
@@ -223,8 +170,7 @@ const trustIcons: Record<string, string> = {
         var(--color-primary-800) 65%,
         var(--color-primary-900) 100%
       );
-    background-size: 400% 400%;
-    animation: heroGradientShift 20s ease infinite;
+    background-size: 100% 100%;
   }
 
   /* Enhanced gradient overlay for depth */
@@ -244,7 +190,6 @@ const trustIcons: Record<string, string> = {
         transparent 50%
       );
     pointer-events: none;
-    animation: heroOverlayPulse 8s ease-in-out infinite;
   }
 
   /* Decorative background */
@@ -278,6 +223,21 @@ const trustIcons: Record<string, string> = {
     grid-template-columns: 1fr;
     gap: var(--spacing-8);
     align-items: center;
+  }
+
+  /* Hero image styles */
+  .hero__image-wrapper {
+    display: none;
+  }
+
+  .hero__image {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-xl);
+    box-shadow: 
+      0 25px 50px -12px rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(255, 255, 255, 0.1);
+    object-fit: cover;
   }
 
   .hero__content {
@@ -432,41 +392,7 @@ const trustIcons: Record<string, string> = {
     transform: translateY(-2px);
   }
 
-  /* =================================================================
-   * TRUST BADGES
-   * =================================================================
-   */
-
-  .hero__trust-badges {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: var(--spacing-3);
-  }
-
-  .hero__trust-badge {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-2);
-    padding: var(--spacing-2) var(--spacing-3);
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: var(--radius-full);
-    font-size: var(--font-size-xs);
-    color: var(--color-primary-100);
-    white-space: nowrap;
-  }
-
-  .hero__trust-badge-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--color-primary-300);
-  }
-
-  .hero__trust-badge-text {
-    font-weight: var(--font-weight-medium);
-  }
+  /* Inline trust badges CSS removed - now using TrustBadges component only */
 
   /* =================================================================
    * LOCATION CUE
@@ -502,198 +428,14 @@ const trustIcons: Record<string, string> = {
 
   .hero__coordinates {
     font-size: var(--font-size-xs);
-    font-family: var(--font-mono, monospace);
+    font-family: var(--font-body);
     color: var(--color-primary-200);
     padding: var(--spacing-1) var(--spacing-2);
     background: rgba(0, 0, 0, 0.2);
     border-radius: var(--radius-sm);
   }
 
-  /* =================================================================
-   * FANCY INTERIOR BORDER
-   * =================================================================
-   * An elegant white ornamental border that frames the hero section
-   * with decorative corners and diamond accents
-   */
-
-  .hero__interior-border {
-    position: absolute;
-    inset: var(--spacing-4);
-    pointer-events: none;
-    z-index: 2;
-  }
-
-  /* Border lines with gradient fade effect */
-  .hero__border-line {
-    position: absolute;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.15) 10%,
-      rgba(255, 255, 255, 0.4) 50%,
-      rgba(255, 255, 255, 0.15) 90%,
-      transparent 100%
-    );
-  }
-
-  .hero__border-line--top,
-  .hero__border-line--bottom {
-    left: 50px;
-    right: 50px;
-    height: 1px;
-  }
-
-  .hero__border-line--top {
-    top: 0;
-  }
-
-  .hero__border-line--bottom {
-    bottom: 0;
-  }
-
-  .hero__border-line--left,
-  .hero__border-line--right {
-    top: 50px;
-    bottom: 50px;
-    width: 1px;
-    background: linear-gradient(
-      180deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.15) 10%,
-      rgba(255, 255, 255, 0.4) 50%,
-      rgba(255, 255, 255, 0.15) 90%,
-      transparent 100%
-    );
-  }
-
-  .hero__border-line--left {
-    left: 0;
-  }
-
-  .hero__border-line--right {
-    right: 0;
-  }
-
-  /* Decorative corner ornaments */
-  .hero__border-corner {
-    position: absolute;
-    width: 40px;
-    height: 40px;
-    color: rgba(255, 255, 255, 0.5);
-    transition: color var(--duration-300) var(--ease-out);
-  }
-
-  .hero__border-corner svg {
-    width: 100%;
-    height: 100%;
-  }
-
-  .hero__border-corner--top-left {
-    top: 0;
-    left: 0;
-  }
-
-  .hero__border-corner--top-right {
-    top: 0;
-    right: 0;
-  }
-
-  .hero__border-corner--bottom-left {
-    bottom: 0;
-    left: 0;
-  }
-
-  .hero__border-corner--bottom-right {
-    bottom: 0;
-    right: 0;
-  }
-
-  /* Responsive adjustments for interior border */
-  @media screen and (min-width: 640px) {
-    .hero__interior-border {
-      inset: var(--spacing-6);
-    }
-
-    .hero__border-corner {
-      width: 50px;
-      height: 50px;
-    }
-
-    .hero__border-line--top,
-    .hero__border-line--bottom {
-      left: 60px;
-      right: 60px;
-    }
-
-    .hero__border-line--left,
-    .hero__border-line--right {
-      top: 60px;
-      bottom: 60px;
-    }
-
-  }
-
-  @media screen and (min-width: 1024px) {
-    .hero__interior-border {
-      inset: var(--spacing-8);
-    }
-
-    .hero__border-corner {
-      width: 60px;
-      height: 60px;
-      color: rgba(255, 255, 255, 0.55);
-    }
-
-    .hero__border-line {
-      background: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(255, 255, 255, 0.2) 15%,
-        rgba(255, 255, 255, 0.5) 50%,
-        rgba(255, 255, 255, 0.2) 85%,
-        transparent 100%
-      );
-    }
-
-    .hero__border-line--left,
-    .hero__border-line--right {
-      background: linear-gradient(
-        180deg,
-        transparent 0%,
-        rgba(255, 255, 255, 0.2) 15%,
-        rgba(255, 255, 255, 0.5) 50%,
-        rgba(255, 255, 255, 0.2) 85%,
-        transparent 100%
-      );
-    }
-
-    .hero__border-line--top,
-    .hero__border-line--bottom {
-      left: 80px;
-      right: 80px;
-    }
-
-    .hero__border-line--left,
-    .hero__border-line--right {
-      top: 80px;
-      bottom: 80px;
-    }
-
-  }
-
-  /* High contrast mode - hide decorative border */
-  @media (forced-colors: active) {
-    .hero__interior-border {
-      display: none;
-    }
-  }
-
-  /* Print - hide decorative border */
-  @media print {
-    .hero__interior-border {
-      display: none;
-    }
-  }
+  /* Interior border CSS removed - element no longer in use */
 
   /* =================================================================
    * DECORATIVE SKYLINE
@@ -706,7 +448,7 @@ const trustIcons: Record<string, string> = {
     left: 0;
     right: 0;
     height: 80px;
-    color: rgba(0, 0, 0, 0.15);
+    color: rgba(0, 0, 0, 0.35);
     pointer-events: none;
   }
 
@@ -1011,7 +753,6 @@ const trustIcons: Record<string, string> = {
     background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
     border-radius: 50%;
     pointer-events: none;
-    animation: accentFloat 8s ease-in-out infinite;
   }
 
   /* =================================================================
@@ -1052,14 +793,7 @@ const trustIcons: Record<string, string> = {
       width: auto;
     }
 
-    .hero__trust-badges {
-      gap: var(--spacing-4);
-    }
-
-    .hero__trust-badge {
-      font-size: var(--font-size-sm);
-      padding: var(--spacing-2) var(--spacing-4);
-    }
+    /* trust badge gap/sizing removed - using TrustBadges component */
 
     /* Floating Orbs - Tablet Enhancements */
     .hero__orb {
@@ -1095,6 +829,31 @@ const trustIcons: Record<string, string> = {
       gap: var(--spacing-12);
     }
 
+    /* Show image on desktop when present */
+    .hero__grid:has(.hero__image-wrapper) {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-16);
+    }
+
+    .hero__image-wrapper {
+      display: block;
+      position: relative;
+    }
+
+    .hero__image-wrapper::before {
+      content: '';
+      position: absolute;
+      inset: -10px;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(59, 130, 246, 0.2));
+      border-radius: var(--radius-2xl);
+      z-index: -1;
+      filter: blur(20px);
+    }
+
+    .hero__image {
+      max-height: 450px;
+    }
+
     .hero__content {
       align-items: flex-start;
       text-align: left;
@@ -1123,10 +882,6 @@ const trustIcons: Record<string, string> = {
     .hero__cta-group {
       justify-content: flex-start;
       gap: var(--spacing-4);
-    }
-
-    .hero__trust-badges {
-      justify-content: flex-start;
     }
 
     .hero__location-cue {
@@ -1336,10 +1091,6 @@ const trustIcons: Record<string, string> = {
     animation: heroFadeIn 0.6s ease-out 0.5s backwards;
   }
 
-  .hero__trust-badges {
-    animation: heroFadeIn 0.6s ease-out 0.5s backwards;
-  }
-
   @keyframes heroFadeIn {
     from {
       opacity: 0;
@@ -1371,8 +1122,7 @@ const trustIcons: Record<string, string> = {
     .hero__value-prop,
     .hero__subheadline,
     .hero__cta-wrapper,
-    .hero__location-cue,
-    .hero__trust-badges {
+    .hero__location-cue {
       animation: none;
     }
 
@@ -1423,8 +1173,7 @@ const trustIcons: Record<string, string> = {
 
     .hero__value-prop,
     .hero__subheadline,
-    .hero__location-cue,
-    .hero__trust-badge {
+    .hero__location-cue {
       border: 1px solid CanvasText;
       background: transparent;
     }

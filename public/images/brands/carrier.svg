@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 80">
+  <defs>
+    <linearGradient id="carrierGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0052CC;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#003D99;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="200" height="80" rx="12" fill="url(#carrierGrad)"/>
+  <!-- Snowflake icon -->
+  <g transform="translate(30, 40)" fill="#B8D4FF">
+    <circle cx="0" cy="0" r="3"/>
+    <rect x="-1.5" y="-12" width="3" height="24" rx="1.5"/>
+    <rect x="-1.5" y="-12" width="3" height="24" rx="1.5" transform="rotate(60)"/>
+    <rect x="-1.5" y="-12" width="3" height="24" rx="1.5" transform="rotate(-60)"/>
+    <circle cx="0" cy="-9" r="2"/><circle cx="0" cy="9" r="2"/>
+    <circle cx="7.8" cy="-4.5" r="2"/><circle cx="-7.8" cy="4.5" r="2"/>
+    <circle cx="7.8" cy="4.5" r="2"/><circle cx="-7.8" cy="-4.5" r="2"/>
+  </g>
+  <text x="120" y="42" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="800" fill="#FFFFFF" letter-spacing="2">CARRIER</text>
+  <text x="120" y="58" text-anchor="middle" font-family="system-ui, sans-serif" font-size="8" fill="#B8D4FF" letter-spacing="1.5">TURN TO THE EXPERTS</text>
+</svg>

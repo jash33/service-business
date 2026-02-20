@@ -101,10 +101,10 @@ const cardClasses = [
     /* Positioning for pseudo-elements */
     position: relative;
 
-    /* Visual */
+    /* Visual - softer, friendlier appearance */
     background-color: var(--color-background-elevated);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-xl);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-2xl);
     box-shadow: var(--shadow-sm);
 
     /* Overflow for shine effect */
@@ -157,12 +157,12 @@ const cardClasses = [
 
   .service-card:hover {
     box-shadow: var(--shadow-lg), var(--glow-card-hover);
-    transform: translateY(-6px);
-    border-color: var(--color-primary-300);
+    transform: translateY(-3px);
+    border-color: var(--color-primary-200);
   }
 
   .service-card:hover::before {
-    opacity: 0.35;
+    opacity: 0.2;
   }
 
   .service-card:hover::after {
@@ -222,14 +222,14 @@ const cardClasses = [
     font-family: var(--font-heading);
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-semibold);
-    color: var(--color-text-primary);
+    color: var(--color-primary);
     margin: 0;
     line-height: var(--line-height-tight);
     transition: color var(--duration-200) var(--ease-out);
   }
 
   .service-card:hover .service-card__title {
-    color: var(--color-primary);
+    color: var(--color-primary-700);
   }
 
   .service-card__description {

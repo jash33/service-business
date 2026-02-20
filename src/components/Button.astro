@@ -209,8 +209,8 @@ const buttonAttrs = !isLink ? {
     cursor: pointer;
     user-select: none;
 
-    /* Visual */
-    border-radius: var(--radius-lg);
+    /* Visual - friendlier rounded corners */
+    border-radius: var(--radius-xl);
     transition:
       background-color var(--duration-150) var(--ease-in-out),
       border-color var(--duration-150) var(--ease-in-out),
@@ -262,7 +262,7 @@ const buttonAttrs = !isLink ? {
 
   .btn--primary:hover:not(.btn--disabled) {
     background-color: var(--color-primary-hover);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-sm);
     transform: translateY(-1px);
   }
 

@@ -400,12 +400,19 @@ const cardClasses = [
       const valueElement = element.querySelector('.counter-card__value');
       if (!valueElement) return;
 
-      const targetValue = parseInt(element.getAttribute('data-counter-value') || '0', 10);
+      const targetValue = parseFloat(element.getAttribute('data-counter-value') || '0');
       const duration = parseInt(element.getAttribute('data-animation-duration') || '2000', 10);
+      const hasDecimal = targetValue % 1 !== 0;
+      const decimalPlaces = hasDecimal ? (targetValue.toString().split('.')[1]?.length || 1) : 0;
+
+      const formatValue = (val: number) => {
+        if (hasDecimal) return val.toFixed(decimalPlaces);
+        return val.toLocaleString();
+      };
 
       // If reduced motion is preferred, show the final value immediately
       if (prefersReducedMotion) {
-        valueElement.textContent = targetValue.toLocaleString();
+        valueElement.textContent = formatValue(targetValue);
         return;
       }
 
@@ -419,14 +426,14 @@ const cardClasses = [
         // Easing function (ease-out-quart for smooth deceleration)
         const easeOutQuart = 1 - Math.pow(1 - progress, 4);
 
-        const currentValue = Math.floor(startValue + (targetValue - startValue) * easeOutQuart);
-        valueElement.textContent = currentValue.toLocaleString();
+        const currentValue = startValue + (targetValue - startValue) * easeOutQuart;
+        valueElement.textContent = formatValue(hasDecimal ? currentValue : Math.floor(currentValue));
 
         if (progress < 1) {
           requestAnimationFrame(updateCounter);
         } else {
           // Ensure we end on the exact target value
-          valueElement.textContent = targetValue.toLocaleString();
+          valueElement.textContent = formatValue(targetValue);
         }
       };
 

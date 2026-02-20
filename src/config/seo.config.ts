@@ -12,32 +12,36 @@ import type { SEOConfig, LocalBusinessSchema } from '../types/seo';
  */
 export const localBusinessSchema: LocalBusinessSchema = {
   type: 'ProfessionalService',
-  name: '', // Configure: Business name
-  legalName: '', // Configure: Legal business name
-  description: '', // Configure: Business description for SEO
-  slogan: '', // Configure: Business slogan/tagline
-  url: '', // Configure: Production URL (e.g., https://example.com)
-  telephone: '', // Configure: Business phone (e.g., +1-555-000-0000)
-  email: '', // Configure: Business email (e.g., info@example.com)
+  name: 'Coolside Comfort',
+  legalName: 'Coolside Comfort LLC',
+  description: 'Houston HVAC experts offering AC repair, heating services, and maintenance plans. Same-day service, upfront pricing, serving the Greater Houston area since 2010.',
+  slogan: 'Keeping Houston Cool Since 2010',
+  url: 'https://coolsidecomfort.com',
+  telephone: '+1-832-555-2665',
+  email: 'info@coolsidecomfort.com',
   address: {
-    streetAddress: '', // Configure: Street address
-    addressLocality: '', // Configure: City
-    addressRegion: '', // Configure: State/region code (e.g., TX)
-    postalCode: '', // Configure: Postal/ZIP code
+    streetAddress: '12847 Westheimer Rd',
+    addressLocality: 'Houston',
+    addressRegion: 'TX',
+    postalCode: '77077',
     addressCountry: 'US',
   },
   geo: {
-    latitude: 0, // Configure: Business latitude
-    longitude: 0, // Configure: Business longitude
+    latitude: 29.7389,
+    longitude: -95.5983,
   },
   areaServed: [
-    // Configure: Add service areas
-    // Example: { type: 'City', name: 'Your City', addressLocality: 'Your City', addressRegion: 'ST', addressCountry: 'US' },
+    { type: 'City', name: 'Houston', addressLocality: 'Houston', addressRegion: 'TX', addressCountry: 'US' },
+    { type: 'City', name: 'Katy', addressLocality: 'Katy', addressRegion: 'TX', addressCountry: 'US' },
+    { type: 'City', name: 'Sugar Land', addressLocality: 'Sugar Land', addressRegion: 'TX', addressCountry: 'US' },
+    { type: 'City', name: 'Memorial', addressLocality: 'Memorial', addressRegion: 'TX', addressCountry: 'US' },
+    { type: 'City', name: 'Energy Corridor', addressLocality: 'Energy Corridor', addressRegion: 'TX', addressCountry: 'US' },
+    { type: 'City', name: 'The Woodlands', addressLocality: 'The Woodlands', addressRegion: 'TX', addressCountry: 'US' },
   ],
   openingHoursSpecification: [
-    { dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], opens: '09:00', closes: '17:00' },
+    { dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], opens: '07:00', closes: '19:00' },
   ],
-  openingHours: ['Mo-Fr 09:00-17:00'],
+  openingHours: ['Mo-Fr 07:00-19:00'],
   logo: '', // Configure: Absolute URL to logo image
   image: [], // Configure: Absolute URLs to business images
   priceRange: '$$',
@@ -45,11 +49,11 @@ export const localBusinessSchema: LocalBusinessSchema = {
   paymentAccepted: ['Cash', 'Credit Card', 'Debit Card', 'Check', 'Invoice', 'Bank Transfer'],
   sameAs: [], // Configure: Social media profile URLs
   contactPoint: {
-    telephone: '', // Configure: Contact phone
-    email: '', // Configure: Contact email
+    telephone: '+1-832-555-2665',
+    email: 'info@coolsidecomfort.com',
     contactType: 'customer service',
     availableLanguage: ['English'],
-    areaServed: [], // Configure: Service area names
+    areaServed: ['Houston', 'Katy', 'Sugar Land', 'Memorial', 'Energy Corridor', 'The Woodlands'],
   },
   makesOffer: [
     // Configure: List of services offered
@@ -68,20 +72,20 @@ export const localBusinessSchema: LocalBusinessSchema = {
  */
 export const seoConfig: SEOConfig = {
   // Site Identity
-  siteName: '', // Configure: Business/site name
-  siteUrl: '', // Configure: Production URL (e.g., https://example.com)
+  siteName: 'Coolside Comfort',
+  siteUrl: 'https://coolsidecomfort.com',
 
   // Title Configuration
-  titleTemplate: '%s', // Configure: e.g., '%s | Your Business Name'
+  titleTemplate: '%s | Coolside Comfort',
 
   // Default Meta Content
-  defaultDescription: '', // Configure: Default meta description for SEO
+  defaultDescription: 'Houston HVAC experts offering AC repair, heating services, and maintenance plans. Same-day service, upfront pricing, serving the Greater Houston area since 2010.',
   defaultLang: 'en',
   defaultLocale: 'en_US',
 
   // Default Social Sharing Image
   defaultImage: '/images/og-default.jpg', // Configure: Create this image (1200x630 recommended)
-  defaultImageAlt: '', // Configure: Alt text for default social sharing image
+  defaultImageAlt: 'Coolside Comfort - Houston HVAC Services',
 
   // Twitter Configuration
   twitterSite: undefined, // Add @username when available

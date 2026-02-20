@@ -1,0 +1,141 @@
+---
+/**
+ * Trust Badges Component
+ * Displays certification and trust signal badges in a horizontal row.
+ * Designed to reinforce credibility in the hero section.
+ */
+
+interface Badge {
+  icon: string;
+  text: string;
+}
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+
+const badges: Badge[] = [
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>`,
+    text: 'Licensed & Insured',
+  },
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`,
+    text: 'BBB A+ Rated',
+  },
+  {
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>`,
+    text: '24/7 Emergency',
+  },
+];
+
+const wrapperClasses = ['trust-badges', className].filter(Boolean).join(' ');
+---
+
+<div class={wrapperClasses} aria-label="Trust certifications" role="list">
+  {badges.map((badge) => (
+    <div class="trust-badges__item" role="listitem">
+      <span class="trust-badges__icon" aria-hidden="true" set:html={badge.icon} />
+      <span class="trust-badges__text">{badge.text}</span>
+    </div>
+  ))}
+</div>
+
+<style>
+  .trust-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-3);
+    animation: heroFadeIn 0.6s ease-out 0.45s backwards;
+  }
+
+  .trust-badges__item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-3);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-lg);
+    white-space: nowrap;
+  }
+
+  .trust-badges__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary-300);
+    flex-shrink: 0;
+  }
+
+  .trust-badges__text {
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary-100);
+  }
+
+  /* Tablet (640px+) */
+  @media screen and (min-width: 640px) {
+    .trust-badges {
+      gap: var(--spacing-4);
+    }
+
+    .trust-badges__item {
+      padding: var(--spacing-2) var(--spacing-4);
+    }
+
+    .trust-badges__text {
+      font-size: var(--font-size-sm);
+    }
+  }
+
+  /* Desktop (1024px+) */
+  @media screen and (min-width: 1024px) {
+    .trust-badges {
+      justify-content: flex-start;
+    }
+  }
+
+  /* Reuse hero fade-in keyframes */
+  @keyframes heroFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .trust-badges {
+      animation: none;
+    }
+  }
+
+  /* High contrast mode */
+  @media (forced-colors: active) {
+    .trust-badges__item {
+      border: 1px solid CanvasText;
+      background: transparent;
+    }
+  }
+
+  /* Print */
+  @media print {
+    .trust-badges__item {
+      background: transparent;
+      border: 1px solid var(--color-border);
+    }
+
+    .trust-badges__text {
+      color: var(--color-text-primary);
+    }
+  }
+</style>

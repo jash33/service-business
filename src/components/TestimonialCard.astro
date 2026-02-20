@@ -58,6 +58,38 @@ const cardClasses = [
 // Build attribution text
 const attributionParts = [title, company].filter(Boolean);
 const hasAttribution = attributionParts.length > 0;
+
+// Generate initials from name (e.g., "Maria Gonzalez" -> "MG")
+function getInitials(fullName: string): string {
+  return fullName
+    .split(' ')
+    .map(part => part.charAt(0).toUpperCase())
+    .slice(0, 2)
+    .join('');
+}
+
+// Generate a consistent color based on name (for avatar background)
+function getAvatarColor(fullName: string): string {
+  const colors = [
+    'var(--color-primary)',      // Primary blue
+    'var(--color-accent)',       // Purple accent
+    '#059669',                   // Emerald green
+    '#dc2626',                   // Red
+    '#ea580c',                   // Orange
+    '#0891b2',                   // Cyan
+    '#7c3aed',                   // Violet
+    '#db2777',                   // Pink
+  ];
+  // Simple hash based on name to get consistent color
+  let hash = 0;
+  for (let i = 0; i < fullName.length; i++) {
+    hash = fullName.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return colors[Math.abs(hash) % colors.length];
+}
+
+const initials = getInitials(name);
+const avatarColor = getAvatarColor(name);
 ---
 
 <article class={cardClasses} id={`testimonial-${id}`}>
@@ -75,6 +107,9 @@ const hasAttribution = attributionParts.length > 0;
 
   <!-- Customer Info -->
   <footer class="testimonial-card__footer">
+    <div class="testimonial-card__avatar" style={`background-color: ${avatarColor};`} aria-hidden="true">
+      {initials}
+    </div>
     <cite class="testimonial-card__author">
       <span class="testimonial-card__name">{name}</span>
       {hasAttribution && (
@@ -145,7 +180,7 @@ const hasAttribution = attributionParts.length > 0;
 
   .testimonial-card:hover {
     box-shadow: var(--shadow-lg), var(--glow-card-hover);
-    transform: translateY(-6px);
+    transform: translateY(-3px);
     border-color: var(--color-primary-300);
   }
 
@@ -225,6 +260,31 @@ const hasAttribution = attributionParts.length > 0;
     padding-top: var(--spacing-4);
     border-top: 1px solid var(--color-border);
     margin-top: auto;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-3);
+  }
+
+  /* Avatar with initials */
+  .testimonial-card__avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--spacing-12);
+    height: var(--spacing-12);
+    border-radius: var(--radius-full);
+    color: var(--color-text-inverse);
+    font-family: var(--font-heading);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-bold);
+    flex-shrink: 0;
+    letter-spacing: 0.5px;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--duration-300) var(--ease-spring-soft);
+  }
+
+  .testimonial-card:hover .testimonial-card__avatar {
+    transform: scale(1.05);
   }
 
   .testimonial-card__author {
